@@ -142,7 +142,7 @@
           <tr v-for="socio in listSociosCumple" :key="socio.idSocio">
             <td class="d-none d-md-table-cell">{{ socio.nombre }}</td>
             <td>{{ socio.apellido }}</td>
-            <td>  {{ obtenerFechaFormateada(socio.fechaNacimiento) }} ({{calcularEdad(socio.fechaNacimiento) }})</td>
+            <td> <b>  {{ obtenerFechaFormateada(socio.fechaNacimiento) }} </b> ({{calcularEdad(socio.fechaNacimiento) }})</td>
           </tr>
         </tbody>
       </table>
