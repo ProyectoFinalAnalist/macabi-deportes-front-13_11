@@ -96,6 +96,7 @@ export function useElementStore(nombreStore) {
 				}
 			},
 
+
 			async patchElement(url, updatedElement) {
 				try {
 					await axios.patch(url, updatedElement, { withCredentials: true })

@@ -171,7 +171,7 @@ export default {
         const nombreContacto = ref(null)
 
         onMounted(async () => {
-            await sociosStore.fetchElements(`${apiUrl}/socio/getSocios`)
+            await sociosStore.fetchElements(`${apiUrl}/socio/getAll`)
             await sociosStore.fetchElementById(`${apiUrl}/socio/`, idSocio)
             data.value;
         })
@@ -239,8 +239,8 @@ export default {
                 if (sociosStore.confirm("modificar", "modificado", "Socio")) {
                     const socioUpdate = JSON.parse(JSON.stringify(sociosStore.currentElement.result))
                     try {
-                        await sociosStore.updateElement(`${apiUrl}/socio`, socioUpdate, "idSocio")
-                        location.reload()
+                        await sociosStore.patchElement(`${apiUrl}/socio/${socioUpdate.idSocio}`, socioUpdate)
+                        router.go(-1)
                     } catch (e) {
                         console.log(e)
                         message.value = "Error updating";

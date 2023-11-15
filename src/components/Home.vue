@@ -12,12 +12,12 @@
 
         </div>
 
-        <div v-else-if="usuarioStore.getRol == 'C' && deportesDeUsuario.getElements != null" class="container_flex">
+        <div v-else-if="usuarioStore.getRol == 'C' && deportesDeUsuario.getElements.result != null" class="container_flex">
             <div style="width: 100%;" class="text text-center pb-5 h1">Tus Deportes asignados - Coordinador de Deportes
             </div>
 
-            <router-link v-if="deportesDeUsuario.getElements.deportes.length > 0"
-                v-for="sport in deportesDeUsuario.getElements.deportes" :to="'/detalleDeporte/' + sport.idDeporte"
+            <router-link v-if="deportesDeUsuario.getElements.result.length > 0"
+                v-for="sport in deportesDeUsuario.getElements.result" :to="'/detalleDeporte/' + sport.idDeporte"
                 class="fs-4 btn btn-primary primary-macabi btn-home">
                 {{ sport.nombre }}
             </router-link>
@@ -27,11 +27,11 @@
             </div>
         </div>
 
-        <div v-else-if="usuarioStore.getRol == 'P' && categoriasDeUsuario.getElements != null" class="container_flex">
+        <div v-else-if="usuarioStore.getRol == 'P' && this.categoriasDeUsuario.getElements.categorias != null" class="container_flex">
             <div style="width: 100%;" class="text text-center pb-5 h1">Tus Categorías asignadas - Profesor</div>
 
-            <router-link v-if="categoriasDeUsuario.getElements.categorias.length > 0"
-                v-for="category in categoriasDeUsuario.getElements.categorias"
+            <router-link v-if="this.categoriasDeUsuario.getElements.categorias.length > 0"
+                v-for="category in this.categoriasDeUsuario.getElements.categorias"
                 :to="'/detalleCategoria/' + category.idCategoria" class="fs-4 btn btn-primary primary-macabi btn-home">
                 {{ category.nombreCategoria }} - {{ category.Deporte.nombre }}
             </router-link>
@@ -56,6 +56,8 @@
 import { useElementStore } from "../utils/Store"
 import { usrStore } from '../stores/usrStore.ts'
 import apiUrl from "../../config/config";
+import axios from "axios";
+
 
 
 export default {
@@ -80,15 +82,28 @@ export default {
                 this.obtenerCategorias()
                 break;
         }
+
     },
 
     methods: {
-        obtenerDeportes() {
+         obtenerDeportes() {
             this.deportesDeUsuario.fetchElements(`${apiUrl}/usuario/${this.usuarioStore.getId}/deportes`)
+
+            
         },
+        
+
+
+
 
         obtenerCategorias() {
             this.categoriasDeUsuario.fetchElements(`${apiUrl}/usuario/${this.usuarioStore.getId}/categorias`)
+            .then(() => {
+                console.log(this.categoriasDeUsuario.getElements.categorias.length);
+            })
+            
+
+            
         },
     },
 }
