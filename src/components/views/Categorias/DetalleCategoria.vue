@@ -232,6 +232,8 @@ export default {
     } catch (e) {
       console.log("catch");
     }
+
+     this.ordenarListaPorFecha();
   },
   methods: {
     asignarSiEsNuevoUsuarioONo(fechaDiaSemanaAnterior, listaSocios) {
@@ -270,6 +272,13 @@ export default {
     obtenerFechaFormateada(fecha) {
             return this.utils.obtenerFechaFormateada(fecha);
         },
+
+        ordenarListaPorFecha() {
+      this.listSociosCumple.sort((a, b) => {
+        return new Date(a.fechaNacimiento) - new Date(b.fechaNacimiento);
+      });
+        },
+    
 
 
     verProfesor(profesor) {
