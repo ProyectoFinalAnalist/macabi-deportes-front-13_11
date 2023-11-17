@@ -52,7 +52,7 @@ export default {
   }),
 
   async created() {
-
+   
 
       const date = new Date()
       date.setDate(date.getDate());

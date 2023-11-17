@@ -1,6 +1,12 @@
 import { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { createPinia } from "pinia";
+import { usrStore } from "./stores/usrStore";
+
+
+
+
+
 
 import './assets/main.css';
 
@@ -78,9 +84,8 @@ const routes = [
   { path: "/categorias", component: CategoriasList }, // no se usa mas, se reemplaza con detalle deporte y deportes list
   { path: "/crearCategoria/:idDeporte", component: CrearCategoria }, // reemplazo con modal en editar Deporte
   { path: "/modificarCategoria/:id", component: ModificarCategoria },
-  { path: "/detalleCategoria/:id", component: DetalleCategoria },
+  { path: "/detalleCategoria/:id", component: DetalleCategoria},
   { path: "/eliminarSociosCategoria/:id", component: EliminarSociosCategorias },
-
 
   // DEPORTES
   { path: "/deportes", component: DeportesList },
@@ -102,7 +107,7 @@ const routes = [
   { path: "/socios/update/:id", component: UpdateSocio },
 
   // USUARIOS
-  { path: "/usuarios", component: UsuariosList },
+  { path: "/usuarios", component: UsuariosList,},
   { path: "/crearusuario", component: CrearUsuario },
   { path: "/usuarios/:id", component: DetalleUsuario },
   { path: "/modificarusuario/:id", component: ModificarUsuario },
@@ -112,23 +117,120 @@ const routes = [
   { path: "/contactosEmergencia/admin", component: ContactoEmergenciaAdmin },
 ];
 
+
+
 const router = createRouter({
   history: createWebHistory(),
   routes,
 });
 
-/*
-router.beforeEach((to, from, next) => {
-  console.log(isAuthenticated())
-  if (to.path !== "/login" && !isAuthenticated()) {
-    next("/login");
+export const rutasNoAutorizadasParaCoordinador = [
+  "/contactosEmergencia/admin",
+  "/modificarusuario/:id",
+  "/crearusuario",
+];
+
+export const rutasNoAutorizadasParaProfesor = [
+  "/usuarios",
+  "/crearusuario",
+  "/usuarios/:id",
+  "/modificarusuario/:id",
+  "/registrarSocio",
+  "/socios",
+  "/socios/update/:id",
+  "/deportes",
+  "/editarDeporte/:id",
+  "/detalleDeporte/:id",
+  "/modificarCategoria/:id",
+  "/crearCategoria/:idDeporte",
+  "/categorias",
+  "/contactosEmergencia/admin",
+];
+
+
+function mismaRuta(ruta, tipoRol){
+  let pos = 0;
+  let encontrado = false;
+  let rutasPorRevisar = [];
+  if(tipoRol === 'P'){
+    rutasPorRevisar = rutasNoAutorizadasParaProfesor;
+  }else {
+    if(tipoRol === 'C') {
+      rutasPorRevisar = rutasNoAutorizadasParaCoordinador;
+    }
+  }
+    while(pos < rutasPorRevisar.length && !encontrado){
+      if(ruta === rutasPorRevisar[pos]) {
+        encontrado = true
+      }else {
+        pos++
+      }
+    }
+  
+    return encontrado
+  }
+
+
+//Esta es la base q voy a utilizar para q no me falle.
+router.beforeEach(async (to, from, next) => {
+  const usuarioStore = usrStore();
+
+  if (!usuarioStore.isLogged) {
+    // Si la sesión no está iniciada, reinicia la sesión
+    await usuarioStore.reiniciarSesion();
+  }
+  const isLoginPage = to.path === "/login";
+
+  if (!usuarioStore.isLogged && !isLoginPage) {
+    next( { path: "/login", component: Login });
+
   } else {
+    if(to.matched.some(record =>  mismaRuta(record.path, usuarioStore.getRol))) {
+      
+      next(   { path: "/unauthorized", component: Unauthorized }
+      );
+    }
+  
+    
     next();
   }
-})
+});
+
+
+
+
+
+/*
+
+//Esta es la base q voy a utilizar para q no me falle.
+router.beforeEach(async (to, from, next) => {
+
+  const usuarioStore = usrStore();
+  if (!usuarioStore.isLogged) {
+    // Si la sesión no está iniciada, reinicia la sesión
+    await usuarioStore.reiniciarSesion();
+  }
+  console.log("Esta logueado: " + usuarioStore.isLogged);
+  const isLoginPage = to.path === "/login";
+
+  if (!usuarioStore.isLogged && !isLoginPage) {
+    next( { path: "/login", component: Login });
+  } else {
+    if(to.matched.some(record => record.path === "/crearfecha/:idCategoria") && usuarioStore.getRol == 'C') {
+      
+      next(   { path: "/unauthorized", component: Unauthorized }
+      );
+
+    }
+    next();
+  }
+});
+
 */
+
 const pinia = createPinia();
 
 createApp(App).use(pinia).use(router).mount("#app");
+
 
 import "bootstrap/dist/js/bootstrap.js"
