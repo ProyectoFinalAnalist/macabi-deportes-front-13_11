@@ -93,7 +93,7 @@
 							<th class="big" style="width: 6%;">A</th>
 							<th class="big" style="width: 6%;">J</th>
 							<th class="big" style="width: 7%;">N/A</th>
-							<th class="small">Socios:</th>
+							<th class="big" style="width: 11%;">Presentismo</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -108,23 +108,30 @@
 							</td>
 							<td data-cell="P" style="font-weight: bold;">
 								<span class="text-success">
-									{{ getCountOfDateTipe('P', socio.Fechas) }}
+									{{ socio.asistencia.P }}
 								</span>
 							</td>
 							<td data-cell="A" style="font-weight: bold;">
 								<span class="text-danger">
-									{{ getCountOfDateTipe('A', socio.Fechas) }}
+									{{ socio.asistencia.A }}
 								</span>
 							</td>
 							<td data-cell="J" style="font-weight: bold;">
 								<span class="text-warning">
-									{{ getCountOfDateTipe('J', socio.Fechas) }}
+									{{ socio.asistencia.J }}
 								</span>
 							</td>
 							<td data-cell="N/A" style="font-weight: bold;">
 								<span class="text-secondary">
-									{{ getCountOfDateTipe(null, socio.Fechas) }}
+									{{ socio.asistencia["N/A"] }}
 								</span>
+							</td>
+							<td data-cell="Asistencia" style="font-weight: bold;">
+								<div class="vertical-bar-container">
+									<div class="vertical-bar" :style="{ height: barHeight(+socio.asistencia.presentismo) + '%', backgroundColor: barColor(+socio.asistencia.presentismo) }">
+									<div class="percentage-label">{{ socio.asistencia.presentismo }}%</div>
+									</div>
+								</div>
 							</td>
 
 						</tr>
@@ -195,6 +202,7 @@ onBeforeMount(async () => {
 	await fetchCategoria()
 
 });
+
 
 function initDate() {
 	if (sessionStorage.getItem(`preSelectedDateFLC${idCategoria}`)) {
@@ -269,8 +277,39 @@ function showSocios() {
 			return { ...socio, Fechas: fechasFiltradas };
 		});
 
-	sociosToShow.value = sociosProcesados
+	
+		console.log("🚀 ~ file: FechasListCategoria.vue:274 ~ showSocios ~ value:", mapAsistencia(sociosProcesados) )
+	sociosToShow.value = mapAsistencia(sociosProcesados)
+	
 	cantSociosToShow.value = sociosProcesados.length
+}
+
+
+function mapAsistencia(inputData) {
+  return inputData.map((socio) => {
+    const counts = socio.Fechas.reduce(
+      (acc, fecha) => {
+        const estado = fecha.Asistencia?.estado;
+        acc[estado || 'N/A']++;
+        return acc;
+      },
+      { P: 0, A: 0, J: 0, 'N/A': 0 }
+    );
+
+    const total = counts.P + counts.A + counts.J + counts['N/A'];
+	const totalSinNA = counts.P + counts.A + counts.J
+    const presentismo = total === 0 ? 'N/A' : ((counts.P / totalSinNA) * 100).toFixed(2);
+
+    return {
+      ...socio,
+      asistencia: {
+        ...counts,
+        total,
+		totalSinNA,
+        presentismo,
+      },
+    };
+  });
 }
 
 function cambiarFecha(cant, tipe) {
@@ -312,7 +351,28 @@ function getCountOfDateTipe(character, dateArray) {
 	return count
 
 }
+function barColor(presentismo) {
+      if (presentismo === 100) {
+        return '#4CAF50'; // Green
+      } else if (presentismo > 60) {
+        return '#FFC107'; // Yellow
+      } else {
+        return '#FF5252'; // Red
+      }
+    }
 
+
+	function barHeight(presentismo) {
+      if (presentismo === 100) {
+        return 100
+      } else if (presentismo > 60) {
+        return 90
+      } else {
+        return 80; // Red
+      }
+    }
+  
+	
 
 </script>
 
@@ -365,4 +425,29 @@ function getCountOfDateTipe(character, dateArray) {
 		margin-left: 0px;
 	}
 }
+
+.vertical-bar-container {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  height: 50px;
+}
+
+.vertical-bar {
+  position: relative;
+  width: 60px;
+  border-radius: 8px;
+  transition: height 0.5s ease;
+}
+
+.percentage-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 14px
+}
+
 </style>
