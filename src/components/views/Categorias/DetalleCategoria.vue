@@ -6,8 +6,8 @@
         </div>
         <h6 class="my-3"><strong>Profesor/es:</strong></h6>
         <div class="ms-5 mb-0">
-            <button v-for="(profesor, index) in profesoresCategoria" :key="index"
-                class="mb-1 mx-1 btn btn-sm btn-dark" @click="verProfesor(profesor.idUsuario)">
+            <button v-for="(profesor, index) in profesoresCategoria" :key="index" class="mb-1 mx-1 btn btn-sm btn-dark"
+                @click="verProfesor(profesor.idUsuario)">
                 {{ profesor.apellido }}, {{ profesor.nombre }}
             </button>
         </div>
@@ -28,16 +28,20 @@
                     <input type="text" class="form-control" placeholder="Buscar..." v-model="busqueda">
                 </div>
                 <div class="col-12 col-md-auto">
-                    <button class="btn btn-danger" type="button" v-on:click="reiniciar">Reiniciar</button>
+                    <div class="btn-group d-flex justify-content-center mx-md-0" style="margin: 0% 40%;">
+                        <button class="btn btn-danger text-center" type="button" v-on:click="reiniciar">Reiniciar</button>
+                        <button class="btn btn-success text-center" type="button" v-on:click="buscar">Buscar</button>
+                    </div>
                 </div>
                 <div class="col text-md-end">
                     <div class="d-flex justify-content-end mt-3 mb-0">
-                        <p>Socios en la categoria: <strong>{{ listSocios.length }}</strong></p>
+                        <p>Socios encontrados: <strong>{{ this.size }}</strong></p>
                     </div>
                 </div>
             </div>
         </form>
         <br>
+        <div class="text text-center mb-3"> <code>Solo se muestran los socios asignados a la categoría</code></div>
         <div v-if="listSocios && listSocios.length > 0">
             <table class="table table-bordered table-hover">
                 <thead>
@@ -56,25 +60,43 @@
                 <tbody class="pointer">
                     <tr v-for="socio in sociosFiltados" :key="socio.idSocio" @click="irA(socio.idSocio)">
                         <td class="d-none d-sm-table-cell">{{ socio.nroSocio }}</td>
-                        <td>{{ socio.nombre }}  <label class="btn-group" id="socioNuevo" v-if="socio.esNuevoSocio">"NUEVO"</label>  </td>
+                        <td>{{ socio.nombre }} <label class="badge bg-macabi ms-3" id="socioNuevo"
+                                v-if="socio.esNuevoSocio">NUEVO</label> </td>
                         <td>{{ socio.apellido }}</td>
                         <td class="d-none d-sm-table-cell">{{ socio.dni }}</td>
                         <td class="d-none d-lg-table-cell">{{ socio.email }}</td>
                     </tr>
                 </tbody>
             </table>
-            <p id="explicacion">*"NUEVO" -> El socio fue agregado a la categoria dentro de los últimos 7 días</p>
-
+            <div class="text text-start mb-2">
+                <p>Socios en la categoría: <strong>{{ this.listSocios.length }}</strong></p>
+            </div>
+            
+            <div class="text text-center">
+                <p class="badge bg-macabi me-2 mb-0">NUEVO</p>
+                <br>
+                <code>* El socio fue agregado a la categoría dentro de los últimos 7 días</code>
+            </div>
+            
         </div>
-        <div v-else class="text text-center fw-bold h3 alert alert-danger">No se encontraron socios asignados a la categoria</div>
-        <br>
-        <div class="d-flex justify-content-center mb-3">
+       
+        <div v-else class="text text-center fw-bold h3 alert alert-danger">No se encontraron socios asignados a la categoria
+        </div>
+        <hr>
+        <div class="d-flex justify-content-center">
+            <router-link :to="`/fechasCategoria/${this.idCategoria}`" class="btn btn-dark">Fechas</router-link>
+        </div>
+        <div class="text text-center pt-3">
+            <code>Añadir o quitar socios <strong>de esta Categoría</strong></code>
+        </div>
+        <div class="d-flex justify-content-center my-3">
             <div class="btn-group">
-                <router-link :to="`/fechasCategoria/${this.idCategoria}`" class="btn btn-danger">Fechas</router-link>
                 <router-link :to="`/agregarSocio/${this.idCategoria}`" class="btn btn-success">Añadir socios</router-link>
+                <router-link :to="`/eliminarSociosCategoria/${this.idCategoria}`" class="btn btn-danger">Quitar
+                    socios</router-link>
             </div>
         </div>
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center mb-5">
             <div class="btn-group">
                 <router-link :to="`/modificarCategoria/${this.idCategoria}`" class="btn btn-macabi1">Editar
                     Categoría</router-link>
@@ -107,10 +129,10 @@ export default {
             size: 0,
             orden: 0,
             profesoresCategoria: [
-                
+
             ],
-            fecha1SemanaAtras:"",
-            
+            fecha1SemanaAtras: "",
+
         };
     },
     async created() {
@@ -120,7 +142,6 @@ export default {
             this.nombreCategoria = respuesta.data.nombreCategoria
             let nombreDeporteBuscado = await axios.get(`${apiUrl}/categoria/${this.idCategoria}/nombreDeporte`, { withCredentials: true });
             this.deporteCategoria = nombreDeporteBuscado.data.nombreDeporte
-            //console.log(this.deporteCategoria);
             let respuestaSocios = await axios.get(`${apiUrl}/sociosXCategoria/${this.idCategoria}`, { withCredentials: true });
             let sociosLista = respuestaSocios.data.sociosDatos
             sociosLista.forEach(socio => {
@@ -129,42 +150,37 @@ export default {
 
             this.fecha1SemanaAtras = new Date();
             this.fecha1SemanaAtras.setDate(this.fecha1SemanaAtras.getDate() - 7);
-            console.log("La fecha de hoy es ... " + this.fecha1SemanaAtras);
-
             this.asignarSiEsNuevoUsuarioONo(this.fecha1SemanaAtras, this.listSocios)
 
-            this.sociosFiltados = this.listSocios;
+            this.sociosFiltados = this.listSocios
+            this.size = this.listSocios.length
 
             try {
                 let resultProfes = await axios.get(`${apiUrl}/categoria/${this.idCategoria}/getProfesores`);
-            this.profesoresCategoria = resultProfes.data.usuariosList;
-            }catch(e){
+                this.profesoresCategoria = resultProfes.data.usuariosList;
+            } catch (e) {
 
             }
 
-            
-           // console.log("Los profesores son: " + this.profesoresCategoria);
 
-            
         } catch (e) {
-            console.log("catch");
         }
 
     },
     methods: {
 
-        asignarSiEsNuevoUsuarioONo(fechaDiaSemanaAnterior,listaSocios){
+        asignarSiEsNuevoUsuarioONo(fechaDiaSemanaAnterior, listaSocios) {
 
             listaSocios.forEach(socio => {
 
-                    let fechaRegistroSocio = new Date(socio.fechaRegistro)
-                    fechaRegistroSocio.setDate(fechaRegistroSocio.getDate() + 1)
-                    if(fechaRegistroSocio < fechaDiaSemanaAnterior){
-                        socio.esNuevoSocio = false;
+                let fechaRegistroSocio = new Date(socio.fechaRegistro)
+                fechaRegistroSocio.setDate(fechaRegistroSocio.getDate() + 1)
+                if (fechaRegistroSocio < fechaDiaSemanaAnterior) {
+                    socio.esNuevoSocio = false;
 
-                    }else {
-                        socio.esNuevoSocio = true;
-                    }
+                } else {
+                    socio.esNuevoSocio = true;
+                }
 
             });
 
@@ -192,12 +208,7 @@ export default {
                     let busquedaLowerCase = String(this.busqueda).toLowerCase();
                     return propiedadLowerCase.includes(busquedaLowerCase);
                 });
-
-                //console.log(this.sociosFiltados);
-
-                this.size = this.listSocios.length || 0;
-            } else {
-                this.size = 0;
+                this.size = this.sociosFiltados.length || 0;
             }
 
 
@@ -227,20 +238,11 @@ export default {
 </script>
 
 <style scoped>
-
-#explicacion {
-    color:red;
-}
-
-#socioNuevo {
-background-color:blue;
-color:white;
-padding: 5px;
-margin-left: 30px;
-
-}
-
 .pointer {
     cursor: pointer
+}
+
+.bg-macabi {
+    background-color: #004896;
 }
 </style>

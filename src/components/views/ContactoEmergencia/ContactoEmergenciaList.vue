@@ -7,9 +7,11 @@
                 <div class="text-white mb-5">
                     <p class="p pe-3">
                     <div v-if="contactosEmergencia == null">
-                        <p class="text-center text-bg-danger p pe-3 ms-4 me-1 mt-2 h-2" style="border-radius: 10px;">
-                            <strong>No existen contactos de emergencia aun</strong>
-                        </p>
+                        <div class="card fondo-card">
+                            <div class="card-body" style="border-radius: 10px;">
+                                <h5 class="fw-bold text-center">No se encontraron contactos de emergencia</h5>
+                            </div>
+                        </div>
                     </div>
                     <div v-else class="card mt-3 ms-4 me-2 fondo-card" v-for="contacto in contactosEmergencia">
                         <div class="card-body" style="border-radius: 10px;">
@@ -31,7 +33,7 @@
             </div>
         </div>
     </div>
-    <div class="d-flex justify-content-center mb-4">
+    <div class="d-flex justify-content-center mb-5">
         <div class="btn-group">
             <button v-if="usrStore.getRol == 'A'" class="btn btn-macabi1"><router-link to="/contactosEmergencia/admin"
                     class="nav-item nav-link" href="#">Modificar Contactos</router-link></button>

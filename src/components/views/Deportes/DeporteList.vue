@@ -9,12 +9,16 @@
                         <input type="text" class="form-control" placeholder="Buscar por nombre..." v-model="busqueda">
                     </div>
                     <div class="col-12 col-md-auto">
-                        <button class="btn btn-danger" type="button" v-on:click="reiniciar">Reiniciar</button>
+                        <div class="btn-group d-flex justify-content-center mx-md-0" style="margin: 0% 40%;">
+                            <button class="btn btn-danger text-center" type="button"
+                                v-on:click="reiniciar">Reiniciar</button>
+                            <button class="btn btn-success text-center" type="button" v-on:click="buscar">Buscar</button>
+                        </div>
                     </div>
                     <div class="col-12 col-md-auto d-none d-lg-table-cell"></div>
                     <div class="col text-md-end">
                         <div class="d-flex justify-content-end mt-2">
-                            <p>Deportes en total: <strong>{{ size }}</strong></p>
+                            <p>Deportes encontrados: <strong>{{ size }}</strong></p>
                         </div>
                     </div>
                 </div>
@@ -44,6 +48,9 @@
                         </div>
                     </li>
                 </ul>
+            </div>
+            <div class="mt-4" v-if="deporteStore.getElements">
+                <p>Deportes en total: <strong>{{ deporteStore.getElements.result.length }}</strong></p>
             </div>
         </div>
         <h5 v-else class="alert alert-warning alert-sm mb-0 text-center m-2 mb-3">
@@ -141,8 +148,6 @@ export default {
                 });
 
                 size.value = deportes.value.length || 0;
-            } else {
-                size.value = 0;
             }
         }
 
@@ -156,7 +161,7 @@ export default {
 
         function reiniciar() {
             deportes.value = deporteStore.getElements.result
-            size.value = deportes.value.length
+            size.value = deporteStore.getElements.result.length
         }
 
         function irA(id) {

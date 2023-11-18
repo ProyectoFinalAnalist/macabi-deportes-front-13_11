@@ -45,7 +45,7 @@
             <strong>{{ message }}</strong>
         </h5>
     </div>
-    <div class="d-flex justify-content-center ms-3 mt-3">
+    <div class="d-flex justify-content-center ms-3 mt-3 mb-5">
         <div class="btn-group">
             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal">Agregar
                 Contacto</button>

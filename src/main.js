@@ -3,11 +3,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import { createPinia } from "pinia";
 import { usrStore } from "./stores/usrStore";
 
-
-
-
-
-
 import './assets/main.css';
 
 import "bootstrap/dist/css/bootstrap.css"
@@ -29,8 +24,8 @@ import SociosXFecha from "./components/views/Asistencias/SociosXFecha.vue";
 import TomarAsistencia from "./components/views/Asistencias/TomarAsistencia.vue";
 
 // CATEGORIAS
-import CategoriasList from "./components/views/Categorias/CategoriasList.vue";
-import CrearCategoria from "./components/views/Categorias/CrearCategoria.vue";
+//import CategoriasList from "./components/views/Categorias/CategoriasList.vue";
+//import CrearCategoria from "./components/views/Categorias/CrearCategoria.vue";
 import DetalleCategoria from "./components/views/Categorias/DetalleCategoria.vue";
 import EliminarSociosCategorias from "./components/views/Categorias/EliminarSociosCategorias.vue";
 
@@ -81,8 +76,8 @@ const routes = [
   { path: "/tomarAsistencia/:id", component: TomarAsistencia },
 
   // CATEGORIAS
-  { path: "/categorias", component: CategoriasList }, // no se usa mas, se reemplaza con detalle deporte y deportes list
-  { path: "/crearCategoria/:idDeporte", component: CrearCategoria }, // reemplazo con modal en editar Deporte
+  //{ path: "/categorias", component: CategoriasList }, // no se usa mas, se reemplaza con detalle deporte y deportes list
+  //{ path: "/crearCategoria/:idDeporte", component: CrearCategoria }, // reemplazo con modal en editar Deporte
   { path: "/modificarCategoria/:id", component: ModificarCategoria },
   { path: "/detalleCategoria/:id", component: DetalleCategoria},
   { path: "/eliminarSociosCategoria/:id", component: EliminarSociosCategorias },
@@ -116,8 +111,6 @@ const routes = [
   { path: "/contactosEmergencia", component: ContactoEmergenciaList },
   { path: "/contactosEmergencia/admin", component: ContactoEmergenciaAdmin },
 ];
-
-
 
 const router = createRouter({
   history: createWebHistory(),

@@ -21,11 +21,11 @@
 					<tr v-for="coordinador in coordinadores" @click="$router.push(`/usuarios/${coordinador.idUsuario}`);"
 						class="resaltable">
 						<td data-cell="Nombre">{{ coordinador.nombre }} {{ coordinador.apellido }}</td>
-						<td data-cell="dni">{{ coordinador.dni }}</td>
+						<td data-cell="DNI">{{ coordinador.dni }}</td>
 						<td data-cell="Email">{{ coordinador.email }}</td>
 						<td data-cell="Estado">
-							<span class="text-success" v-if="coordinador.activo"> Activo </span>
-							<span class="text-danger" v-else> Inactivo </span>
+							<span class="text-success fw-bold" v-if="coordinador.activo"> Activo </span>
+							<span class="text-danger fw-bold" v-else> Inactivo </span>
 						</td>
 					</tr>
 
@@ -50,10 +50,10 @@
 
 	</div>
 
-	<div class="sub_container_buttons">
-		<button style="margin-right: 10px;" class="btn btn-primary primary-macabi"
+	<div class="sub_container_buttons btn-group mb-5">
+		<button class="btn btn-primary primary-macabi"
 			@click="$router.push(`/editarDeporte/${idDeporte}`);">Editar Deporte</button>
-		<button style="margin-left: 10px;" class="btn btn-dark" @click="$router.go(-1)">Volver Atras</button>
+		<button class="btn btn-dark" @click="$router.go(-1)">Volver</button>
 	</div>
 </template>
 

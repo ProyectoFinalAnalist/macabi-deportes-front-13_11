@@ -19,11 +19,15 @@
                         <input type="text" class="form-control" placeholder="Buscar..." v-model="busqueda">
                     </div>
                     <div class="col-12 col-md-auto">
-                        <button class="btn btn-danger" type="button" v-on:click="reiniciar">Reiniciar</button>
+                        <div class="btn-group d-flex justify-content-center mx-md-0" style="margin: 0% 40%;">
+                            <button class="btn btn-danger text-center" type="button"
+                                v-on:click="reiniciar">Reiniciar</button>
+                            <button class="btn btn-success text-center" type="button" v-on:click="buscar">Buscar</button>
+                        </div>
                     </div>
                     <div class="col text-md-end">
                         <div class="d-flex justify-content-end mt-3 mb-0">
-                            <p>Socios en total: <strong>{{ size }}</strong></p>
+                            <p>Socios encontrados: <strong>{{ size }}</strong></p>
                         </div>
                     </div>
                 </div>
@@ -59,7 +63,10 @@
         <h5 v-else class="alert alert-warning alert-sm mb-0 text-center m-2 mb-3">
             <strong>No hay Socios cargados :c</strong>
         </h5>
-        <br>
+        <div class="mt-3 d-flex justify-content-between mb-2" v-if="sociosStore.getElements">
+            <p class="pe-5">Socios en total: <strong>{{ sociosStore.getElements.result.length }}</strong></p>
+            <code v-if="size == 0">* Los socios se mostrarán a medida que se busquen con los filtros</code>
+        </div>
         <div class="d-flex justify-content-center align-items-center">
             <div class="btn-group">
                 <button class="btn btn-macabi1">
@@ -75,7 +82,9 @@
 <style scoped>
 @import '../../../assets/btn.css';
 
-tbody {cursor: pointer;}
+tbody {
+    cursor: pointer;
+}
 </style>
 <script>
 import { useElementStore } from '../../../utils/Store';
