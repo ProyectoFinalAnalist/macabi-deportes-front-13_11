@@ -68,6 +68,7 @@ export default {
 			axios.get(`${apiUrl}/usuario/${this.usrStore.currentUser.idUsuario}`, { withCredentials: true })
 				.then(response => {
 					this.user = response.data.result;
+
 				})
 				.catch(error => {
 					console.error('Error al obtener los datos:', error);

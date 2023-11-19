@@ -119,6 +119,8 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import apiUrl from '../../../../config/config.js'
 import axios from 'axios'
+import { usrStore } from '../../../stores/usrStore';
+import { verificarAutorizacionCategoria } from "../../../utils/permisos";
 
 export default {
     setup() {
@@ -126,7 +128,9 @@ export default {
         const deporteStore = useElementStore("deportes")()
         const usuariosStore = useElementStore("usuarios")()
         const profesoresStore = useElementStore("profesores")()
-
+        
+        const userStore = usrStore();
+        const rolUsuario = userStore.getRol
         const message = ref(null)
 
         const route = useRoute()
@@ -137,6 +141,9 @@ export default {
         const nombre = ref(null)
 
         onMounted(async () => {
+            if (!await verificarAutorizacionCategoria(idCategoria)) {
+		router.push({ path: "/unauthorized" })
+	}
             await categoriasStore.fetchElementById(`${apiUrl}/categoria/`, idCategoria)
             await deporteStore.fetchElements(`${apiUrl}/deporte/getAll`)
             usuariosStore.elements = null ;

@@ -115,15 +115,7 @@ export default {
 
         onMounted(async () => {
 
-        /*     
-    let usuarioStore = usrStore()
-    if( usuarioStore.getRol === "P") {
-      console.log("sdsd");
-
-     router.push({path: "/unauthorized" });
-
-    }
-*/
+  
 
 
             await sociosStore.fetchElementById(`${apiUrl}/socio/`, idSocio)

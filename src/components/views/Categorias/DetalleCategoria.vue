@@ -76,7 +76,7 @@
         </div>
         <div class="d-flex justify-content-center">
             <div class="btn-group">
-                <router-link :to="`/modificarCategoria/${this.idCategoria}`" class="btn btn-macabi1">Editar
+                <router-link v-if="  this.rolUsuario != 'P'" :to="`/modificarCategoria/${this.idCategoria}`" class="btn btn-macabi1">Editar
                     Categoría</router-link>
                 <button class="btn btn-dark" @click="volverAtras()">Volver</button>
             </div>
@@ -89,6 +89,7 @@ import axios from 'axios';
 import apiUrl from '../../../../config/config.js';
 import { useElementStore } from '../../../utils/Store';
 import { verificarAutorizacionCategoria } from '../../../utils/permisos.js'
+import { usrStore } from '../../../stores/usrStore';
 
 export default {
     setup() {
@@ -111,11 +112,14 @@ export default {
                 
             ],
             fecha1SemanaAtras:"",
+            rolUsuario:""
             
         };
     },
     async created() {
         this.idCategoria = this.$route.params.id;
+        const userStore = usrStore();
+        this.rolUsuario =  userStore.getRol
         console.log("La categoia es: " + this.idCategoria);
         if(! await verificarAutorizacionCategoria(this.idCategoria)) {
             this.$router.push(`/unauthorized`);

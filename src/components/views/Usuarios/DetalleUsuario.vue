@@ -23,7 +23,7 @@
             </div>
             <div class="d-flex justify-content-center">
                     <div class="btn-group">
-                        <router-link class="btn btn-macabi1" v-if="usuario" :to="`/modificarusuario/${usuario.idUsuario}`">Modificar
+                        <router-link class="btn btn-macabi1" v-if="rolUser == 'A' " :to="`/modificarusuario/${usuario.idUsuario}`">Modificar
                             Usuario</router-link>
 
                             <button class="btn btn-dark" @click="volver">Volver</button>
@@ -42,10 +42,12 @@ import { useElementStore } from "../../../stores/Store";
 import { useRoute, useRouter } from "vue-router";
 import { computed, onMounted } from "vue";
 import { Utils } from "../../../utils/utils"
+import { usrStore } from '../../../stores/usrStore';
 
 export default {
     setup() {
-
+        const userStore = usrStore()
+        const rolUser = userStore.getRol
         const route = useRoute();
         const router = useRouter();
         const idUsuario = route.params.id.toString();
@@ -65,6 +67,7 @@ export default {
 
         return {
             usuario,
+            rolUser,
             utils,
             volver
         };

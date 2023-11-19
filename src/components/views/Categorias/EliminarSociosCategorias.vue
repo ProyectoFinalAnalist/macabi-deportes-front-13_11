@@ -81,6 +81,8 @@
 import axios from 'axios';
 import apiUrl from '../../../../config/config.js';
 import { useElementStore } from '../../../utils/Store';
+import { verificarAutorizacionCategoria } from '../../../utils/permisos.js'
+
 
 export default {
     setup() {
@@ -109,6 +111,10 @@ export default {
     async created() {
         this.idCategoria = this.$route.params.id;
         try {
+            if(! await verificarAutorizacionCategoria(this.idCategoria)) {
+            this.$router.push(`/unauthorized`);
+
+        }
             let respuesta = await axios.get(`${apiUrl}/categoria/${this.idCategoria}/nombreCategoria`, { withCredentials: true });
             this.nombreCategoria = respuesta.data.nombreCategoria
             let nombreDeporteBuscado = await axios.get(`${apiUrl}/categoria/${this.idCategoria}/nombreDeporte`, { withCredentials: true });

@@ -33,6 +33,8 @@
 <script>
 import axios from "axios";
 import apiUrl from '../../../../config/config.js'
+import { verificarAutorizacionCategoria } from "../../../utils/permisos";
+
 
 export default {
   components: {},
@@ -63,7 +65,12 @@ export default {
     
 
     this.idCat = this.$route.params.idCategoria,
+    
       this.minFecha = new Date().toISOString().split('T')[0]
+
+      if (!await verificarAutorizacionCategoria(this.idCat)) {
+        this.$router.push("/unauthorized")
+      }
 
     let nombreDeLaCategoria = await axios.get(`${apiUrl}/categoria/${this.idCat}/nombreCategoria`, { withCredentials: true });
 
