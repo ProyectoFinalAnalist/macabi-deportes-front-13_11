@@ -70,14 +70,14 @@ const routes = [
   // APP 
   { path: "/", component: Home, },
   { path: "/login", component: Login, },
-  { path: "/miUsuario", component: MiUsuario, },
+  { path: "/miUsuario", component: MiUsuario, },//listo (No necesita validación. Solo lo puede ver el propio usuario xq es en base al token)
   { path: "/newPassword", component: NewPassword, },
   { path: "/unauthorized", component: Unauthorized, },
   { path: "/updatePass/:idUsuario", component: UpdatePassword},//Listo-- (Solo puede si coincide con su propio idUsuario)
 
   // ASISTENCIAS
-  { path: "/historialAsistencia/:id", component: HistorialAsistencias },
-  { path: "/sociosPorFecha", component: SociosXFecha },
+  { path: "/historialAsistencia/:id", component: HistorialAsistencias }, //NO SE USA
+  { path: "/sociosPorFecha", component: SociosXFecha },//NO SE USA
   { path: "/tomarAsistencia/:id", component: TomarAsistencia },// LISTO--
 
   // CATEGORIAS
@@ -100,15 +100,15 @@ const routes = [
   { path: "/fechasCategoria/:id", component: FechasListCategoria }, //LISTO--
 
   // SOCIOS
-  { path: "/registrarSocio", component: RegistrarSocio, },
+  { path: "/registrarSocio", component: RegistrarSocio, },//TODOS
   { path: "/socios", component: SociosList, }, //Bloqueado para profe, pero un coordinar deberia poder verlo.
   { path: "/agregarSocio/:idCategoria", component: AgregarSocio }, //LISTO --
-  { path: "/socios/:id", component: DetalleSocio },
-  { path: "/socios/update/:id", component: UpdateSocio },
+  { path: "/socios/:id", component: DetalleSocio }, //TODOS
+  { path: "/socios/update/:id", component: UpdateSocio },//TODOS
 
   // USUARIOS
   { path: "/usuarios", component: UsuariosList,},
-  { path: "/crearusuario", component: CrearUsuario },
+  { path: "/crearusuario", component: CrearUsuario }, //admin y coordinadorees en principio deberian poder verlo.
   { path: "/usuarios/:id", component: DetalleUsuario },
   { path: "/modificarusuario/:id", component: ModificarUsuario },
 
@@ -127,10 +127,9 @@ const router = createRouter({
 export const rutasNoAutorizadasParaCoordinador = [
   "/contactosEmergencia/admin",
  // "/modificarusuario/:id", //¿habría q ver si puede editar o no. xq si quiere darlos de baja debería poder. Perso si le damos acceso, puede cambiarles el rol.
-  "/crearusuario",
+  //"/crearusuario",
   "/deportes",
   "/editarDeporte/:id",
- // "/detalleDeporte/:id"
 ];
 
 export const rutasNoAutorizadasParaProfesor = [
