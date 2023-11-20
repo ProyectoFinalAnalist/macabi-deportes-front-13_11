@@ -50,22 +50,65 @@
 
 	</div>
 
-	<div class="sub_container_buttons btn-group mb-5">
-		<button class="btn btn-primary primary-macabi"
+
+	<!--MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / -->
+	<div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Crear Categoría</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <p class="p pe-3">
+                      <strong>Nombre: <code>*</code></strong><input type="text" class="form-control"
+                          v-model="nombreCategoria" />
+                  </p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-macabi1" @click="crearCategoria">Crear</button>
+                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                  <div class="text-start"><code>*campos obligatorios</code></div>
+              </div>
+          </div>
+          <h5 v-if="messageModal != null" class="alert alert-danger alert-sm mb-0 text-center m-2 mb-3">
+              <strong>{{ messageModal }}</strong>
+          </h5>
+      </div>
+  </div>
+
+	<div class="sub_container_buttons">
+		<button v-if="rolUsuario == 'A' " style="margin-right: 10px;" class="btn btn-primary primary-macabi"
 			@click="$router.push(`/editarDeporte/${idDeporte}`);">Editar Deporte</button>
-		<button class="btn btn-dark" @click="$router.go(-1)">Volver</button>
+			<div class="justify-content-center d-flex">
+                             
+                          </div>
+		<button v-if="rolUsuario == 'C' " style="margin-right: 10px;" class="btn btn-primary primary-macabi" data-bs-toggle="modal"
+                                  data-bs-target="#categoriaModal"
+			>Agregar nueva categoria</button>
+		<button style="margin-left: 10px;" class="btn btn-dark" @click="$router.go(-1)">Volver Atras</button>
 	</div>
 </template>
 
 <script setup>
-
+import { usrStore } from '../../../stores/usrStore';
 import apiUrl from '../../../../config/config.js';
 import { useElementStore } from '../../../utils/Store';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+
+
+
 import { ref, onMounted } from "vue";
+import axios from "axios";
+import { verificarDeportePermitidoCoordinador } from "../../../utils/permisos";
+
+
+const router2 = useRouter()
 
 const router = useRoute()
 const idDeporte = router.params.id
+const userStore = usrStore()
+const rolUsuario = userStore.getRol
 
 let titulo = ref("Loading...")
 let coordinadores = ref([])
@@ -75,6 +118,9 @@ const deporteStore = useElementStore(`deporte${idDeporte}Store`)()
 const categoriasDeDeporteStore = useElementStore(`categoriasDeDeporte${idDeporte}Store`)()
 
 onMounted(async () => {
+	if (!await verificarDeportePermitidoCoordinador(idDeporte)) {
+		router2.push({ path: "/unauthorized" })
+	}
 
 	await deporteStore.fetchElementById(`${apiUrl}/deporte/${idDeporte}/coordinadores`)
 
@@ -91,6 +137,32 @@ onMounted(async () => {
 	}
 
 })
+
+const nombreCategoria = ref(null)
+      const messageModal = ref(null);
+
+      async function crearCategoria() {
+          const nuevaCategoria = {
+              nombreCategoria: nombreCategoria.value,
+              idDeporte: idDeporte,
+          };
+
+          try {
+              const response = await axios.post(apiUrl + '/categoria', nuevaCategoria, { withCredentials: true });
+              console.log('Respuesta del servidor:', response.data);
+			  alert("Categoria creada con éxito")
+			  location.reload()
+
+          } catch (error) {
+              const msj = error.response.data.message
+              if (msj != 'idProfesores is not iterable') {
+                  messageModal.value = msj;
+              } else {
+                  location.reload()
+              }
+          }
+      };
+	  
 
 </script>
 

@@ -115,6 +115,8 @@ import { useElementStore } from "../../../utils/Store";
 import { onBeforeMount, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import apiUrl from "../../../../config/config.js";
+import { verificarAutorizacionFecha } from "../../../utils/permisos";
+
 
 export default {
   setup() {
@@ -136,6 +138,9 @@ export default {
     const listaSociosAgregar = ref([])
 
     onBeforeMount(async () => {
+      if (!await verificarAutorizacionFecha(idFecha)) {
+	      	router.push({ path: "/unauthorized" })
+	}
       await fetchs();
     });
 

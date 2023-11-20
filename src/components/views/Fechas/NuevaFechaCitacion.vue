@@ -31,6 +31,8 @@
 <script>
 import axios from "axios";
 import apiUrl from '../../../../config/config.js'
+import { verificarAutorizacionCategoria } from "../../../utils/permisos";
+
 
 export default {
   name: "NuevaFechaCitacion",
@@ -46,6 +48,10 @@ export default {
     try {
       this.fechaCitacion = this.$route.query.fecha;
       this.categoria = this.$route.params.idCategoria;
+
+      if (!await verificarAutorizacionCategoria(this.categoria)) {
+        this.$router.push("/unauthorized")
+      }
 
       let respuesta = await axios.get(`${apiUrl}/sociosXCategoria/${this.categoria}`, { withCredentials: true });
       this.users = respuesta.data.sociosDatos

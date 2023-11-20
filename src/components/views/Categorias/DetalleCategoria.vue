@@ -98,11 +98,30 @@
         </div>
         <div class="d-flex justify-content-center mb-5">
             <div class="btn-group">
-                <router-link :to="`/modificarCategoria/${this.idCategoria}`" class="btn btn-macabi1">Editar
+                <router-link v-if="  this.rolUsuario != 'P'" :to="`/modificarCategoria/${this.idCategoria}`" class="btn btn-macabi1">Editar
                     Categoría</router-link>
                 <button class="btn btn-dark" @click="volverAtras()">Volver</button>
             </div>
         </div>
+        <div v-if="listSociosCumple && listSociosCumple.length > 0" class="cumpleanos-box">
+        <h2 class="text-center mb-3">Cumpleaños del Mes de {{ obtenerNombreMes() }}</h2>
+      <table class="table table-bordered table-hover mt-3" cumpleanos-table>
+        <thead>
+          <tr>
+            <th class="d-none d-md-table-cell">Nombre:</th>
+            <th>Apellido:</th>
+            <th class="d-none d-md-table-cell">Día de Cumpleaños:</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="socio in listSociosCumple" :key="socio.idSocio">
+            <td class="d-none d-md-table-cell">{{ socio.nombre }}</td>
+            <td>{{ socio.apellido }}</td>
+            <td> <b>  {{ obtenerFechaFormateada(socio.fechaNacimiento) }} </b> ({{calcularEdad(socio.fechaNacimiento) }})</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     </div>
 </template>
 
@@ -110,6 +129,10 @@
 import axios from 'axios';
 import apiUrl from '../../../../config/config.js';
 import { useElementStore } from '../../../utils/Store';
+import { verificarAutorizacionCategoria } from '../../../utils/permisos.js'
+import { usrStore } from '../../../stores/usrStore';
+import {Utils} from "../../../utils/utils"
+
 
 export default {
     setup() {
@@ -131,12 +154,24 @@ export default {
             profesoresCategoria: [
 
             ],
-            fecha1SemanaAtras: "",
 
+            fecha1SemanaAtras:"",
+            rolUsuario:"",
+            listSociosCumple: [],
+        utils : new Utils()
+            
         };
     },
     async created() {
         this.idCategoria = this.$route.params.id;
+        const userStore = usrStore();
+        this.rolUsuario =  userStore.getRol
+        console.log("La categoia es: " + this.idCategoria);
+        if(! await verificarAutorizacionCategoria(this.idCategoria)) {
+            this.$router.push(`/unauthorized`);
+
+        }
+
         try {
             let respuesta = await axios.get(`${apiUrl}/categoria/${this.idCategoria}/nombreCategoria`, { withCredentials: true });
             this.nombreCategoria = respuesta.data.nombreCategoria
@@ -146,7 +181,22 @@ export default {
             let sociosLista = respuestaSocios.data.sociosDatos
             sociosLista.forEach(socio => {
                 this.listSocios.push(socio)
-            });
+                const mesActual = new Date().getMonth() + 1;
+
+
+       
+                const mesNacimiento = new Date(socio.fechaNacimiento).getMonth() + 1;
+
+
+                if (mesNacimiento === mesActual) {
+                this.listSociosCumple.push(socio);
+                }
+});
+
+            
+
+
+
 
             this.fecha1SemanaAtras = new Date();
             this.fecha1SemanaAtras.setDate(this.fecha1SemanaAtras.getDate() - 7);
@@ -185,10 +235,46 @@ export default {
             });
 
         },
+        obtenerNombreMes() {
+        const meses = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+        const mesActual = new Date().getMonth();
+        return meses[mesActual];
+    },
+
+
+    calcularEdad(fechaNacimiento) {
+        const fechaNac = new Date(fechaNacimiento);
+        const hoy = new Date();
+        const edad = hoy.getFullYear() - fechaNac.getFullYear();
+
+
+        if ((hoy.getDate() >= fechaNac.getUTCDate())) {
+            return `CUMPLIÓ ${edad} AÑOS`;
+        } else {
+            return `CUMPLE ${edad} AÑOS`;
+        }
+    },
+
+
+    obtenerFechaFormateada(fecha) {
+            return this.utils.obtenerFechaFormateada(fecha);
+        },
+
+
+        ordenarListaPorFecha() {
+      this.listSociosCumple.sort((a, b) => {
+        return new Date(a.fechaNacimiento) - new Date(b.fechaNacimiento);
+      });
+        },
+
 
         verProfesor(profesor) {
             this.$router.push(`/usuarios/${profesor}`);
         },
+
 
         irA(id) {
             if (id != 0) {
@@ -238,11 +324,71 @@ export default {
 </script>
 
 <style scoped>
+
+#explicacion {
+  color: red;
+}
+
+
+#socioNuevo {
+  background-color: blue;
+  color: white;
+  padding: 5px;
+  margin-left: 30px;
+}
+
+
 .pointer {
-    cursor: pointer
+  cursor: pointer;
+}
+
+
+/* En tu archivo de estilos (por ejemplo, styles.css) */
+.cumpleanos-box {
+  margin: 20px; /* Ajusta el margen según sea necesario */
+  padding: 15px;
+  border: 4px solid #013a77; /* Color del borde del cuadro */
+  border-radius: 10px; /* Esquinas redondeadas */
+}
+
+
+.cumpleanos-table th,
+.cumpleanos-table td {
+  border: 5px solid #013a77; /* Color del borde de las celdas de la tabla */
+  padding: 8px;
+}
+
+
+@media (max-width: 767px) {
+  .cumpleanos-box {
+    margin: 10px;
+    padding: 10px;
+  }
+
+
+  .cumpleanos-table th,
+  .cumpleanos-table td {
+    padding: 6px;
+  }
+}
+
+
+@media (max-width: 479px) {
+  .cumpleanos-box {
+    margin: 5px;
+    padding: 5px;
+  }
+
+
+  .cumpleanos-table th,
+  .cumpleanos-table td {
+    padding: 4px;
+  }
 }
 
 .bg-macabi {
     background-color: #004896;
 }
 </style>
+
+

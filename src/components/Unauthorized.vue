@@ -6,7 +6,7 @@
     </div>
 
     <div class="d-flex justify-content-center">
-        <button class="btn btn-dark btn-lg" @click="this.router.go(-1)">Volver</button>
+        <button class="btn btn-dark btn-lg" @click="this.router.go(-2)">Volver</button>
     </div>
 </template>
 <style scoped>

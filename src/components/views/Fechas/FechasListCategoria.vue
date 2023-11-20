@@ -164,7 +164,7 @@ import { ref, onBeforeMount } from "vue";
 import { useElementStore } from '../../../utils/Store';
 import { useRoute, useRouter } from 'vue-router';
 import apiUrl from '../../../../config/config.js'
-
+import { verificarAutorizacionCategoria } from "../../../utils/permisos";
 import moment from "moment";
 import 'moment/dist/locale/es'
 
@@ -185,12 +185,17 @@ const cantSociosToShow = ref(0);
 const fechasToShow = ref([]);
 const sociosToShow = ref([]);
 
+
 let objMoment
 let idsFechasSelected = new Set()
 
 const mesSelected = ref('.....')
 
 onBeforeMount(async () => {
+	if (!await verificarAutorizacionCategoria(idCategoria)) {
+		router.push({ path: "/unauthorized" })
+	}
+     
 	initDate()
 	fechaDeCategoriaStore.elements = null
 	fechaDeCategoriaStore.currentElement = null

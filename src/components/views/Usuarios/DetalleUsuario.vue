@@ -92,11 +92,10 @@
             <div class="col-md-6 offset-md-3" v-else>
                 <strong class="alert alert-warning text-center">El usuario no existe.</strong>
             </div>
-            <div class="d-flex justify-content-center mb-5">
-                <div class="btn-group mb-3">
-                    <router-link class="btn btn-macabi1" v-if="usuario"
-                        :to="`/modificarusuario/${usuario.idUsuario}`">Modificar
-                        Usuario</router-link>
+            <div class="d-flex justify-content-center">
+                    <div class="btn-group">
+                        <router-link class="btn btn-macabi1" v-if="rolUser == 'A' " :to="`/modificarusuario/${usuario.idUsuario}`">Modificar
+                            Usuario</router-link>
 
                     <button class="btn btn-dark" @click="volver">Volver</button>
                 </div>
@@ -133,10 +132,12 @@ import { computed, ref } from "vue";
 import { Utils } from "../../../utils/utils"
 import apiUrl from "../../../../config/config";
 import axios from "axios";
+import { usrStore } from '../../../stores/usrStore';
 
 export default {
     setup() {
-
+        const userStore = usrStore()
+        const rolUser = userStore.getRol
         const route = useRoute();
         const router = useRouter();
         const idUsuario = route.params.id.toString();
@@ -189,6 +190,7 @@ export default {
 
         return {
             usuario,
+            rolUser,
             utils,
             volver,
             asignaciones,

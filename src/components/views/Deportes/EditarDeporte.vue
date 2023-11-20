@@ -149,6 +149,7 @@ import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import apiUrl from '../../../../config/config.js';
 
+
 export default {
     setup() {
         const categoriasStore = useElementStore("categorias")()
@@ -346,5 +347,6 @@ export default {
             router
         }
     }
+
 }
 </script>

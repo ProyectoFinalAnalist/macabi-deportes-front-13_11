@@ -65,45 +65,45 @@ const routes = [
   // APP 
   { path: "/", component: Home, },
   { path: "/login", component: Login, },
-  { path: "/miUsuario", component: MiUsuario, },
+  { path: "/miUsuario", component: MiUsuario, },//listo (No necesita validación. Solo lo puede ver el propio usuario xq es en base al token)
   { path: "/newPassword", component: NewPassword, },
   { path: "/unauthorized", component: Unauthorized, },
-  { path: "/updatePass/:idUsuario", component: UpdatePassword},
+  { path: "/updatePass/:idUsuario", component: UpdatePassword},//Listo-- (Solo puede si coincide con su propio idUsuario)
 
   // ASISTENCIAS
-  { path: "/historialAsistencia/:id", component: HistorialAsistencias },
-  { path: "/sociosPorFecha", component: SociosXFecha },
-  { path: "/tomarAsistencia/:id", component: TomarAsistencia },
+  { path: "/historialAsistencia/:id", component: HistorialAsistencias }, //NO SE USA
+  { path: "/sociosPorFecha", component: SociosXFecha },//NO SE USA
+  { path: "/tomarAsistencia/:id", component: TomarAsistencia },// LISTO--
 
-  // CATEGORIAS
-  //{ path: "/categorias", component: CategoriasList }, // no se usa mas, se reemplaza con detalle deporte y deportes list
-  //{ path: "/crearCategoria/:idDeporte", component: CrearCategoria }, // reemplazo con modal en editar Deporte
-  { path: "/modificarCategoria/:id", component: ModificarCategoria },
-  { path: "/detalleCategoria/:id", component: DetalleCategoria},
-  { path: "/eliminarSociosCategoria/:id", component: EliminarSociosCategorias },
+
+  { path: "/categorias", component: CategoriasList }, // no se usa mas, se reemplaza con detalle deporte y deportes list//NO SE USA
+  { path: "/crearCategoria/:idDeporte", component: CrearCategoria }, // reemplazo con modal en editar Deporte //NO SE USA
+  { path: "/modificarCategoria/:id", component: ModificarCategoria },//LISTO--
+  { path: "/detalleCategoria/:id", component: DetalleCategoria},//LISTO--
+  { path: "/eliminarSociosCategoria/:id", component: EliminarSociosCategorias },//LISTO--
 
   // DEPORTES
-  { path: "/deportes", component: DeportesList },
-  { path: "/editarDeporte/:id", component: editarDeporte },
-  { path: "/detalleDeporte/:id", component: DetalleDeporte },
+  { path: "/deportes", component: DeportesList },//solo para admins
+  { path: "/editarDeporte/:id", component: editarDeporte },//solo para admins--
+  { path: "/detalleDeporte/:id", component: DetalleDeporte },//LISTO--
 
   // FECHAS
-  { path: "/editarFecha/:id", component: EditarFecha, },
-  { path: "/crearfecha/:idCategoria", component: CrearFecha },
-  { path: "/fechas/:id", component: DetalleFecha },
-  { path: "/nuevaCitacion/:idCategoria", component: NuevaFechaCitacion },
-  { path: "/fechasCategoria/:id", component: FechasListCategoria },
+  { path: "/editarFecha/:id", component: EditarFecha, },//LISTO--
+  { path: "/crearfecha/:idCategoria", component: CrearFecha }, //LISTO--
+  { path: "/fechas/:id", component: DetalleFecha }, //LISTO--
+  { path: "/nuevaCitacion/:idCategoria", component: NuevaFechaCitacion },//LISTO---
+  { path: "/fechasCategoria/:id", component: FechasListCategoria }, //LISTO--
 
   // SOCIOS
-  { path: "/registrarSocio", component: RegistrarSocio, },
-  { path: "/socios", component: SociosList, },
-  { path: "/agregarSocio/:idCategoria", component: AgregarSocio },
-  { path: "/socios/:id", component: DetalleSocio },
-  { path: "/socios/update/:id", component: UpdateSocio },
+  { path: "/registrarSocio", component: RegistrarSocio, },//TODOS
+  { path: "/socios", component: SociosList, }, //Bloqueado para profe, pero un coordinar deberia poder verlo.
+  { path: "/agregarSocio/:idCategoria", component: AgregarSocio }, //LISTO --
+  { path: "/socios/:id", component: DetalleSocio }, //TODOS
+  { path: "/socios/update/:id", component: UpdateSocio },//TODOS
 
   // USUARIOS
   { path: "/usuarios", component: UsuariosList,},
-  { path: "/crearusuario", component: CrearUsuario },
+  { path: "/crearusuario", component: CrearUsuario }, //admin y coordinadorees en principio deberian poder verlo.
   { path: "/usuarios/:id", component: DetalleUsuario },
   { path: "/modificarusuario/:id", component: ModificarUsuario },
 
@@ -119,8 +119,10 @@ const router = createRouter({
 
 export const rutasNoAutorizadasParaCoordinador = [
   "/contactosEmergencia/admin",
-  "/modificarusuario/:id",
-  "/crearusuario",
+  "/modificarusuario/:id", //¿habría q ver si puede editar o no. xq si quiere darlos de baja debería poder. Perso si le damos acceso, puede cambiarles el rol.
+  //"/crearusuario",
+  "/deportes",
+  "/editarDeporte/:id",
 ];
 
 export const rutasNoAutorizadasParaProfesor = [
@@ -130,9 +132,9 @@ export const rutasNoAutorizadasParaProfesor = [
   "/modificarusuario/:id",
   "/registrarSocio",
   "/socios",
-  "/socios/update/:id",
+ // "/socios/update/:id",
+ "/editarDeporte/:id",
   "/deportes",
-  "/editarDeporte/:id",
   "/detalleDeporte/:id",
   "/modificarCategoria/:id",
   "/crearCategoria/:idDeporte",
