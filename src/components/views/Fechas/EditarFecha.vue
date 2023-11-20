@@ -138,10 +138,10 @@ export default {
     const listaSociosAgregar = ref([])
 
     onBeforeMount(async () => {
+      await fetchs();
       if (!await verificarAutorizacionFecha(idFecha)) {
 	      	router.push({ path: "/unauthorized" })
 	}
-      await fetchs();
     });
 
     async function fetchs() {
