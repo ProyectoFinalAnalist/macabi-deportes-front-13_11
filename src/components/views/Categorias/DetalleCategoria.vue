@@ -1,57 +1,79 @@
 <template>
-  <div class="container-fluid px-5 mb-5">
-    <div class="text text-center">
-      <h1>
-        Categoria: <strong>{{ nombreCategoria }}</strong>
-      </h1>
-      <h4>
-        Deporte: <strong>{{ deporteCategoria }}</strong>
-      </h4>
-    </div>
-    <h6 class="my-3"><strong>Profesor/es:</strong></h6>
-    <div class="ms-5 mb-0">
-      <button
-        v-for="(profesor, index) in profesoresCategoria"
-        :key="index"
-        class="mb-1 mx-1 btn btn-sm btn-dark"
-        @click="verProfesor(profesor.idUsuario)"
-      >
-        {{ profesor.apellido }}, {{ profesor.nombre }}
-      </button>
-    </div>
-    <br />
-    <form @submit.prevent="buscar()">
-      <div class="row g-2">
-        <div class="col-12 col-md-auto">
-          <select id="filtro" class="form-select">
-            <option disabled>Filtrar por:</option>
-            <option value="nroSocio">Número de Socio</option>
-            <option selected value="nombre">Nombre</option>
-            <option value="apellido">Apellido</option>
-            <option value="dni">Dni</option>
-            <option value="email">Mail</option>
-          </select>
+    <div class="container-fluid px-5 mb-5">
+        <div class="text text-center">
+            <h1>Categoria: <strong>{{ nombreCategoria }}</strong> </h1>
+            <h4>Deporte: <strong>{{ deporteCategoria }}</strong> </h4>
         </div>
-        <div class="col-12 col-md-auto">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Buscar..."
-            v-model="busqueda"
-          />
+        <h6 class="my-3"><strong>Profesor/es:</strong></h6>
+        <div class="ms-5 mb-0">
+            <button v-for="(profesor, index) in profesoresCategoria" :key="index"
+                class="mb-1 mx-1 btn btn-sm btn-dark" @click="verProfesor(profesor.idUsuario)">
+                {{ profesor.apellido }}, {{ profesor.nombre }}
+            </button>
         </div>
-        <div class="col-12 col-md-auto">
-          <button class="btn btn-danger" type="button" v-on:click="reiniciar">
-            Reiniciar
-          </button>
-        </div>
-        <div class="col text-md-end">
-          <div class="d-flex justify-content-end mt-3 mb-0">
-            <p>
-              Socios en la categoria: <strong>{{ listSocios.length }}</strong>
-            </p>
-          </div>
+        <br>
+        <form @submit.prevent="buscar()">
+            <div class="row g-2">
+                <div class="col-12 col-md-auto">
+                    <select id="filtro" class="form-select">
+                        <option disabled>Filtrar por:</option>
+                        <option value="nroSocio">Número de Socio</option>
+                        <option selected value="nombre">Nombre</option>
+                        <option value="apellido">Apellido</option>
+                        <option value="dni">Dni</option>
+                        <option value="email">Mail</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-auto">
+                    <input type="text" class="form-control" placeholder="Buscar..." v-model="busqueda">
+                </div>
+                <div class="col-12 col-md-auto">
+                    <button class="btn btn-danger" type="button" v-on:click="reiniciar">Reiniciar</button>
+                </div>
+                <div class="col text-md-end">
+                    <div class="d-flex justify-content-end mt-3 mb-0">
+                        <p>Socios en la categoria: <strong>{{ listSocios.length }}</strong></p>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <br>
+        <div v-if="listSocios && listSocios.length > 0">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th class="d-none d-sm-table-cell">NroSocio:
+                            <button class="btn bg-success" @click="ordenar('nroSocio')"></button>
+                        </th>
+                        <th>Nombre:</th>
+                        <th>Apellido:</th>
+                        <th class="d-none d-sm-table-cell">Dni:
+                            <button class="btn bg-success" @click="ordenar('dni')"></button>
+                        </th>
+                        <th class="d-none d-lg-table-cell">Email:</th>
+                    </tr>
+                </thead>
+                <tbody class="pointer">
+                    <tr v-for="socio in sociosFiltados" :key="socio.idSocio" @click="irA(socio.idSocio)">
+                        <td class="d-none d-sm-table-cell">{{ socio.nroSocio }}</td>
+                        <td>{{ socio.nombre }}  <label class="btn-group" id="socioNuevo" v-if="socio.esNuevoSocio">"NUEVO"</label>  </td>
+                        <td>{{ socio.apellido }}</td>
+                        <td class="d-none d-sm-table-cell">{{ socio.dni }}</td>
+                        <td class="d-none d-lg-table-cell">{{ socio.email }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p id="explicacion">*"NUEVO" -> El socio fue agregado a la categoria dentro de los últimos 7 días</p>
 
+        </div>
+        <div v-else class="text text-center fw-bold h3 alert alert-danger">No se encontraron socios asignados a la categoria</div>
+        <br>
+        <div class="d-flex justify-content-center mb-3">
+            <div class="btn-group">
+                <router-link :to="`/fechasCategoria/${this.idCategoria}`" class="btn btn-danger">Fechas</router-link>
+                <router-link :to="`/agregarSocio/${this.idCategoria}`" class="btn btn-success">Añadir socios</router-link>
+            </div>
+        </div>
         <div class="d-flex justify-content-center">
             <div class="btn-group">
                 <router-link v-if="  this.rolUsuario != 'P'" :to="`/modificarCategoria/${this.idCategoria}`" class="btn btn-macabi1">Editar
@@ -59,83 +81,7 @@
                 <button class="btn btn-dark" @click="volverAtras()">Volver</button>
             </div>
         </div>
-      </div>
-    </form>
-    <br />
-    <div v-if="listSocios && listSocios.length > 0">
-      <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th class="d-none d-sm-table-cell">
-              NroSocio:
-              <button
-                class="btn bg-success"
-                @click="ordenar('nroSocio')"
-              ></button>
-            </th>
-            <th>Nombre:</th>
-            <th>Apellido:</th>
-            <th class="d-none d-sm-table-cell">
-              Dni:
-              <button class="btn bg-success" @click="ordenar('dni')"></button>
-            </th>
-            <th class="d-none d-lg-table-cell">Email:</th>
-          </tr>
-        </thead>
-        <tbody class="pointer">
-          <tr
-            v-for="socio in sociosFiltados"
-            :key="socio.idSocio"
-            @click="irA(socio.idSocio)"
-          >
-            <td class="d-none d-sm-table-cell">{{ socio.nroSocio }}</td>
-            <td>
-              {{ socio.nombre }}
-              <label class="btn-group" id="socioNuevo" v-if="socio.esNuevoSocio"
-                >"NUEVO"</label
-              >
-            </td>
-            <td>{{ socio.apellido }}</td>
-            <td class="d-none d-sm-table-cell">{{ socio.dni }}</td>
-            <td class="d-none d-lg-table-cell">{{ socio.email }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <p id="explicacion">
-        *"NUEVO" -> El socio fue agregado a la categoria dentro de los últimos 7
-        días
-      </p>
-    </div>
-    <div v-else class="text text-center fw-bold h3 alert alert-danger">
-      No se encontraron socios asignados a la categoria
-    </div>
-    <br />
-    <div class="d-flex justify-content-center mb-3">
-      <div class="btn-group">
-        <router-link
-          :to="`/fechasCategoria/${this.idCategoria}`"
-          class="btn btn-danger"
-          >Fechas</router-link
-        >
-        <router-link
-          :to="`/agregarSocio/${this.idCategoria}`"
-          class="btn btn-success"
-          >Añadir socios</router-link
-        >
-      </div>
-    </div>
-    <div class="d-flex justify-content-center">
-      <div class="btn-group">
-        <router-link
-          :to="`/modificarCategoria/${this.idCategoria}`"
-          class="btn btn-macabi1"
-          >Editar Categoría</router-link
-        >
-        <button class="btn btn-dark" @click="volverAtras()">Volver</button>
-      </div>
-    </div>
-
-    <div v-if="listSociosCumple && listSociosCumple.length > 0" class="cumpleanos-box">
+        <div v-if="listSociosCumple && listSociosCumple.length > 0" class="cumpleanos-box">
         <h2 class="text-center mb-3">Cumpleaños del Mes de {{ obtenerNombreMes() }}</h2>
       <table class="table table-bordered table-hover mt-3" cumpleanos-table>
         <thead>
@@ -154,118 +100,125 @@
         </tbody>
       </table>
     </div>
-  </div>
+    </div>
 </template>
 
 <script>
-import axios from "axios";
-import apiUrl from "../../../../config/config.js";
-import { useElementStore } from "../../../utils/Store";
-import {Utils} from "../../../utils/utils"
+import axios from 'axios';
+import apiUrl from '../../../../config/config.js';
+import { useElementStore } from '../../../utils/Store';
 import { verificarAutorizacionCategoria } from '../../../utils/permisos.js'
 import { usrStore } from '../../../stores/usrStore';
+import {Utils} from "../../../utils/utils"
+
 
 export default {
-  setup() {
-    const socioStore = useElementStore("categoria")(); // Asegúrate de usar la tienda correcta
-    const { currentElement, fetchElementById, elements } = socioStore;
-    return { currentElement, fetchElementById, elements };
-  },
-  data() {
-    return {
-      idCategoria: "",
-      nombreCategoria: "nombreCategoria",
-      deporteCategoria: "nombreDeporteCategoria",
-      listSocios: [],
-      busqueda: "",
-      sociosFiltados: [],
-      tipoFiltro: "",
-      size: 0,
-      orden: 0,
-      profesoresCategoria: [],
-      fecha1SemanaAtras: "",
-      listSociosCumple: [],
+    setup() {
+        const socioStore = useElementStore("categoria")(); // Asegúrate de usar la tienda correcta
+        const { currentElement, fetchElementById, elements } = socioStore;
+        return { currentElement, fetchElementById, elements };
+    },
+    data() {
+        return {
+            idCategoria: "",
+            nombreCategoria: "nombreCategoria",
+            deporteCategoria: "nombreDeporteCategoria",
+            listSocios: [],
+            busqueda: "",
+            sociosFiltados: [],
+            tipoFiltro: "",
+            size: 0,
+            orden: 0,
+            profesoresCategoria: [
+                
+            ],
+            fecha1SemanaAtras:"",
+            rolUsuario:"",
+            listSociosCumple: [],
         utils : new Utils()
-
-    };
-  },
-  async created() {
-    this.idCategoria = this.$route.params.id;
-     const userStore = usrStore();
+            
+        };
+    },
+    async created() {
+        this.idCategoria = this.$route.params.id;
+        const userStore = usrStore();
         this.rolUsuario =  userStore.getRol
         console.log("La categoia es: " + this.idCategoria);
         if(! await verificarAutorizacionCategoria(this.idCategoria)) {
             this.$router.push(`/unauthorized`);
 
         }
-    try {
-      let respuesta = await axios.get(
-        `${apiUrl}/categoria/${this.idCategoria}/nombreCategoria`,
-        { withCredentials: true }
-      );
-      this.nombreCategoria = respuesta.data.nombreCategoria;
-      let nombreDeporteBuscado = await axios.get(
-        `${apiUrl}/categoria/${this.idCategoria}/nombreDeporte`,
-        { withCredentials: true }
-      );
-      this.deporteCategoria = nombreDeporteBuscado.data.nombreDeporte;
-      //console.log(this.deporteCategoria);
-      let respuestaSocios = await axios.get(
-        `${apiUrl}/sociosXCategoria/${this.idCategoria}`,
-        { withCredentials: true }
-      );
-      let sociosLista = respuestaSocios.data.sociosDatos;
-      sociosLista.forEach((socio) => {
-        this.listSocios.push(socio);
-        
-        const mesActual = new Date().getMonth() + 1;
 
-        
-        const mesNacimiento = new Date(socio.fechaNacimiento).getMonth() + 1;
-        
-        
-        if (mesNacimiento === mesActual) {
-          this.listSociosCumple.push(socio);
+        try {
+            let respuesta = await axios.get(`${apiUrl}/categoria/${this.idCategoria}/nombreCategoria`, { withCredentials: true });
+            this.nombreCategoria = respuesta.data.nombreCategoria
+            let nombreDeporteBuscado = await axios.get(`${apiUrl}/categoria/${this.idCategoria}/nombreDeporte`, { withCredentials: true });
+            this.deporteCategoria = nombreDeporteBuscado.data.nombreDeporte
+            //console.log(this.deporteCategoria);
+            let respuestaSocios = await axios.get(`${apiUrl}/sociosXCategoria/${this.idCategoria}`, { withCredentials: true });
+            let sociosLista = respuestaSocios.data.sociosDatos
+            sociosLista.forEach(socio => {
+                this.listSocios.push(socio)
+                const mesActual = new Date().getMonth() + 1;
 
+
+       
+                const mesNacimiento = new Date(socio.fechaNacimiento).getMonth() + 1;
+
+
+                if (mesNacimiento === mesActual) {
+                this.listSociosCumple.push(socio);
+                }
+});
+
+            
+
+
+
+
+            this.fecha1SemanaAtras = new Date();
+            this.fecha1SemanaAtras.setDate(this.fecha1SemanaAtras.getDate() - 7);
+            console.log("La fecha de hoy es ... " + this.fecha1SemanaAtras);
+
+            this.asignarSiEsNuevoUsuarioONo(this.fecha1SemanaAtras, this.listSocios)
+
+            this.sociosFiltados = this.listSocios;
+
+            try {
+                let resultProfes = await axios.get(`${apiUrl}/categoria/${this.idCategoria}/getProfesores`);
+            this.profesoresCategoria = resultProfes.data.usuariosList;
+            }catch(e){
+
+            }
+
+            
+           // console.log("Los profesores son: " + this.profesoresCategoria);
+
+            
+        } catch (e) {
+            console.log("catch");
         }
-      });
 
-      this.fecha1SemanaAtras = new Date();
-      this.fecha1SemanaAtras.setDate(this.fecha1SemanaAtras.getDate() - 7);
-      console.log("La fecha de hoy es ... " + this.fecha1SemanaAtras);
-
-      this.asignarSiEsNuevoUsuarioONo(this.fecha1SemanaAtras, this.listSocios);
-
-      this.sociosFiltados = this.listSocios;
-
-      try {
-        let resultProfes = await axios.get(
-          `${apiUrl}/categoria/${this.idCategoria}/getProfesores`
-        );
-        this.profesoresCategoria = resultProfes.data.usuariosList;
-      } catch (e) {}
-
-      // console.log("Los profesores son: " + this.profesoresCategoria);
-    } catch (e) {
-      console.log("catch");
-    }
-
-     this.ordenarListaPorFecha();
-  },
-  methods: {
-    asignarSiEsNuevoUsuarioONo(fechaDiaSemanaAnterior, listaSocios) {
-      listaSocios.forEach((socio) => {
-        let fechaRegistroSocio = new Date(socio.fechaRegistro);
-        fechaRegistroSocio.setDate(fechaRegistroSocio.getDate() + 1);
-        if (fechaRegistroSocio < fechaDiaSemanaAnterior) {
-          socio.esNuevoSocio = false;
-        } else {
-          socio.esNuevoSocio = true;
-        }
-      });
     },
+    methods: {
 
-    obtenerNombreMes() {
+        asignarSiEsNuevoUsuarioONo(fechaDiaSemanaAnterior,listaSocios){
+
+            listaSocios.forEach(socio => {
+
+                    let fechaRegistroSocio = new Date(socio.fechaRegistro)
+                    fechaRegistroSocio.setDate(fechaRegistroSocio.getDate() + 1)
+                    if(fechaRegistroSocio < fechaDiaSemanaAnterior){
+                        socio.esNuevoSocio = false;
+
+                    }else {
+                        socio.esNuevoSocio = true;
+                    }
+
+            });
+
+        },
+        obtenerNombreMes() {
         const meses = [
             'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
             'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -274,10 +227,12 @@ export default {
         return meses[mesActual];
     },
 
+
     calcularEdad(fechaNacimiento) {
         const fechaNac = new Date(fechaNacimiento);
         const hoy = new Date();
         const edad = hoy.getFullYear() - fechaNac.getFullYear();
+
 
         if ((hoy.getDate() >= fechaNac.getUTCDate())) {
             return `CUMPLIÓ ${edad} AÑOS`;
@@ -286,63 +241,73 @@ export default {
         }
     },
 
+
     obtenerFechaFormateada(fecha) {
             return this.utils.obtenerFechaFormateada(fecha);
         },
+
 
         ordenarListaPorFecha() {
       this.listSociosCumple.sort((a, b) => {
         return new Date(a.fechaNacimiento) - new Date(b.fechaNacimiento);
       });
         },
-    
 
 
-    verProfesor(profesor) {
-      this.$router.push(`/usuarios/${profesor}`);
+        verProfesor(profesor) {
+            this.$router.push(`/usuarios/${profesor}`);
+        },
+
+
+        irA(id) {
+            if (id != 0) {
+                this.$router.push(`/socios/${id}`);
+
+            }
+        },
+        buscar() {
+            this.reiniciar();
+
+
+            if (this.busqueda !== "") {
+                this.tipoFiltro = document.getElementById("filtro").value;
+                this.sociosFiltados = this.listSocios.filter(item => {
+                    let propiedad = item[this.tipoFiltro];
+                    let propiedadLowerCase = String(propiedad).toLowerCase();
+                    let busquedaLowerCase = String(this.busqueda).toLowerCase();
+                    return propiedadLowerCase.includes(busquedaLowerCase);
+                });
+
+                //console.log(this.sociosFiltados);
+
+                this.size = this.listSocios.length || 0;
+            } else {
+                this.size = 0;
+            }
+
+
+
+
+
+
+        },
+        reiniciar() {
+            this.sociosFiltados = this.listSocios;
+        },
+        ordenar(columna) {
+            this.orden = !this.orden
+
+            this.sociosFiltados.sort((a, b) => {
+                let factorOrden = this.orden ? -1 : 1;
+                if (a[columna] < b[columna]) return -1 * factorOrden;
+                if (a[columna] > b[columna]) return 1 * factorOrden;
+                return 0;
+            });
+        },
+        volverAtras() {
+            this.$router.go(-1)
+        }
     },
-
-    irA(id) {
-      if (id != 0) {
-        this.$router.push(`/socios/${id}`);
-      }
-    },
-    buscar() {
-      this.reiniciar();
-
-      if (this.busqueda !== "") {
-        this.tipoFiltro = document.getElementById("filtro").value;
-        this.sociosFiltados = this.listSocios.filter((item) => {
-          let propiedad = item[this.tipoFiltro];
-          let propiedadLowerCase = String(propiedad).toLowerCase();
-          let busquedaLowerCase = String(this.busqueda).toLowerCase();
-          return propiedadLowerCase.includes(busquedaLowerCase);
-        });
-
-        //console.log(this.sociosFiltados);
-
-        this.size = this.listSocios.length || 0;
-      } else {
-        this.size = 0;
-      }
-    },
-    reiniciar() {
-      this.sociosFiltados = this.listSocios;
-    },
-    ordenar(columna) {
-      this.orden = !this.orden;
-
-      this.sociosFiltados.sort((a, b) => {
-        let factorOrden = this.orden ? -1 : 1;
-        if (a[columna] < b[columna]) return -1 * factorOrden;
-        if (a[columna] > b[columna]) return 1 * factorOrden;
-        return 0;
-      });
-    },
-    volverAtras() {
-      this.$router.go(-1);
-    },
-  },
 };
 </script>
 
@@ -351,6 +316,7 @@ export default {
   color: red;
 }
 
+
 #socioNuevo {
   background-color: blue;
   color: white;
@@ -358,9 +324,11 @@ export default {
   margin-left: 30px;
 }
 
+
 .pointer {
   cursor: pointer;
 }
+
 
 /* En tu archivo de estilos (por ejemplo, styles.css) */
 .cumpleanos-box {
@@ -370,11 +338,13 @@ export default {
   border-radius: 10px; /* Esquinas redondeadas */
 }
 
+
 .cumpleanos-table th,
 .cumpleanos-table td {
   border: 5px solid #013a77; /* Color del borde de las celdas de la tabla */
   padding: 8px;
 }
+
 
 @media (max-width: 767px) {
   .cumpleanos-box {
@@ -382,11 +352,13 @@ export default {
     padding: 10px;
   }
 
+
   .cumpleanos-table th,
   .cumpleanos-table td {
     padding: 6px;
   }
 }
+
 
 @media (max-width: 479px) {
   .cumpleanos-box {
@@ -394,9 +366,12 @@ export default {
     padding: 5px;
   }
 
+
   .cumpleanos-table th,
   .cumpleanos-table td {
     padding: 4px;
   }
 }
 </style>
+
+
