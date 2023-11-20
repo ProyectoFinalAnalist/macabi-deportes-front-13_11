@@ -94,7 +94,7 @@
             </div>
             <div class="d-flex justify-content-center">
                     <div class="btn-group">
-                        <router-link class="btn btn-macabi1" v-if="rolUser == 'A' " :to="`/modificarusuario/${usuario.idUsuario}`">Modificar
+                        <router-link class="btn btn-macabi1" v-if="rolUser != 'P' && usuario.idRol == '3'  " :to="`/modificarusuario/${usuario.idUsuario}`">Modificar
                             Usuario</router-link>
 
                     <button class="btn btn-dark" @click="volver">Volver</button>

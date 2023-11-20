@@ -15,11 +15,7 @@
                             <button class="btn btn-outline-dark" type="button" id="togglePassword"
                                 @click="mostrarContrasenaClave">Ver contraseña</button>
                         </div>
-                        <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="errorOldPass">
-                            <strong>La contraseña original debe tener un mínimo de 8 caracteres, una mayúscula y un
-                                número</strong>
-                        </h6>
-
+                       
                         <p class="p pe-2 ps-2">
                             <strong>Nueva Contraseña: <code>*</code></strong><input class="form-control" :type="mostrar4"
                                 v-model="clave" placeholder="Ingrese nueva contraseña" onpaste="return false;" />
@@ -108,17 +104,14 @@ export default {
 
         const nombre = ref(null)
 
-        const oldPass = ref(null)
         const clave = ref(null)
         const claveConfirm = ref(null)
 
-        const errorOldPass = ref(false)
         const errorClave = ref(false)
         const errorClaveConfirm = ref(false)
         const errorSamePass = ref(false)
 
         function setInFalse() {
-            errorOldPass.value = false
             errorClave.value = false
             errorClaveConfirm.value = false
             errorSamePass.value = false
@@ -129,11 +122,8 @@ export default {
 
             let passValidated = false
 
-            passValidated = validarContraseña(oldPass.value)
 
-            if (!passValidated) {
-                errorOldPass.value = true
-            }
+           
 
             passValidated = validarContraseña(clave.value)
 
@@ -212,14 +202,12 @@ export default {
             mostrar4,
             mostrarContrasenaClave,
             mostrarContrasenaNew,
-            errorOldPass,
             errorClaveConfirm,
             errorClave,
             usuario,
             nombre,
             updatePassword,
             volver,
-            oldPass,
             clave,
             claveConfirm
         };

@@ -76,8 +76,6 @@ const routes = [
   { path: "/tomarAsistencia/:id", component: TomarAsistencia },// LISTO--
 
 
-  { path: "/categorias", component: CategoriasList }, // no se usa mas, se reemplaza con detalle deporte y deportes list//NO SE USA
-  { path: "/crearCategoria/:idDeporte", component: CrearCategoria }, // reemplazo con modal en editar Deporte //NO SE USA
   { path: "/modificarCategoria/:id", component: ModificarCategoria },//LISTO--
   { path: "/detalleCategoria/:id", component: DetalleCategoria},//LISTO--
   { path: "/eliminarSociosCategoria/:id", component: EliminarSociosCategorias },//LISTO--
@@ -119,7 +117,7 @@ const router = createRouter({
 
 export const rutasNoAutorizadasParaCoordinador = [
   "/contactosEmergencia/admin",
-  "/modificarusuario/:id", //¿habría q ver si puede editar o no. xq si quiere darlos de baja debería poder. Perso si le damos acceso, puede cambiarles el rol.
+  //"/modificarusuario/:id", //¿habría q ver si puede editar o no. xq si quiere darlos de baja debería poder. Perso si le damos acceso, puede cambiarles el rol.
   //"/crearusuario",
   "/deportes",
   "/editarDeporte/:id",

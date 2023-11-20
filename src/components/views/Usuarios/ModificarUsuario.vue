@@ -94,9 +94,7 @@
                         <button class="btn btn-macabi1" @click="updateUsuario">
                             Actualizar Usuario
                         </button>
-                        <button class="btn btn-success" v-if="isSameUser()" @click="updatePassword">
-                            Cambiar contraseña
-                        </button>
+                        
                         <button class="btn btn-danger" @click="deleteUsuario">
                             Eliminar Usuario
                         </button>
@@ -148,7 +146,10 @@ export default {
         const showErrores = ref({})
         const nombre = ref(null)
 
-        onMounted(() => {
+        onMounted( async() =>   {
+            if (! await cambiosPerfilPropioPermiso(idUsuario)) {
+                router.push(`/unauthorized`);
+            }
             elementStore.fetchElements()
         })
 
@@ -178,10 +179,7 @@ export default {
             alert("not implemented")
         }
 
-        function updatePassword() {
-            router.push(`/updatePass/${idUsuario}`)
-        }
-
+        
 
         function volver() {
             router.go(-1)
@@ -206,9 +204,7 @@ export default {
         }
     },
     methods: {
-        isSameUser() {
-            return this.usrStore.currentUser.idUsuario == this.route.params.id.toString()
-        }
+        
     }
 };
 </script>

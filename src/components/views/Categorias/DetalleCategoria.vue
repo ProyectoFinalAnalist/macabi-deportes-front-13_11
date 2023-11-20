@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid px-5 mb-5">
+    <div class="container-fluid px-0 px-md-5 mb-5">
         <div class="text text-center">
             <h1>Categoria: <strong>{{ nombreCategoria }}</strong> </h1>
             <h4>Deporte: <strong>{{ deporteCategoria }}</strong> </h4>
@@ -103,18 +103,18 @@
                 <button class="btn btn-dark" @click="volverAtras()">Volver</button>
             </div>
         </div>
-        <div v-if="listSociosCumple && listSociosCumple.length > 0" class="cumpleanos-box">
+        <div v-if="listSociosCumple && listSociosCumple.length > 0" class="cumpleanos-box mx-1">
         <h2 class="text-center mb-3">Cumpleaños del Mes de {{ obtenerNombreMes() }}</h2>
       <table class="table table-bordered table-hover mt-3" cumpleanos-table>
         <thead>
           <tr>
             <th class="d-none d-md-table-cell">Nombre:</th>
             <th>Apellido:</th>
-            <th class="d-none d-md-table-cell">Día de Cumpleaños:</th>
+            <th >Cumpleaños:</th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="socio in listSociosCumple" :key="socio.idSocio">
+        <tbody class="pointer">
+          <tr v-for="socio in listSociosCumple" :key="socio.idSocio" @click="irA(socio.idSocio)">
             <td class="d-none d-md-table-cell">{{ socio.nombre }}</td>
             <td>{{ socio.apellido }}</td>
             <td> <b>  {{ obtenerFechaFormateada(socio.fechaNacimiento) }} </b> ({{calcularEdad(socio.fechaNacimiento) }})</td>
@@ -181,12 +181,16 @@ export default {
             let sociosLista = respuestaSocios.data.sociosDatos
             sociosLista.forEach(socio => {
                 this.listSocios.push(socio)
+                console.log(socio);
                 const mesActual = new Date().getMonth() + 1;
 
-
+                console.log("mes actual: " + mesActual);
        
-                const mesNacimiento = new Date(socio.fechaNacimiento).getMonth() + 1;
-
+                let mesNacimiento = new Date(socio.fechaNacimiento);
+                mesNacimiento.setDate(mesNacimiento.getDate() + 1)
+                 mesNacimiento = mesNacimiento.getMonth() + 1;
+             //   mesNacimiento.setDate(mesNacimiento.getDate() + 1)
+                console.log(" El mes de nacimiento de socio.nombre es: "+ mesNacimiento) ;
 
                 if (mesNacimiento === mesActual) {
                 this.listSociosCumple.push(socio);
@@ -345,7 +349,7 @@ export default {
 
 /* En tu archivo de estilos (por ejemplo, styles.css) */
 .cumpleanos-box {
-  margin: 20px; /* Ajusta el margen según sea necesario */
+   /* Ajusta el margen según sea necesario */
   padding: 15px;
   border: 4px solid #013a77; /* Color del borde del cuadro */
   border-radius: 10px; /* Esquinas redondeadas */

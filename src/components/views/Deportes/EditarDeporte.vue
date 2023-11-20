@@ -289,7 +289,8 @@ export default {
 
             try {
                 const response = await axios.post(apiUrl + '/categoria', nuevaCategoria, { withCredentials: true });
-                console.log('Respuesta del servidor:', response.data);
+                alert("Categoria creada con éxito")          
+                location.reload()      
             } catch (error) {
                 const msj = error.response.data.message
                 if (msj != "Los IDs de Usuarios estan en un formato Incorrecto") {
