@@ -16,11 +16,11 @@ import Navbar from "./components/dependentComponents/Navbar.vue";
 
 const usuarioStore = usrStore()
 
+/*
 onMounted(async () => {
 	await usuarioStore.reiniciarSesion()
 })
-
-
+*/
 </script>
 
 <style scoped>

@@ -87,6 +87,7 @@
 <script >
 import axios from "axios";
 import apiUrl from '../../../../config/config.js'
+import { verificarAutorizacionCategoria } from "../../../utils/permisos";
 export default {
   name: "AgregarSocio",
   components: {},
@@ -105,6 +106,9 @@ export default {
   }),
   async created() {
     this.idCat = this.$route.params.idCategoria
+    if(await verificarAutorizacionCategoria(this.idCat)) {
+      this.$router.push({ path: "/unauthorized", component: Unauthorized })
+    }
     let result = await axios.get(`${apiUrl}/categoria/${this.idCat}/nombreCategoria`, { withCredentials: true });
     this.nombreCategoria = result.data.nombreCategoria
 

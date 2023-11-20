@@ -99,6 +99,8 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import apiUrl from '../../../../config/config.js'
 import { Utils } from "../../../utils/utils"
+import { usrStore } from "../../../stores/usrStore";
+
 
 
 export default {
@@ -112,6 +114,10 @@ export default {
         const idSocio = route.params.id
 
         onMounted(async () => {
+
+  
+
+
             await sociosStore.fetchElementById(`${apiUrl}/socio/`, idSocio)
             await deporteStore.fetchElements(`${apiUrl}/deporte/getAll`)
             await categoriasStore.fetchElementById(`${apiUrl}/sociosXCategoria/categorias`, idSocio)

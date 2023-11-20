@@ -90,6 +90,8 @@ export const usrStore = defineStore('usuariosStore', {
         },
 
         getRol() {
+            
+            
             let result
             if (this.currentUser != null) {
 
@@ -104,6 +106,8 @@ export const usrStore = defineStore('usuariosStore', {
             } else {
                 result = null
             }
+
+            
 
             return result
 

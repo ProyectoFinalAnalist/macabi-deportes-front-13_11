@@ -4,12 +4,13 @@ import { setCookie,getCookie,getCookieJSON} from './Cookies';
 // JUAMPI: hice este método para simular un inicio de sesion, cuando se haga el inicio real se borra
 let auth = false
 let idUsuario = 1
-// 1 = A dmin
+let admin = 1 
+let cordinador = 2
 // 2 = C oordinador
 // 3 = P rofesor
 // 4 = P rofesor
 
-const url = `http://localhost:2020/usuario/${idUsuario}`;
+const url = `http://localhost:5000/usuario/${idUsuario}`;
 
 login()
 
@@ -49,6 +50,10 @@ export function isAdmin() {
     }
     return usuario || false
 }
+
+
+
+
 
 export function sameUser(id){
     const usuario:any =getCookieJSON()

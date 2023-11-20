@@ -83,6 +83,8 @@ import { useElementStore } from "../../../utils/Store";
 import { onBeforeMount, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import apiUrl from "../../../../config/config.js";
+import { verificarAutorizacionFecha } from "../../../utils/permisos";
+
 
 export default {
   setup() {
@@ -102,6 +104,10 @@ export default {
 
     async function fetchs() {
       try {
+        if(! await verificarAutorizacionFecha(idFecha)) {
+            router.push( { path: "/unauthorized"});
+
+        }
         await asistenciaStore.fetchElements(`${apiUrl}/asistencia/${idFecha}`);
         sociosAsistenciaFecha.value = asistenciaStore.getElements.result;
         size.value = sociosAsistenciaFecha.value.length;

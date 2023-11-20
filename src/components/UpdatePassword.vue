@@ -83,15 +83,24 @@ h6 {
 import { useElementStore } from "../stores/Store";
 import { useRouter, useRoute } from "vue-router";
 import { computed, ref } from "vue";
+import { onBeforeMount } from "vue";
 import axios from "axios";
 import apiUrl from "../../config/config";
+import { cambiosPerfilPropioPermiso } from '../utils/permisos';
 
 export default {
     setup() {
         const route = useRoute();
         const router = useRouter();
-
         const idUsuario = route.params.idUsuario.toString();
+
+        onBeforeMount(async () => {
+      if(! await cambiosPerfilPropioPermiso(idUsuario)) {
+        router.push(`/unauthorized`)
+      }
+    });
+
+        
         const elementStore = useElementStore("usuario")();
         elementStore.fetchElementById(idUsuario).then(() => { nombre.value = `${usuario.value.apellido}, ${usuario.value.nombre}` })
 
@@ -216,4 +225,6 @@ export default {
         };
     },
 };
+
+
 </script>
