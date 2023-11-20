@@ -4,7 +4,7 @@
 			<h1>no estas logeado</h1>
 		</div>
 	</div>
-	<div class="container-fluid" v-else>
+	<div class="container-fluid mt-3 mb-5" v-else>
 		<div class="row">
 			<div class="col-md-6 offset-md-3" v-if="this.user">
 				<h3 class="text-center">Detalles del Usuario: <strong>{{ this.user.apellido }}, {{ this.user.nombre
@@ -16,7 +16,7 @@
 						<p class="mb-2"><strong class="font-weight-bold">Email: </strong>{{ this.user.email }}</p>
 						<p class="mb-2"><strong class="font-weight-bold">Dni: </strong>{{ this.user.dni }}</p>
 						<p class="mb-2"><strong class="font-weight-bold">Edad: </strong>{{
-							utils.obtenerEdadXFecha(this.user.fechaNacimiento) }}</p>
+							utils.obtenerEdadXFecha(this.user.fechaNacimiento) }}<code>*</code></p>
 						<p class="mb-2"><strong class="font-weight-bold">Fecha de nacimiento: </strong>{{
 							utils.obtenerFechaFormateada(this.user.fechaNacimiento) }}</p>
 						<p class="mb-2"><strong class="font-weight-bold">Telefono: </strong>{{ this.user.telefono }}</p>
@@ -25,11 +25,14 @@
 						<p class="mb-2"><strong class="font-weight-bold">Direccion: </strong>{{ this.user.direccion }}</p>
 					</div>
 				</div>
+				<div class="text-end my-3 ms-5">
+                    <code>* Edad calculada a partir de la fecha de nacimiento automáticamente</code>
+                </div>
 			</div>
 			<div class="col-md-6 offset-md-3" v-else>
 				<strong class="alert alert-warning text-center">El usuario no existe.</strong>
 			</div>
-			<div class="d-flex justify-content-center">
+			<div class="d-flex justify-content-center mb-3">
 				<div class="btn-group">
 					<router-link class="btn btn-macabi1" v-if="this.user"
 						:to="`/modificarusuario/${this.user.idUsuario}`">Modificar mis datos</router-link>
@@ -93,8 +96,8 @@ export default {
 		},
 
 		volver() {
-			this.router.go(-1)
-		}
+			this.$router.go(-1);
+		},
 	},
 	computed: {
 		roleName() {

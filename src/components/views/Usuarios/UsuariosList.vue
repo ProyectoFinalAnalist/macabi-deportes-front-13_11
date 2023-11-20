@@ -44,7 +44,7 @@
         </div>
         <div class="col text-md-end">
           <div class="d-flex justify-content-end mt-3 mb-0">
-            <p>Usuarios en total: <strong>{{ size }}</strong></p>
+            <p>Usuarios encontrados: <strong>{{ size }}</strong></p>
           </div>
         </div>
       </div>
@@ -73,7 +73,10 @@
         </tbody>
       </table>
     </div>
-    <div class="text text-end mb-3"><code>Si se encuentra en rojo, el usuario no está activo</code></div>
+    <div class="d-flex justify-content-between my-3">
+      <p class="pe-5" v-if="elementStore.getElements">Usuarios en total: <strong>{{ elementStore.getElements.length }}</strong></p>
+      <code>Si se encuentra en rojo, el usuario no está activo</code>
+    </div>
     <div class="d-flex justify-content-center align-items-center">
       <div class="btn-group">
         <button class="btn btn-macabi1">
@@ -103,7 +106,6 @@ export default {
   setup() {
     const elementStore = useElementStore("usuario")()
     let busqueda = ""
-    let filtro = ""
     const usuarios = ref(null)
     const orden = ref(true)
     const router = useRouter();

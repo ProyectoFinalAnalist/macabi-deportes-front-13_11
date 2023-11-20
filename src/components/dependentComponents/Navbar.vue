@@ -3,7 +3,7 @@
 
         <div class="logo"> <img src="../icons/logo-nav.png" alt="Logo"> </div>
 
-        <div class="nav-links"> <router-link to="/">INICIO</router-link> </div>
+        <div class="nav-links" v-if="this.usrStore.isLogged"> <router-link to="/">INICIO</router-link> </div>
 
         <div v-if="!usrStore.isLogged" class="nav-links"> <router-link to="/login"> INICIAR SESION </router-link> </div>
         <div v-else class="nav-links"> <router-link to="/miUsuario"> {{ usrStore.currentUser.nombre }} </router-link>
@@ -18,7 +18,7 @@
 
             <div class="overlay-content" style="height: 100%;">
 
-                <div class="overlay-option">
+                <div v-if="this.usrStore.isLogged" class="overlay-option">
                     <router-link @click="closeNavMenu" to="/">INICIO</router-link>
                 </div>
 
@@ -63,7 +63,7 @@ export default {
 <style scoped>
 .header {
     display: grid;
-    grid-template-columns: 2fr 2fr 1fr 2fr 2fr;
+    grid-template-columns: 3fr 3fr 3fr;
     background-color: black;
     width: 100%;
     transition: 1s;

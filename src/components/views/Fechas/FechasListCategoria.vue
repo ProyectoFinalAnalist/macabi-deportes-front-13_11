@@ -97,7 +97,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr v-for="socio in sociosToShow" class="resaltable">
+						<tr v-for="socio in sociosToShow" class="resaltable" @click="irA(socio.idSocio)">
 							<td data-cell="Id" class="big">{{ socio.nroSocio }}</td>
 							<td data-cell="Nombre">{{ socio.nombre }} {{ socio.apellido }}</td>
 							<td data-cell="Dni">{{ socio.dni }}</td>
@@ -145,13 +145,15 @@
 		</div>
 
 		<div class="sub_container_buttons2">
+			<div class="btn btn-group">
 			<button @click="nuevaFecha" class="btn btn-primary primary-macabi">
 				Crear fecha
 			</button>
 
-			<button class="btn btn-secondary">
-				<router-link to="/" class="nav-item nav-link" href="#">Volver a Inicio</router-link>
+			<button class="btn btn-dark" @click="this.$router.go(-1)">
+				Volver
 			</button>
+		</div>
 		</div>
 
 	</div>
@@ -316,6 +318,10 @@ function getCountOfDateTipe(character, dateArray) {
 
 	return count
 
+}
+
+function irA(id){
+	router.push(`/socios/${id}`)
 }
 
 

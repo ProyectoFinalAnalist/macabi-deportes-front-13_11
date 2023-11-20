@@ -1,15 +1,15 @@
 
 <template>
 
-  <div class=".container-fluid ms-2 me-2 mb-5">
-    <div style="width: 100%;" class="text text-center pb-3 pt-5 h1">Agregar socios a la categoria: {{ nombreCategoria }}
+  <div class="container-fluid px-5 mb-5">
+    <div class="text text-center pb-3 h2">Agregar socios a la categoria: <strong>{{ nombreCategoria }}</strong>
     </div>
 
     <form >
       <div class="row g-2">  
       <input class="form-control" v-model="socioBuscado" type="text" name="datosSocio" placeholder="Dni o nro socio..">
       <label for="">Busqueda por: </label>
-      <div class="botones" v-if="socioBuscado">
+      <div class="botones my-3" v-if="socioBuscado">
         <button  v-if="socioBuscado" class="btn botonHabilitado btn_busquedas" @click.prevent="buscarSocio('D')">{{ tituloBotonDni
         }}</button>
         <button v-if="socioBuscado" class="btn botonHabilitado btn_busquedas" @click.prevent="buscarSocio('S')">{{ tituloBotonNroSocio
@@ -20,7 +20,7 @@
 
         <!-- El .prevent() hace q el form no recargue cuando se se toque el boton </div> -->
       </div>
-      <div class="botones" v-else>
+      <div class="botones my-3" v-else>
         <button class="btn btn_busquedas" disabled>{{ tituloBotonDni }}</button>
         <button class="btn btn_busquedas" disabled>{{ tituloBotonNroSocio }}</button>
         <button class="btn btn_busquedas" disabled>{{ tituloBotonPorApellido
@@ -39,7 +39,7 @@
         <p class="">Socios por asignar: <strong>{{ sociosList.length }}</strong></p>
       </div>
       <div>
-        <table class="table table-striped table-bordered">
+        <table class="table table-bordered">
           <thead>
             <tr>
               <th>Nro socio</th>
@@ -51,11 +51,11 @@
           </thead>
           <tbody>
             <tr v-for="(socio, index) in sociosList" :key="socio.idSocio">
+              <td>{{ socio.nroSocio }}</td>
               <td>{{ socio.nombre }}</td>
               <td class="d-none d-md-table-cell">{{ socio.apellido }}</td>
-              <td>{{ socio.nroSocio }}</td>
               <td class="d-none d-md-table-cell">{{ socio.dni }}</td>
-              <td><button class="btn botonHabilitado" @click="eliminarDeListaSocios(index)">Eliminar de la lista</button>
+              <td><button class="btn btn-danger" @click="eliminarDeListaSocios(index)">Eliminar de la lista</button>
               </td>
 
 
@@ -65,14 +65,12 @@
       </div>
     </div>
     <div v-if="sociosList.length == 0">
-        <p class="no-fechas">{{mensaje}}</p>
+        <p class="no-fechas" style="border-radius: 15px;">{{mensaje}}</p>
       </div>
    <div class="d-flex justify-content-center align-items-center">
     <div class="btn-group ">
       <button @click="agregarSociosACategoria" class="btn botonHabilitado mr-2"> Agregar socios </button>
-      <button class="btn btn-dark ml-2">
-        <router-link to="/" class="nav-item nav-link" href="#">Volver a Inicio</router-link>
-      </button>
+      <button class="btn btn-dark ml-2" @click="this.$router.go(-1)">Volver</button>
     </div>
    </div>
     
@@ -80,7 +78,7 @@
   </div>
 
 
-
+<br>
 </template>
 
 
@@ -116,7 +114,7 @@ export default {
   methods: {
    async buscarPorApellido(){
       try {
-        console.log("Socio buscado:" + this.socioBuscado);
+        //console.log("Socio buscado:" + this.socioBuscado);
        let sociosApellido = await axios.get(`${apiUrl}/socio/getSociosPorApellido/${this.socioBuscado}`, { withCredentials: true });
        this.sociosBuscadosPorApellido = sociosApellido.data.result
        let sociosExistentes = false;
@@ -155,7 +153,7 @@ export default {
     async buscarSocio(opcion) {
       this.tipoBusqueda = opcion;
       try {
-        console.log("Socio buscado:" + this.socioBuscado);
+        //console.log("Socio buscado:" + this.socioBuscado);
 
         let sociosGet;
         if (opcion == 'D') {
@@ -165,7 +163,7 @@ export default {
           sociosGet = await axios.get(`${apiUrl}/socio/getSocioPorNroSocio/${this.socioBuscado}`, { withCredentials: true });
         }
 
-        console.log("El socio que se esta intentando buscar es " + sociosGet.data.result.nroSocio);
+        //console.log("El socio que se esta intentando buscar es " + sociosGet.data.result.nroSocio);
 
         if (!this.yaExisteSocioEnLista(sociosGet.data.result.nroSocio)) {
           this.sociosList.push(sociosGet.data.result)

@@ -21,11 +21,11 @@
 					<tr v-for="coordinador in coordinadores" @click="$router.push(`/usuarios/${coordinador.idUsuario}`);"
 						class="resaltable">
 						<td data-cell="Nombre">{{ coordinador.nombre }} {{ coordinador.apellido }}</td>
-						<td data-cell="dni">{{ coordinador.dni }}</td>
+						<td data-cell="DNI">{{ coordinador.dni }}</td>
 						<td data-cell="Email">{{ coordinador.email }}</td>
 						<td data-cell="Estado">
-							<span class="text-success" v-if="coordinador.activo"> Activo </span>
-							<span class="text-danger" v-else> Inactivo </span>
+							<span class="text-success fw-bold" v-if="coordinador.activo"> Activo </span>
+							<span class="text-danger fw-bold" v-else> Inactivo </span>
 						</td>
 					</tr>
 
@@ -49,6 +49,7 @@
 		</div>
 
 	</div>
+
 
 	<!--MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / -->
 	<div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

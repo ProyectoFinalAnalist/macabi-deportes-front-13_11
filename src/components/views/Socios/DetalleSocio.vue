@@ -13,8 +13,10 @@
                             <p class="mb-2"><strong>Email:</strong> {{ socio.email }}</p>
                             <p class="mb-2"><strong>Teléfono:</strong> {{ socio.telefono }}</p>
                             <p class="mb-2"><strong>Dirección:</strong> {{ socio.direccion }}</p>
-                            <p class="mb-2"><strong class="font-weight-bold">Edad: </strong>{{ utils.obtenerEdadXFecha(socio.fechaNacimiento) }}</p>
-                            <p class="mb-2"><strong class="font-weight-bold">Fecha de nacimiento: </strong>{{ utils.obtenerFechaFormateada(socio.fechaNacimiento) }}</p>
+                            <p class="mb-2"><strong class="font-weight-bold">Edad: </strong>{{
+                                utils.obtenerEdadXFecha(socio.fechaNacimiento) }}</p>
+                            <p class="mb-2"><strong class="font-weight-bold">Fecha de nacimiento: </strong>{{
+                                utils.obtenerFechaFormateada(socio.fechaNacimiento) }}</p>
                             </p>
                             <hr>
                             <p>
@@ -59,8 +61,9 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="categoria in categorias" :key="categoria.idCategoria">
-                                        <td>{{ categoria.nombreCategoria }}</td>
-                                        <td>{{ obtenerNombreDeporte(categoria.idDeporte) }}</td>
+                                        <td class="tablaHoover" @click="irA(categoria.idCategoria, 'detalleCategoria')">{{
+                                            categoria.nombreCategoria }}</td>
+                                        <td class="tablaHoover" @click="irA(categoria.idDeporte, 'detalleDeporte')">{{ obtenerNombreDeporte(categoria.idDeporte) }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -73,7 +76,7 @@
             </div>
         </div>
     </div>
-    <div class="d-flex justify-content-center align-items-center mb-4">
+    <div class="d-flex justify-content-center align-items-center mb-5">
         <div class="btn-group">
             <button v-if="socio" @click="editarSocio" class="btn btn-macabi1">Modificar socio</button>
             <button class="btn btn-dark" @click="volver()">Volver</button>
@@ -83,6 +86,10 @@
 <style scoped>
 @import '../../../assets/btn.css';
 
+tbody {
+    cursor: pointer;
+}
+
 h6 {
     background-color: #f8d7da;
     border-color: #f0959e;
@@ -91,6 +98,9 @@ h6 {
     border-style: solid;
     border-radius: 4px;
     padding: 8px;
+}
+.tablaHoover:hover {
+    background-color: rgb(230, 230, 230)
 }
 </style>
 <script>
@@ -110,12 +120,10 @@ export default {
         const categoriasStore = useElementStore("categorias")()
         const utils = new Utils()
         const route = useRoute()
-        const router= useRouter()
+        const router = useRouter()
         const idSocio = route.params.id
 
         onMounted(async () => {
-
-  
 
 
             await sociosStore.fetchElementById(`${apiUrl}/socio/`, idSocio)
@@ -165,6 +173,10 @@ export default {
             router.go(-1)
         }
 
+        function irA(id, route) {
+            router.push(`/${route}/${id}`)
+        }
+
         return {
             socio,
             sociosStore,
@@ -174,7 +186,8 @@ export default {
             categorias,
             obtenerNombreDeporte,
             utils,
-            volver
+            volver,
+            irA
         }
     },
     data() {

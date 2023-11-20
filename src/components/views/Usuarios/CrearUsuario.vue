@@ -101,6 +101,7 @@
 </template>
 <style scoped>
 @import '../../../assets/alert.css';
+
 h6 {
     background-color: #f8d7da;
     border-color: #f0959e;
@@ -146,9 +147,11 @@ export default {
         const crearUsuario = async () => {
             showErrores.value = utilsUsuario.validar(elementStore.currentElement, elementStore.elements)
 
-            if (!utilsUsuario.errores(showErrores.value) && utils.confirm("crear", "registrado", "Usuario")) {
-                await elementStore.createElement(usuario.value);
-                router.push("/login");
+            if (!utilsUsuario.errores(showErrores.value)) {
+                if (utils.confirm("crear", "registrado", "Usuario")) {
+                    await elementStore.createElement(usuario.value);
+                    router.push("/usuarios");
+                }
             } else {
                 alert("Error detectado en el ingreso de campos")
             }

@@ -12,7 +12,7 @@
 
         </div>
 
-        <div v-else-if="usuarioStore.getRol == 'C' && deportesDeUsuario.getElements.result != null" class="container_flex">
+        <div v-else-if="usuarioStore.getRol == 'C' && deportesDeUsuario.getElements" class="container_flex">
             <div style="width: 100%;" class="text text-center pb-5 h1">Tus Deportes asignados - Coordinador de Deportes
             </div>
 
@@ -27,7 +27,7 @@
             </div>
         </div>
 
-        <div v-else-if="usuarioStore.getRol == 'P' && this.categoriasDeUsuario.getElements.categorias != null" class="container_flex">
+        <div v-else-if="usuarioStore.getRol == 'P' && this.categoriasDeUsuario.getElements" class="container_flex">
             <div style="width: 100%;" class="text text-center pb-5 h1">Tus Categorías asignadas - Profesor</div>
 
             <router-link v-if="this.categoriasDeUsuario.getElements.categorias.length > 0"
@@ -43,22 +43,17 @@
         </div>
 
         <div class="container_flex">
-            <router-link to="/contactosEmergencia" class="fs-4 btn btn-danger btn-home emergencia" style="height: 90px;">
+            <router-link to="/contactosEmergencia" class="fs-4 btn btn-danger btn-home emergencia">
                 <h4 class="text-center pt-3 pb-1"><strong>CONTACTOS DE EMERGENCIA</strong></h4>
             </router-link>
         </div>
 
-
     </div>
 </template>
-
 <script>
 import { useElementStore } from "../utils/Store"
 import { usrStore } from '../stores/usrStore.ts'
 import apiUrl from "../../config/config";
-import axios from "axios";
-
-
 
 export default {
     data() {
@@ -69,6 +64,8 @@ export default {
         }
     },
     async mounted() {
+
+        document.title = 'Macabi Deportes App'
 
         if (!this.usuarioStore.isLogged) {
             await this.usuarioStore.reiniciarSesion()
@@ -84,30 +81,16 @@ export default {
         }
 
     },
-
     methods: {
-         obtenerDeportes() {
+        obtenerDeportes() {
             this.deportesDeUsuario.fetchElements(`${apiUrl}/usuario/${this.usuarioStore.getId}/deportes`)
-
-            
         },
-        
-
-
-
 
         obtenerCategorias() {
             this.categoriasDeUsuario.fetchElements(`${apiUrl}/usuario/${this.usuarioStore.getId}/categorias`)
-            .then(() => {
-                console.log(this.categoriasDeUsuario.getElements.categorias.length);
-            })
-            
-
-            
         },
     },
 }
-
 </script>
 
 <style scoped>
@@ -120,7 +103,8 @@ export default {
     height: 70px;
     margin-bottom: 20px;
 }
-.emergencia{
+
+.emergencia {
     margin-top: 40px;
     width: 85%;
     min-width: 300px;

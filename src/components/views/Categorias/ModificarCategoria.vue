@@ -6,8 +6,8 @@
                     <div v-if="categoria" class="card-body">
                         <h4>Detalles de la Categoría: <strong>{{ nombre }}</strong></h4>
                         <div>
-                            <p class="p pe-3">
-                                <strong>Nombre: </strong><input type="text" class="form-control ms-2"
+                            <p class="p">
+                                <strong>Nombre: </strong><input type="text" class="form-control"
                                     v-model="categoria.nombreCategoria" />
                             <div class="d-flex justify-content-center my-3">
                                 <button class="btn btn-macabi1" @click="updateNombreCategoria">Actualizar nombre</button>
@@ -17,26 +17,27 @@
                                 <strong>Deporte al que pertenece: </strong>
                             </p>
                             <ul class="list-group mt-1 mb-4 text-center">
-                                <li class="list-group text-dark list-group-item list-group-item-light">
+                                <li class="list-group-item list-group-item-light list-group-item-action text-dark"
+                                @click="irA(categoria.idDeporte, 'detalleDeporte')">
                                     <strong>{{ obtenerNombreDeporte(categoria.idDeporte).nombre }}</strong>
                                 </li>
                             </ul>
                             <p class="p pe-3">
                                 <strong>Profesores: </strong>
                             </p>
-                            <table class="table table-striped table-bordered" v-if="profesores">
+                            <table class="table table-hover table-bordered" v-if="profesores">
                                 <thead>
                                     <tr>
                                         <th>Nombre:</th>
                                         <th>Apellido:</th>
-                                        <th>DNI:</th>
+                                        <th class="d-none d-sm-table-cell">DNI:</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="profesor in profesores" :key="profesor.idUsuario">
+                                    <tr v-for="profesor in profesores" :key="profesor.idUsuario" @click="irA(profesor.idUsuario, 'usuarios')">
                                         <td>{{ profesor.nombre }}</td>
                                         <td>{{ profesor.apellido }}</td>
-                                        <td>{{ profesor.dni }}</td>
+                                        <td class="d-none d-sm-table-cell">{{ profesor.dni }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -47,15 +48,12 @@
                             </div>
                             <div class="justify-content-center d-flex">
                                 <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#myModal2">
-                                    Agregar Profesor
+                                    Modificar Profesores
                                 </button>
                             </div>
                             <div class="d-flex justify-content-center">
                                 <button class="btn btn-danger" @click="confirmarEliminarCategoria">Borrar Categoría</button>
 
-                            </div>
-                            <div class="d-flex justify-content-center mt-3">
-                                <button class="btn btn-dark" @click="eliminarSocio">Eliminar socios de la categoria</button>
                             </div>
                         </div>
                     </div>
@@ -112,6 +110,10 @@ h6 {
     border-radius: 4px;
     padding: 8px;
 }
+
+li, tbody {
+    cursor: pointer;
+}
 </style>
 <script>
 import { useElementStore } from '../../../utils/Store';
@@ -146,7 +148,7 @@ export default {
 	}
             await categoriasStore.fetchElementById(`${apiUrl}/categoria/`, idCategoria)
             await deporteStore.fetchElements(`${apiUrl}/deporte/getAll`)
-            usuariosStore.elements = null ;
+            usuariosStore.elements = null;
             usuariosStore.elementsList = null;
             await usuariosStore.fetchElements(`${apiUrl}/categoria/${idCategoria}/getProfesores`)
             await profesoresStore.fetchElements(`${apiUrl}/usuario/3/rol/activos`)
@@ -214,9 +216,7 @@ export default {
             const mensaje = `¿Estás seguro de eliminar esta categoria: "${nombre.value}"?`;
             if (window.confirm(mensaje)) {
                 deleteCategoria();
-            } else {
-                console.log("Operación de eliminación cancelada.");
-            }
+            } 
         };
 
         function volverAtras() {
@@ -296,8 +296,10 @@ export default {
             return false
         }
 
-        function eliminarSocio(){
-            router.push({ path: `/eliminarSociosCategoria/${idCategoria}` })
+        function irA(id, route) {
+            if (id != 0) {
+                router.push(`/${route}/${id}`);
+            }
         }
 
         return {
@@ -316,9 +318,9 @@ export default {
             profesoresModal,
             saveSelectedProfesores,
             isChecked,
-            eliminarSocio,
             confirmarEliminarCategoria,
-            deleteCategoria
+            deleteCategoria,
+            irA
         }
     }
 }

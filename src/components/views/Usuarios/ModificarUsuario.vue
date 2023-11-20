@@ -155,9 +155,11 @@ export default {
         const updateUsuario = async () => {
             showErrores.value = utilsUsuario.validar(elementStore.currentElement, elementStore.elements)
 
-            if (!utilsUsuario.errores(showErrores.value) && utils.confirm("modificar", "modificado", "Usuario")) {
-                await elementStore.patchElement(usuario.value);
-                location.reload()
+            if (!utilsUsuario.errores(showErrores.value)) {
+                if (utils.confirm("modificar", "modificado", "Usuario")) {
+                    await elementStore.patchElement(usuario.value);
+                    location.reload()
+                }
             } else {
                 alert("Error detectado en el ingreso de campos")
             }
@@ -200,11 +202,11 @@ export default {
         return {
             usrStore: usrStore(),
             idUser: 0,
-            route : useRoute(),
+            route: useRoute(),
         }
     },
     methods: {
-        isSameUser(){
+        isSameUser() {
             return this.usrStore.currentUser.idUsuario == this.route.params.id.toString()
         }
     }
