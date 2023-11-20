@@ -368,7 +368,7 @@ function barColor(presentismo) {
       } else if (presentismo > 60) {
         return 90
       } else {
-        return 80; // Red
+        return 80;	
       }
     }
   
