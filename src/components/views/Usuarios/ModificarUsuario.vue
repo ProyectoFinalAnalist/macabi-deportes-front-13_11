@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid">
+    <div class="container-fluid mb-5">
         <div class="row">
             <div class="col-md-6 offset-md-3" v-if="usuario">
                 <h3 class="text-center">Detalles del Usuario: <strong>{{ nombre }}</strong></h3>
@@ -94,10 +94,6 @@
                         <button class="btn btn-macabi1" @click="updateUsuario">
                             Actualizar Usuario
                         </button>
-                        
-                        <button class="btn btn-danger" @click="deleteUsuario">
-                            Eliminar Usuario
-                        </button>
                     </div>
                 </div>
             </div>
@@ -174,13 +170,7 @@ export default {
             const day = (fechaActual.getDate() - 1).toString().padStart(2, '0'); // Corregido: Restar 1 día
 
             return `${year}-${month}-${day}`;
-        }
-
-        function deleteUsuario() {
-            alert("not implemented")
-        }
-
-        
+        }      
 
         function volver() {
             router.go(-1)
@@ -192,7 +182,6 @@ export default {
             showErrores,
             nombre,
             volver,
-            deleteUsuario,
             obtenerFechaMax
         };
     },

@@ -22,14 +22,14 @@ export function useElementStore(nombreStore) {
 
     actions: {
       async fetchElements() {
-        if (!this.elements) {
+        // if (!this.elements) {
           try {
             const response = await axios.get(url + "/getAll", { withCredentials: true })
             this.elements = response.data.result
           } catch (error) {
             console.error('Error fetching elements:', error)
           }
-        }
+        // }
       },
       setCurrentElement(value) {
         this.currentElement = value;
@@ -50,7 +50,6 @@ export function useElementStore(nombreStore) {
       async createElement(newElement) {
         try {
           const response = await axios.post(`${url}`, newElement, { withCredentials: true })
-          this.elements.push(response.data)
         } catch (error) {
           console.error('Error creating element:', error)
         }

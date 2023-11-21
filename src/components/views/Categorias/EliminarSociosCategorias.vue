@@ -47,7 +47,7 @@
                         <th class="d-none d-sm-table-cell">Dni:
                             <button class="btn bg-success" @click="ordenar('dni')"></button>
                         </th>
-                        <th class="d-none d-lg-table-cell">Eliminar</th>
+                        <th>Eliminar</th>
                     </tr>
                 </thead>
                 <tbody class="pointer">

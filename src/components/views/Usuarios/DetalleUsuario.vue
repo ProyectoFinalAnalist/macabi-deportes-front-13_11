@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid">
+    <div class="container-fluid mb-5">
         <div class="row">
             <div class="col-md-6 offset-md-3" v-if="usuario">
                 <h3 class="text-center">Detalles del Usuario: <strong>{{ usuario.apellido }}, {{ usuario.nombre }}</strong>
@@ -92,9 +92,9 @@
             <div class="col-md-6 offset-md-3" v-else>
                 <strong class="alert alert-warning text-center">El usuario no existe.</strong>
             </div>
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center" v-if="usuario">
                     <div class="btn-group">
-                        <router-link class="btn btn-macabi1" v-if="rolUser != 'P' && usuario.idRol == '3'  " :to="`/modificarusuario/${usuario.idUsuario}`">Modificar
+                        <router-link class="btn btn-macabi1" v-if="rolUser != 'P'" :to="`/modificarusuario/${usuario.idUsuario}`">Modificar
                             Usuario</router-link>
 
                     <button class="btn btn-dark" @click="volver">Volver</button>

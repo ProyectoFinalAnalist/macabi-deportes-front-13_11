@@ -32,13 +32,6 @@
 			<div class="col-md-6 offset-md-3" v-else>
 				<strong class="alert alert-warning text-center">El usuario no existe.</strong>
 			</div>
-			<div v-if="this.user" class="d-flex justify-content-center mb-3">
-				<div class="btn-group">
-					<router-link class="btn btn-macabi1" v-if="this.user.idRol != '3' "
-						:to="`/modificarusuario/${this.user.idUsuario}`">Modificar mis datos</router-link>
-					<button class="btn btn-dark" @click="volver">Volver</button>
-				</div>
-			</div>
 
 			<div v-if="this.user" class="d-flex justify-content-center mb-3">
 				<div class="btn-group">
@@ -50,7 +43,13 @@
 				</div>
 			</div>
 
-
+			<div v-if="this.user" class="d-flex justify-content-center mb-3">
+				<div class="btn-group">
+					<router-link class="btn btn-macabi1" v-if="this.user.idRol != '3' "
+						:to="`/modificarusuario/${this.user.idUsuario}`">Modificar mis datos</router-link>
+					<button class="btn btn-dark" @click="volver">Volver</button>
+				</div>
+			</div>
 		</div>
 	</div>
 	<br>

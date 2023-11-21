@@ -50,7 +50,7 @@
       </div>
     </form>
     <br>
-    <div class="d-flex justify-content-end input-group">
+    <div class="d-flex justify-content-end input-group" v-if="usuarios">
       <table class="table table-bordered table-hover">
         <thead>
           <tr>

@@ -204,7 +204,9 @@ export default {
             this.errorsMatrix = [[], [], [], [], [], [], [], [], []]
 
             try {
-                const data = {
+
+                if(window.confirm("¿Quieres registrar este socio?")){
+                    const data = {
                     nroSocio: this.nroSocio,
                     nombre: this.nombre,
                     apellido: this.apellido,
@@ -227,13 +229,14 @@ export default {
 
                     response = await axios.post(`${apiUrl}/socio/noNroSocio`, data, { withCredentials: true });
 
-                    alert("El socio se a registrado exitosamente")
+                    alert("El socio se registró correctamente")
 
 
                 }
 
-                this.$router.push(`/socios/${response.data.result.idSocio}`);
-
+                this.$router.push(`/socios`);
+                }
+                
 
             } catch (error) {
 
@@ -256,9 +259,9 @@ export default {
         showErrors(erroresArray) {
             erroresArray.forEach(error => {
                 const numero = parseInt(error.substring(0, 1));
-                console.log("numero", numero)
+                //console.log("numero", numero)
                 const mensaje = error.substring(1);
-                console.log(mensaje)
+                //console.log(mensaje)
 
 
                 if (/^[0-9]+(\.[0-9]+)?$/.test(numero)) {

@@ -43,7 +43,7 @@
 					</svg>
 				</div>
 			</div>
-
+			<br>
 			<div class="d-flex justify-content-between align-items-center">
 				<p class="">Fechas en total: <strong>{{ cantFechasToShow }}</strong></p>
 			</div>
@@ -60,7 +60,7 @@
 					<tbody>
 						<tr v-for="fecha in fechasToShow" :key="fecha.idFecha" class="resaltable"
 							@click="$router.push(`/fechas/${fecha.idFecha}`);">
-							<td data-cell="Fecha Calendario">{{ fecha.fechaCalendario }}</td>
+							<td data-cell="Fecha Calendario">{{ utils.obtenerFechaFormateada(fecha.fechaCalendario) }}</td>
 							<td data-cell="Tipo">{{ mapearTipo(fecha.tipo) }}</td>
 						</tr>
 						<tr v-if="!fechaDeCategoriaStore.getElements">
@@ -76,7 +76,7 @@
 			</div>
 
 			<div style="margin-top: 27px;" class="sub_container_sub_title"> Socios de la Categoria</div>
-
+			<br>
 			<div class="d-flex justify-content-between align-items-center">
 				<p class="">Socios asignados a categoria: <strong>{{ cantSociosToShow }}</strong></p>
 			</div>
@@ -93,11 +93,11 @@
 							<th class="big" style="width: 6%;">A</th>
 							<th class="big" style="width: 6%;">J</th>
 							<th class="big" style="width: 7%;">N/A</th>
-							<th class="big" style="width: 11%;">Presentismo</th>
+							<th class="big text-center" style="width: 11%;">%</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr v-for="socio in sociosToShow" class="resaltable">
+						<tr v-for="socio in sociosToShow" class="resaltable" @click="router.push(`/socios/${socio.idSocio}`)">
 							<td data-cell="Id" class="big">{{ socio.nroSocio }}</td>
 							<td data-cell="Nombre">{{ socio.nombre }} {{ socio.apellido }}</td>
 							<td data-cell="Dni">{{ socio.dni }}</td>
@@ -107,7 +107,7 @@
 								</span>
 							</td>
 							<td data-cell="P" style="font-weight: bold;">
-								<span class="text-success">
+								<span class="text-success text-center">
 									{{ socio.asistencia.P }}
 								</span>
 							</td>
@@ -127,7 +127,7 @@
 								</span>
 							</td>
 							<td data-cell="Asistencia" style="font-weight: bold;">
-								<div class="vertical-bar-container">
+								<div class="vertical-bar-container p-0 pb-2 ">
 									<div class="vertical-bar" :style="{ height: barHeight(+socio.asistencia.presentismo) + '%', backgroundColor: barColor(+socio.asistencia.presentismo) }">
 									<div class="percentage-label">{{ socio.asistencia.presentismo }}%</div>
 									</div>
@@ -152,15 +152,15 @@
 		</div>
 
 		<div class="sub_container_buttons2">
+			<div class="btn-group">
 			<button @click="nuevaFecha" class="btn btn-primary primary-macabi">
 				Crear fecha
 			</button>
 
-			<button class="btn btn-secondary">
-				<router-link to="/" class="nav-item nav-link" href="#">Volver a Inicio</router-link>
+			<button class="btn btn-dark" @click="router.go(-1)">Volver
 			</button>
 		</div>
-
+	</div>
 	</div>
 </template>
 
@@ -173,6 +173,10 @@ import { verificarAutorizacionCategoria } from "../../../utils/permisos";
 
 import moment from "moment";
 import 'moment/dist/locale/es'
+
+import { Utils } from '../../../utils/utils.js'
+
+const utils = new Utils()
 
 const titulo = ref("Loading....")
 
@@ -258,7 +262,9 @@ function showFechas() {
 	let fechasFiltered = fechaDeCategoriaStore.getElements.result.Fechas.filter(fechaCat => {
 		let fechaCatMoment = moment(fechaCat.fechaCalendario)
 		return fechaCatMoment >= minDate && fechaCatMoment <= maxDate
-	})
+	}).sort((a, b) => {
+      return moment(a.fechaCalendario) - moment(b.fechaCalendario);
+    });
 
 	fechasToShow.value = fechasFiltered
 	cantFechasToShow.value = fechasFiltered.length
@@ -282,7 +288,7 @@ function showSocios() {
 		});
 
 	
-		console.log("🚀 ~ file: FechasListCategoria.vue:274 ~ showSocios ~ value:", mapAsistencia(sociosProcesados) )
+		//console.log("🚀 ~ file: FechasListCategoria.vue:274 ~ showSocios ~ value:", mapAsistencia(sociosProcesados) )
 	sociosToShow.value = mapAsistencia(sociosProcesados)
 	
 	cantSociosToShow.value = sociosProcesados.length
