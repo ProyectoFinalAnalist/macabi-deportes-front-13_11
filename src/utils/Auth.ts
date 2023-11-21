@@ -20,7 +20,7 @@ export function login() {
     if(auth){
         axios.get(url).then(response => {
             if (response.data.success) {
-              setCookie(response.data.result);
+              setCookie(response.data.result,"tokenMacabi");
               //console.log(response.data.result)
               //location.reload();
             } else {

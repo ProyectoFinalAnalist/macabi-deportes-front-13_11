@@ -24,9 +24,9 @@ export const usrStore = defineStore('usuariosStore', {
                 };
 
                 const response = await axios.post(url, data, { withCredentials: true });
-                this.currentUser = response.data.payload
-
-                setCookie(response.data.payload)
+                this.currentUser = response.data.usuario.payload
+                setCookie(response.data.usuario.token,"tokenMacabi")
+                // setCookie(response.data.usuario.payload)
 
 
             } catch (error) {
