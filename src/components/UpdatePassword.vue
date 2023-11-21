@@ -52,6 +52,7 @@
                     </div>
                 </div>
             </div>
+            
             <div class="col-md-6 offset-md-3" v-else>
                 <p class="alert alert-warning text-center">El usuario no existe.</p>
             </div>
@@ -197,6 +198,7 @@ export default {
         }
 
         return {
+
             errorSamePass,
             mostrar2,
             mostrar4,
