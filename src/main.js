@@ -173,8 +173,10 @@ router.beforeEach(async (to, from, next) => {
     await usuarioStore.reiniciarSesion();
   }
   const isLoginPage = to.path === "/login";
+  const newPassordPage = to.path === "/newPassword";
 
-  if (!usuarioStore.isLogged && !isLoginPage) {
+
+  if (!usuarioStore.isLogged && !isLoginPage && !newPassordPage) {
     next( { path: "/login", component: Login });
 
   } else {

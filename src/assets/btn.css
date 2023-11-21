@@ -16,7 +16,11 @@
 }
 
 
-
+.primary-macabi:disabled {
+    background-color: #004896;
+    border: none;
+    opacity: 0.9;
+}
 
 .btn-macabi1 {
     color: white;

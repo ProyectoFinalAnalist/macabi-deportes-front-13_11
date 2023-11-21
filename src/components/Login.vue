@@ -33,7 +33,7 @@
 			</div>
 
 			<div class="sub_container_buttons">
-				<button type="" class="btn btn-secondary" @click="">Recuperar Clave</button>
+				<button type="" class="btn btn-secondary" @click="this.$router.push('/newPassword');">Recuperar Clave</button>				
 				<button type="" class="btn btn-primary primary-macabi" @click="ingresar">Iniciar Sesión</button>
 			</div>
 
