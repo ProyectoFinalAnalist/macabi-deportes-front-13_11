@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid px-5 mb-5">
+    <div class="container-fluid  mb-5 px-md-5">
         <div class="text text-center">
             <h2>Eliminar socios de la Categoria: <strong>{{ nombreCategoria }}</strong> </h2>
             <h4>Deporte: <strong>{{ deporteCategoria }}</strong> </h4>
@@ -36,7 +36,7 @@
         </form>
         <br>
         <div v-if="listSocios && listSocios.length > 0">
-            <table class="table table-bordered table-hover">
+            <table class="table table-bordered table-hover ">
                 <thead>
                     <tr>
                         <th class="d-none d-sm-table-cell">NroSocio:
