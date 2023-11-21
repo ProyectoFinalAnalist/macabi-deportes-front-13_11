@@ -104,7 +104,7 @@ export default {
         const usuario = computed(() => elementStore.currentElement);
 
         const nombre = ref(null)
-
+        const oldPass = ref(null)
         const clave = ref(null)
         const claveConfirm = ref(null)
 
@@ -137,10 +137,6 @@ export default {
                 errorClaveConfirm.value = true
             }
 
-            if (oldPass.value == clave.value) {
-                passValidated = false
-                errorSamePass.value = true
-            }
 
             if (passValidated && confirm()) {
                 const contraseñas = {
@@ -211,7 +207,8 @@ export default {
             updatePassword,
             volver,
             clave,
-            claveConfirm
+            claveConfirm,
+            oldPass
         };
     },
 };
