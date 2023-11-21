@@ -77,7 +77,7 @@
       </div>
   </div>
 
-	<div class="sub_container_buttons btn-group">
+	<div class="sub_container_buttons btn-group mb-5">
 		<button v-if="rolUsuario == 'A' " class="btn btn-primary primary-macabi"
 			@click="$router.push(`/editarDeporte/${idDeporte}`);">Editar Deporte</button>
 			<div class="justify-content-center d-flex">
