@@ -165,7 +165,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, onMounted } from "vue";
 import { useElementStore } from '../../../utils/Store';
 import { useRoute, useRouter } from 'vue-router';
 import apiUrl from '../../../../config/config.js'
@@ -196,15 +196,14 @@ let idsFechasSelected = new Set()
 
 const mesSelected = ref('.....')
 
-onBeforeMount(async () => {
+onMounted(async () => {
 	initDate()
 	fechaDeCategoriaStore.elements = null
 	fechaDeCategoriaStore.currentElement = null
+	await fetchCategoria()
 	if (!await verificarAutorizacionCategoria(idCategoria)) {
 		router.push({ path: "/unauthorized" })
 	}
-	await fetchCategoria()
-	
 
 });
 

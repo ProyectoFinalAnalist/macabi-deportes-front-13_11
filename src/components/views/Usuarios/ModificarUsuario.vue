@@ -130,6 +130,7 @@ import { useElementStore } from "../../../stores/Store";
 import { useRouter, useRoute } from "vue-router";
 import { computed, ref, onMounted } from "vue";
 import { UtilsUsuario, Utils } from '../../../utils/utils.js'
+import {cambiosPerfilPropioPermiso} from '../../../utils/permisos.js'
 
 export default {
     setup() {
@@ -190,7 +191,6 @@ export default {
             usuario,
             showErrores,
             nombre,
-            updatePassword,
             volver,
             deleteUsuario,
             obtenerFechaMax
