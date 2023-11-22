@@ -1,12 +1,13 @@
 <template>
-    <div class="container-fluid px-5 mb-5">
+    <Loading v-if="loading" />
+    <div v-else class="container-fluid px-5 mb-5">
         <div v-if="sociosStore.getElements != null">
             <div class="text text-center h1">SOCIOS</div>
             <br>
             <form @submit.prevent="buscar()">
                 <div class="row g-2">
                     <div class="col-12 col-md-auto">
-                        <select id="filtro" class="form-select">
+                        <select id="filtro" class="form-select" style="cursor: pointer;">
                             <option disabled>Filtrar por:</option>
                             <option value="nroSocio">Número de Socio</option>
                             <option selected value="nombre">Nombre</option>
@@ -92,8 +93,12 @@ import { useElementStore } from '../../../utils/Store';
 import { onBeforeMount, ref } from "vue";
 import { useRouter } from "vue-router";
 import apiUrl from '../../../../config/config.js'
+import Loading from '../../dependentComponents/Loading.vue';
 
 export default {
+    components: {
+        Loading,
+    },
     setup() {
         const sociosStore = useElementStore("socio")()
         const size = ref(0)
@@ -104,10 +109,15 @@ export default {
         const orden = ref(true)
         const router = useRouter();
 
+        const loading = ref(true)
+
         onBeforeMount(async () => { fetchs() })
 
         async function fetchs() {
             await sociosStore.fetchElements(`${apiUrl}/socio/getAll`)
+            .then(() => {
+                loading.value = false
+            })
         }
 
         function buscar() {
@@ -163,7 +173,9 @@ export default {
             errorFiltro,
             ordenar,
             buscar,
-            irA
+            irA,
+            loading,
+            Loading
         }
     }
 

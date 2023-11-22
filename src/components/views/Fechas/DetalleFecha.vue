@@ -1,5 +1,5 @@
 <template>
-  <div class="container fluid mb-5">
+  <div class="container mb-5">
     <div class="text text-center pb-3 h3">Detalles de la Fecha: <strong>{{
       utils.obtenerFechaFormateada(fechaDetalle.fechaCalendario) }}</strong></div>
     <div class="row">
@@ -9,15 +9,15 @@
           <div class="card-body">
             <p class="mb-2"><strong class="font-weight-bold">Fecha: </strong>{{
               utils.obtenerFechaFormateada(fechaDetalle.fechaCalendario) }}</p>
-            <p class="mb-2"><strong class="font-weight-bold">Profesor Asignado: </strong>
-            <ul>
-              <li v-for="prof in profesor">{{ prof.apellido }}, {{ prof.nombre }}</li>
-            </ul>
-            </p>
-            <p class="mb-2"><strong class="font-weight-bold">Tipo: </strong>{{ mapearTipo(fechaDetalle.tipo) }}</p>
+            <p class="mb-1"><strong class="font-weight-bold">Profesores Asignados: </strong></p>
+            <button v-for="(profesor, index) in profesor" :key="index" class="mb-1 mx-1 btn btn-sm btn-dark"
+              @click="verProfesor(profesor.idUsuario)">
+              {{ profesor.apellido }}, {{ profesor.nombre }}
+            </button>
+            <p class="my-2"><strong class="font-weight-bold">Tipo: </strong>{{ mapearTipo(fechaDetalle.tipo) }}</p>
             <p class="mb-2"><strong class="font-weight-bold">Categoria: </strong>{{ fechaDetalle.Categorium ?
               fechaDetalle.Categorium.nombreCategoria : 'Sin categoría' }}</p>
-            <p class="mb-2"><strong class="font-weight-bold">Deporte: </strong>{{ deporte }}</p>
+            <p class="mb-0"><strong class="font-weight-bold">Deporte: </strong>{{ deporte }}</p>
           </div>
         </div>
       </div>
@@ -33,7 +33,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="socio in sociosAsistenciaFecha" :key="socio.idSocio" @click="irA(socio.idSocio)">
+          <tr v-for="socio in sociosAsistenciaFecha" :key="socio.idSocio" @click="irA(socio.idSocio)" style="cursor: pointer;">
             <td>{{ socio.nombre }}</td>
             <td>{{ socio.apellido }}</td>
             <td>{{ mapearEstado(socio.estado) }}</td>
@@ -208,6 +208,10 @@ export default {
         router.push(`/socios/${id}`)
       }
     }
+
+    function verProfesor(profesor) {
+      router.push(`/usuarios/${profesor}`);
+    }
     return {
       sociosAsistenciaFecha,
       fechaDetalle,
@@ -221,7 +225,8 @@ export default {
       eliminarFecha,
       utils,
       irA,
-      router
+      router,
+      verProfesor
     };
   }, data() {
     return {

@@ -8,7 +8,7 @@
         <form @submit.prevent="buscar()">
             <div class="row g-2">
                 <div class="col-12 col-md-auto">
-                    <select id="filtro" class="form-select">
+                    <select id="filtro" class="form-select" style="cursor: pointer;">
                         <option disabled>Filtrar por:</option>
                         <option value="nroSocio">Número de Socio</option>
                         <option selected value="nombre">Nombre</option>

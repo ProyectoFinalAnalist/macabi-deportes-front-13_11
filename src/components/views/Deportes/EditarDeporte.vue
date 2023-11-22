@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid mt-4">
+    <div class="container-fluid mt-2">
         <div class="row">
             <div class="col-md-6 offset-md-3" v-if="deporte">
                 <div class="card bg-light text-dark mb-5" style="width: 100%;">
@@ -73,9 +73,10 @@
             </h5>
         </div>
     </div>
-    <div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-center mb-5">
         <button type="button" @click="router.go(-1)" class="btn btn-dark" href="#">Volver</button>
     </div>
+    <br>
     <!--MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / -->
     <div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">

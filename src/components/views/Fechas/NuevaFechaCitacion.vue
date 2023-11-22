@@ -6,7 +6,7 @@
       <h4 class="text-center mt-2">Categoria: <strong>{{ this.nombreCategoria }}</strong></h4>
       <h5 class="text-center mt-2">Deporte: <strong>{{ this.nombreDeporte }}</strong></h5>
       <code class="text-end" v-if="users.length != 0"># Seleccionar socios para la citación</code>
-      <table class="table table-bordered table-striped mt-2" v-if="users.length != 0">
+      <table class="table table-bordered table-hover mt-2" v-if="users.length != 0">
         <thead>
           <tr>
             <th class="d-none d-sm-table-cell">Nro. de Socio</th>
@@ -17,7 +17,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(user, index) in users" :key="index">
+          <tr v-for="(user, index) in users" :key="index" @click="toggleSociosElegidos(user.idSocio)" style="cursor: pointer;">
             <td class="d-none d-sm-table-cell">{{ user.nroSocio }}</td>
             <td>{{ user.nombre }}</td>
             <td>{{ user.apellido }}</td>
@@ -117,6 +117,16 @@ export default {
 
     deleteAll() {
       this.usersElegidos = []
+    },
+
+    toggleSociosElegidos(idSocio) {
+      const index = this.usersElegidos.findIndex(socio => socio.idSocio === idSocio);
+
+      if (index !== -1) {
+        this.usersElegidos.splice(index, 1);
+      } else {
+        this.usersElegidos.push({ idSocio: idSocio });
+      }
     }
   },
 

@@ -1,81 +1,71 @@
 <template>
-  <div class="container mt-3">
-    <div class="text text-center pb-3 pt-5 h1">Asignar asistencia</div>
+  <div class="container mb-5">
+    <div class="text text-center pb-3 h3">Asignar asistencia a la fecha: <strong>{{
+      utils.obtenerFechaFormateada(fechaDetalle.fechaCalendario)
+    }}</strong></div>
 
-    <div>
-      <div class="fecha-details">
-        <h2>Fecha: {{ fechaDetalle.fechaCalendario }}</h2>
-        <p>Profesor Asignado: {{ profesor }}</p>
-        <p>Tipo: {{ mapearTipo(fechaDetalle.tipo) }}</p>
-        <p>
-          Categoria:
-          {{
-            fechaDetalle.Categorium
-              ? fechaDetalle.Categorium.nombreCategoria
-              : "Sin categoría"
-          }}
-        </p>
-        <p>Deporte: {{ deporte }}</p>
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <br>
+        <div class="card bg-light text-dark mb-4">
+          <div class="card-body">
+            <p class="mb-2"><strong class="font-weight-bold">Fecha: </strong>{{
+              utils.obtenerFechaFormateada(fechaDetalle.fechaCalendario) }}</p>
+            <p class="mb-1"><strong class="font-weight-bold">Profesores Asignados: </strong></p>
+            <button v-for="(profesor, index) in profesor" :key="index" class="mb-1 mx-1 btn btn-sm btn-dark"
+              @click="verProfesor(profesor.idUsuario)">
+              {{ profesor.apellido }}, {{ profesor.nombre }}
+            </button>
+            <p class="my-2"><strong class="font-weight-bold">Tipo: </strong>{{ mapearTipo(fechaDetalle.tipo) }}</p>
+            <p class="mb-2"><strong class="font-weight-bold">Categoria: </strong>{{ fechaDetalle.Categorium ?
+              fechaDetalle.Categorium.nombreCategoria : 'Sin categoría' }}</p>
+            <p class="mb-0"><strong class="font-weight-bold">Deporte: </strong>{{ deporte }}</p>
+          </div>
+        </div>
       </div>
-      <div>
-        <h2>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <h4 class="text-center my-4">
           Socios Anotados en esta Fecha: <strong>{{ size }}</strong>
-        </h2>
-        <table class="table table-striped table-bordered">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Apellido</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="socio in sociosAsistenciaFecha" :key="socio.idSocio">
-              <td>{{ socio.nombre }}</td>
-              <td>{{ socio.apellido }}</td>
-              <td>
-                <input
-                  type="radio"
-                  v-model="socio.estado"
-                  value="P"
-                  :checked="socio.estado === 'P'"
-                />
-                Presente
-                <input
-                  type="radio"
-                  v-model="socio.estado"
-                  value="J"
-                  :checked="socio.estado === 'J'"
-                />
-                Justificado
-                <input
-                  type="radio"
-                  v-model="socio.estado"
-                  value="A"
-                  :checked="socio.estado === 'A'"
-                />
-                Ausente
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        </h4>
+        <ul class="list-group" v-for="socio in sociosAsistenciaFecha" :key="socio.idSocio">
+          <li class="list-group-item text-center mb-2 list-group-item-light">
+            <strong> {{ socio.apellido }}, {{ socio.nombre }}</strong>
+            <div class="d-flex align-items-center justify-content-center my-1 columnas-responsive">
+              <div class="my-1">
+                <input type="radio" :id="'p' + socio.idSocio" v-model="socio.estado" value="P" :checked="socio.estado === 'P'" class="me-1" />
+                <label class="me-0 me-sm-3 pointer" :for="'p' + socio.idSocio">Presente</label>
+              </div>
+
+              <div class="my-1">
+                <input type="radio" :id="'j' + socio.idSocio" v-model="socio.estado" value="J" :checked="socio.estado === 'J'" class="me-1" />
+                <label class="me-0 me-sm-3 pointer" :for="'j' + socio.idSocio">Justificado</label>
+              </div>
+
+              <div class="my-1">
+                <input type="radio" :id="'a' + socio.idSocio" v-model="socio.estado" value="A" :checked="socio.estado === 'A'" />
+                <label class="me-0 me-sm-1 pointer" :for="'a' + socio.idSocio">Ausente</label>
+              </div>
+            </div>
+          </li>
+        </ul>
         <div v-if="sociosAsistenciaFecha.length === 0">
           <p class="no-socios">No hay socios anotados en esta fecha.</p>
         </div>
       </div>
     </div>
     <div class="d-flex justify-content-center align-items-center">
-      <button class="btn btn-secondary">
-        <router-link to="/" class="nav-item nav-link" href="#"
-          >Volver a Inicio</router-link
-        >
-      </button>
-      <button class="btn btn-danger" @click="cancelar">Cancelar</button>
-      <button class="btn btn-danger" @click="guardarAsistencia">
-        Guardar asistencia
-      </button>
+      <div class="btn-group">
+        <button class="btn btn-macabi1" @click="guardarAsistencia">
+          Guardar asistencia
+        </button>
+        <button class="btn btn-dark" @click="cancelar">Volver</button>
+      </div>
     </div>
   </div>
+  <br>
 </template>
 
 <script>
@@ -84,7 +74,7 @@ import { onBeforeMount, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import apiUrl from "../../../../config/config.js";
 import { verificarAutorizacionFecha } from "../../../utils/permisos";
-
+import { Utils } from "../../../utils/utils";
 
 export default {
   setup() {
@@ -98,14 +88,16 @@ export default {
     const size = ref(0);
     const deporte = ref("");
     const profesor = ref("");
+    const utils = new Utils()
+
     onBeforeMount(async () => {
       await fetchs();
     });
 
     async function fetchs() {
       try {
-        if(! await verificarAutorizacionFecha(idFecha)) {
-            router.push( { path: "/unauthorized"});
+        if (! await verificarAutorizacionFecha(idFecha)) {
+          router.push({ path: "/unauthorized" });
 
         }
         await asistenciaStore.fetchElements(`${apiUrl}/asistencia/${idFecha}`);
@@ -149,11 +141,11 @@ export default {
 
     const obtenerProfesor = async (idCategoria) => {
       try {
-        const response = await fetch(`${apiUrl}/usuario/${idCategoria}`);
+        const response = await fetch(`${apiUrl}/categoria/${idCategoria}/getProfesores`);
         if (response.ok) {
           const data = await response.json();
 
-          return data.result.nombre + " " + data.result.apellido;
+          return data.usuariosList
         } else {
           console.error("Error al obtener nombre del profesor");
           return null;
@@ -235,6 +227,7 @@ export default {
       profesor,
       cancelar,
       guardarAsistencia,
+      utils
     };
   },
   data() {
@@ -250,23 +243,16 @@ export default {
 </script>
 
 <style scoped>
-.fecha-details {
-  border: 6px solid #013a77;
-  background-color: #f0f0f0;
-  padding: 10px;
-  margin: 10px 0;
+@import '../../../assets/btn.css';
+
+input, .pointer {
+  cursor: pointer
 }
 
-.table-bordered {
-  border: 6px solid #013a77;
-}
-
-.table-bordered th,
-.table-bordered td {
-  border: 1px solid #013a77;
-}
-
-.no-socios {
-  color: red;
+@media screen and (max-width: 1000px) {
+  .columnas-responsive {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 </style>

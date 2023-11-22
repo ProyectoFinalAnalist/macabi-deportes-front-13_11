@@ -33,8 +33,8 @@
       <div class="d-flex justify-content-center align-items-center">
         <div id="demo" class="collapse">
           <code><strong>"Entrenamiento"</strong> para automaticamente citar a todos los socios de la <strong>Categoría.</strong>
-          <br><strong>"Citacion"</strong> para poder elegir que socios citar a la fecha de la <strong>Categoría.</strong>
-        </code>
+                <br><strong>"Citacion"</strong> para poder elegir que socios citar a la fecha de la <strong>Categoría.</strong>
+              </code>
         </div>
       </div>
       <div class="d-flex justify-content-center align-items-center mt-4">
@@ -132,14 +132,32 @@ export default {
           }
 
         } else {
-          this.$router.push({
-            path: `/nuevaCitacion/${this.idCat}`,
-            query: {
-              fecha: this.fechaElegida,
-              categoria: this.nombreCategoria,
-              deporte: this.nombreDeporte
+
+          try {
+
+            let parametro = {
+              idCategoria: this.idCat,
+              fechaCalendario: this.fechaElegida,
+            };
+
+            const result = await axios.post(`${apiUrl}/fecha/citacionDisponible`, parametro, { withCredentials: true });
+
+            if (result.status == 200) {
+              this.$router.push({
+                path: `/nuevaCitacion/${this.idCat}`,
+                query: {
+                  fecha: this.fechaElegida,
+                  categoria: this.nombreCategoria,
+                  deporte: this.nombreDeporte
+                }
+              });
             }
-          });
+          } catch (e) {
+            if (e.response && e.response.data && e.response.data.message) {
+              alert(e.response.data.message)
+            }
+          }
+
 
         }
 

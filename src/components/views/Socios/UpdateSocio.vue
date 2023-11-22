@@ -156,6 +156,7 @@ import { useElementStore } from '../../../utils/Store';
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import apiUrl from '../../../../config/config.js'
+import { Utils } from '../../../utils/utils';
 
 export default {
     setup() {
@@ -169,6 +170,8 @@ export default {
 
         const nombre = ref(null)
         const nombreContacto = ref(null)
+
+        const utils = new Utils()
 
         onMounted(async () => {
             await sociosStore.fetchElements(`${apiUrl}/socio/getAll`)
@@ -249,8 +252,11 @@ export default {
             }
         };
 
-        function deleteSocio() {
-            alert("not implemented")
+        async function deleteSocio() {
+            if(utils.confirm("Eliminar", "Eliminado", "Socio")){
+                await sociosStore.deleteElement(`${apiUrl}/socio/`, idSocio)
+                router.push('/socios')
+            }
         }
 
         const contactoCreate = computed(() => contactoStore.currentElement)

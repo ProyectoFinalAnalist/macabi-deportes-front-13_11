@@ -19,16 +19,11 @@ import Unauthorized from "./components/Unauthorized.vue";
 import UpdatePassword from "./components/UpdatePassword.vue"
 
 // ASISTENCIAS
-import HistorialAsistencias from "./components/views/Asistencias/HistorialAsistencias.vue";
-import SociosXFecha from "./components/views/Asistencias/SociosXFecha.vue";
 import TomarAsistencia from "./components/views/Asistencias/TomarAsistencia.vue";
 
 // CATEGORIAS
-//import CategoriasList from "./components/views/Categorias/CategoriasList.vue";
-//import CrearCategoria from "./components/views/Categorias/CrearCategoria.vue";
 import DetalleCategoria from "./components/views/Categorias/DetalleCategoria.vue";
 import EliminarSociosCategorias from "./components/views/Categorias/EliminarSociosCategorias.vue";
-
 import ModificarCategoria from "./components/views/Categorias/ModificarCategoria.vue";
 
 // DEPORTES
@@ -71,11 +66,9 @@ const routes = [
   { path: "/updatePass/:idUsuario", component: UpdatePassword},//Listo-- (Solo puede si coincide con su propio idUsuario)
 
   // ASISTENCIAS
-  { path: "/historialAsistencia/:id", component: HistorialAsistencias }, //NO SE USA
-  { path: "/sociosPorFecha", component: SociosXFecha },//NO SE USA
   { path: "/tomarAsistencia/:id", component: TomarAsistencia },// LISTO--
 
-
+  // CATEGORIAS
   { path: "/modificarCategoria/:id", component: ModificarCategoria },//LISTO--
   { path: "/detalleCategoria/:id", component: DetalleCategoria},//LISTO--
   { path: "/eliminarSociosCategoria/:id", component: EliminarSociosCategorias },//LISTO--

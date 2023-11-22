@@ -136,10 +136,10 @@
 
 						</tr>
 						<tr v-if="!sociosDeCategoriaStore.getElements">
-							<td colspan="8" style="text-align: center;"> No hay Socios en la Categoria</td>
+							<td colspan="9" style="text-align: center;"> No hay Socios en la Categoria</td>
 						</tr>
 						<tr v-else-if="sociosToShow.length == 0">
-							<td colspan="8" style="text-align: center;"> No hay Asistencias de ningun Socio en la fecha
+							<td colspan="9" style="text-align: center;"> No hay Asistencias de ningun Socio en la fecha
 								seleccionada </td>
 						</tr>
 
