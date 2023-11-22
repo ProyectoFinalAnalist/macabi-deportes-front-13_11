@@ -105,6 +105,8 @@ export default {
 				if (mensajeError == null) {
 					this.error = false;
 					this.$router.push("/");
+					location.reload();
+					
 
 				} else {
 

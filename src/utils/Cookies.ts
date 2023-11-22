@@ -5,7 +5,7 @@ export function setCookie(value, name = "usuario", expirationDays = 7) {
   document.cookie = cookieString;
 }
 
-export function getCookie(name = "usuario") {
+export function getCookie(name = "tokenMacabi") {
   const cookies = document.cookie.split("; ");
   for (let i = 0; i < cookies.length; i++) {
     const [cookieName, cookieValue] = cookies[i].split("=");
@@ -21,7 +21,7 @@ export function removeCookie(name = "usuario") {
   location.reload();
 }
 
-export function getCookieJSON(name = "usuario") {
+export function getCookieJSON(name = "tokenMacabi") {
   const cookie = getCookie(name);
   if (!!cookie) {
     return JSON.parse(cookie);

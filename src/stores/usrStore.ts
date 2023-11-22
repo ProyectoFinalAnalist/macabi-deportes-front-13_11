@@ -4,9 +4,11 @@ import apiUrl from '../../config/config.js'
 import { removeCookie, setCookie, getCookie } from "../utils/Cookies.js";
 
 
+
 export const usrStore = defineStore('usuariosStore', {
     state: () => ({
         currentUser: null,
+        token: null, 
     }),
     actions: {
 
@@ -24,11 +26,11 @@ export const usrStore = defineStore('usuariosStore', {
                 };
 
                 const response = await axios.post(url, data, { withCredentials: true });
-                this.currentUser = response.data.payload
-
-                setCookie(response.data.payload)
-
-
+                this.currentUser = response.data.usuario.payload
+                this.token = response.data.usuario.token
+                
+                setCookie(response.data.usuario.token,"tokenMacabi")
+                    
             } catch (error) {
                 if (error.response) {
                     mensajeError = error.response.data.message;
@@ -47,7 +49,7 @@ export const usrStore = defineStore('usuariosStore', {
             if (cookieSesion != '') {
                 try {
                     const url = `${apiUrl}/usuario/me`
-
+                    axios.defaults.headers.common['authorization'] = cookieSesion
                     const response = await axios.get(url, { withCredentials: true });
                     this.currentUser = response.data.user;
 
@@ -70,6 +72,7 @@ export const usrStore = defineStore('usuariosStore', {
                 const url = `${apiUrl}/usuario/logout`
                 const data = {};
                 const response = await axios.post(url, data, { withCredentials: true });
+                axios.defaults.headers.common['authorization'] = null
                 alert(response.data.message);
 
             } catch (error) {
