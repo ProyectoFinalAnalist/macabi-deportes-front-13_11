@@ -63,14 +63,14 @@ const routes = [
   { path: "/miUsuario", component: MiUsuario, },//listo (No necesita validación. Solo lo puede ver el propio usuario xq es en base al token)
   { path: "/newPassword", component: NewPassword, },
   { path: "/unauthorized", component: Unauthorized, },
-  { path: "/updatePass/:idUsuario", component: UpdatePassword},//Listo-- (Solo puede si coincide con su propio idUsuario)
+  { path: "/updatePass/:idUsuario", component: UpdatePassword },//Listo-- (Solo puede si coincide con su propio idUsuario)
 
   // ASISTENCIAS
   { path: "/tomarAsistencia/:id", component: TomarAsistencia },// LISTO--
 
   // CATEGORIAS
   { path: "/modificarCategoria/:id", component: ModificarCategoria },//LISTO--
-  { path: "/detalleCategoria/:id", component: DetalleCategoria},//LISTO--
+  { path: "/detalleCategoria/:id", component: DetalleCategoria },//LISTO--
   { path: "/eliminarSociosCategoria/:id", component: EliminarSociosCategorias },//LISTO--
 
   // DEPORTES
@@ -93,7 +93,7 @@ const routes = [
   { path: "/socios/update/:id", component: UpdateSocio },//TODOS
 
   // USUARIOS
-  { path: "/usuarios", component: UsuariosList,},
+  { path: "/usuarios", component: UsuariosList, },
   { path: "/crearusuario", component: CrearUsuario }, //admin y coordinadorees en principio deberian poder verlo.
   { path: "/usuarios/:id", component: DetalleUsuario },
   { path: "/modificarusuario/:id", component: ModificarUsuario },
@@ -106,6 +106,9 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    return {top: 0};
+  }
 });
 
 export const rutasNoAutorizadasParaCoordinador = [
@@ -123,8 +126,8 @@ export const rutasNoAutorizadasParaProfesor = [
   "/modificarusuario/:id",
   "/registrarSocio",
   "/socios",
- // "/socios/update/:id",
- "/editarDeporte/:id",
+  // "/socios/update/:id",
+  "/editarDeporte/:id",
   "/deportes",
   "/detalleDeporte/:id",
   "/modificarCategoria/:id",
@@ -134,27 +137,27 @@ export const rutasNoAutorizadasParaProfesor = [
 ];
 
 
-function mismaRuta(ruta, tipoRol){
+function mismaRuta(ruta, tipoRol) {
   let pos = 0;
   let encontrado = false;
   let rutasPorRevisar = [];
-  if(tipoRol === 'P'){
+  if (tipoRol === 'P') {
     rutasPorRevisar = rutasNoAutorizadasParaProfesor;
-  }else {
-    if(tipoRol === 'C') {
+  } else {
+    if (tipoRol === 'C') {
       rutasPorRevisar = rutasNoAutorizadasParaCoordinador;
     }
   }
-    while(pos < rutasPorRevisar.length && !encontrado){
-      if(ruta === rutasPorRevisar[pos]) {
-        encontrado = true
-      }else {
-        pos++
-      }
+  while (pos < rutasPorRevisar.length && !encontrado) {
+    if (ruta === rutasPorRevisar[pos]) {
+      encontrado = true
+    } else {
+      pos++
     }
-  
-    return encontrado
   }
+
+  return encontrado
+}
 
 
 //Esta es la base q voy a utilizar para q no me falle.
@@ -170,16 +173,16 @@ router.beforeEach(async (to, from, next) => {
 
 
   if (!usuarioStore.isLogged && !isLoginPage && !newPassordPage) {
-    next( { path: "/login", component: Login });
+    next({ path: "/login", component: Login });
 
   } else {
-    if(to.matched.some(record =>  mismaRuta(record.path, usuarioStore.getRol))) {
-      
-      next(   { path: "/unauthorized", component: Unauthorized }
+    if (to.matched.some(record => mismaRuta(record.path, usuarioStore.getRol))) {
+
+      next({ path: "/unauthorized", component: Unauthorized }
       );
     }
-  
-    
+
+
     next();
   }
 });
