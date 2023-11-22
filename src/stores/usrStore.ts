@@ -29,7 +29,7 @@ export const usrStore = defineStore('usuariosStore', {
                 this.currentUser = response.data.usuario.payload
                 this.token = response.data.usuario.token
                 
-                setCookie(response.data.usuario.token,"tokenMacabi")
+                setCookie(response.data.usuario.token.slice(1, -1),"tokenMacabi")
                     
             } catch (error) {
                 if (error.response) {
