@@ -89,6 +89,8 @@
 import axios from "axios";
 import apiUrl from '../../../../config/config.js'
 import { verificarAutorizacionCategoria } from "../../../utils/permisos";
+import Unauthorized from "../../Unauthorized.vue";
+
 export default {
   name: "AgregarSocio",
   components: {},
@@ -107,7 +109,7 @@ export default {
   }),
   async created() {
     this.idCat = this.$route.params.idCategoria
-    if(await verificarAutorizacionCategoria(this.idCat)) {
+    if(!await verificarAutorizacionCategoria(this.idCat)) {
       this.$router.push({ path: "/unauthorized", component: Unauthorized })
     }
     let result = await axios.get(`${apiUrl}/categoria/${this.idCat}/nombreCategoria`, { withCredentials: true });
@@ -237,6 +239,8 @@ export default {
           this.sociosList = []
 
         }
+
+        this.$router.back()
       } catch (e) {
         alert(e.response.data.message)
         this.sociosList = []
