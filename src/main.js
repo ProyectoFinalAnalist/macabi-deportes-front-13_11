@@ -122,7 +122,7 @@ export const rutasNoAutorizadasParaCoordinador = [
 export const rutasNoAutorizadasParaProfesor = [
   "/usuarios",
   "/crearusuario",
-  "/usuarios/:id",
+  //"/usuarios/:id",
   "/modificarusuario/:id",
   "/registrarSocio",
   "/socios",

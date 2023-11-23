@@ -56,3 +56,19 @@ export const verificarAutorizacionFecha = async (idFecha) => {
     
     return permitido
   };
+
+  export const vistaPerfilUsuario = async(idRolUserPorVer) => {
+    let permitido = true
+    const userStore = usrStore()
+
+    let noPermitidoProfesor = (userStore.getRol  == 'P' && idRolUserPorVer != 'P')
+    let noPermitidoCoordinador = (userStore.getRol  == 'C' && idRolUserPorVer == 'A')
+
+
+
+    if(noPermitidoProfesor || noPermitidoCoordinador){
+      permitido = false;
+   }
+
+   return permitido
+  }
