@@ -1,5 +1,6 @@
 <template>
-    <div class="container-fluid">
+    <Loading v-if="loading" />
+    <div v-else class="container-fluid">
         <div class="row">
             <div class="col-md-6 offset-md-3" v-if="socio">
                 <h3 class="text-center">Detalles del Socio: <strong>{{ socio.apellido }}, {{ socio.nombre }}</strong></h3>
@@ -63,7 +64,8 @@
                                     <tr v-for="categoria in categorias" :key="categoria.idCategoria">
                                         <td class="tablaHoover" @click="irA(categoria.idCategoria, 'detalleCategoria')">{{
                                             categoria.nombreCategoria }}</td>
-                                        <td class="tablaHoover" @click="irA(categoria.idDeporte, 'detalleDeporte')">{{ obtenerNombreDeporte(categoria.idDeporte) }}</td>
+                                        <td class="tablaHoover" @click="irA(categoria.idDeporte, 'detalleDeporte')">{{
+                                            obtenerNombreDeporte(categoria.idDeporte) }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -71,12 +73,16 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 offset-md-3" v-else>
-                <strong class="alert alert-warning text-center">El socio no existe.</strong>
+            <div class="col-md-6 offset-md-3 mb-4" v-if="!socio">
+                <div class="card fondo-card">
+                    <div class="card-body" style="border-radius: 10px;">
+                        <h5 class="fw-bold text-center">No se encontró el socio</h5>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="d-flex justify-content-center align-items-center mb-5">
+    <div v-if="!loading" class="d-flex justify-content-center align-items-center mb-5">
         <div class="btn-group">
             <button v-if="socio" @click="editarSocio" class="btn btn-macabi1">Modificar socio</button>
             <button class="btn btn-dark" @click="volver()">Volver</button>
@@ -99,6 +105,7 @@ h6 {
     border-radius: 4px;
     padding: 8px;
 }
+
 .tablaHoover:hover {
     background-color: rgb(230, 230, 230)
 }
@@ -109,9 +116,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import apiUrl from '../../../../config/config.js'
 import { Utils } from "../../../utils/utils"
-import { usrStore } from "../../../stores/usrStore";
-
-
+import Loading from '../../dependentComponents/Loading.vue';
 
 export default {
     setup() {
@@ -123,13 +128,14 @@ export default {
         const router = useRouter()
         const idSocio = route.params.id
 
+        const loading = ref(true)
+
         onMounted(async () => {
-
-
             await sociosStore.fetchElementById(`${apiUrl}/socio/`, idSocio)
             await deporteStore.fetchElements(`${apiUrl}/deporte/getAll`)
             await categoriasStore.fetchElementById(`${apiUrl}/sociosXCategoria/categorias`, idSocio)
             data.value;
+            loading.value = false
         })
 
         const socio = ref(null)
@@ -187,7 +193,8 @@ export default {
             obtenerNombreDeporte,
             utils,
             volver,
-            irA
+            irA,
+            loading
         }
     },
     data() {
@@ -200,5 +207,8 @@ export default {
             this.$router.push({ path: "/socios/update/" + idSocio });
         }
     },
+    components: {
+        Loading
+    }
 }
 </script>

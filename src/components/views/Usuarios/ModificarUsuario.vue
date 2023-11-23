@@ -1,5 +1,6 @@
 <template>
-    <div class="container-fluid mb-5">
+    <Loading v-if="loading" />
+    <div v-else class="container-fluid mb-5">
         <div class="row">
             <div class="col-md-6 offset-md-3" v-if="usuario">
                 <h3 class="text-center">Detalles del Usuario: <strong>{{ nombre }}</strong></h3>
@@ -97,8 +98,12 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 offset-md-3" v-else>
-                <p class="alert alert-warning text-center">El usuario no existe.</p>
+            <div class="col-md-6 offset-md-3" v-if="!usuario">
+                <div class="card fondo-card mb-4">
+                    <div class="card-body" style="border-radius: 10px;">
+                        <h5 class="fw-bold text-center">No se encontró el usuario</h5>
+                    </div>
+                </div>
             </div>
             <div class="d-flex justify-content-center">
                 <button class="btn btn-dark" @click="volver">Volver</button>
@@ -108,8 +113,6 @@
     <br>
 </template>
 <style scoped>
-@import '../../../assets/alert.css';
-
 h6 {
     background-color: #f8d7da;
     border-color: #f0959e;
@@ -126,15 +129,15 @@ import { useElementStore } from "../../../stores/Store";
 import { useRouter, useRoute } from "vue-router";
 import { computed, ref, onMounted } from "vue";
 import { UtilsUsuario, Utils } from '../../../utils/utils.js'
-import {cambiosPerfilPropioPermiso} from '../../../utils/permisos.js'
+import { cambiosPerfilPropioPermiso } from '../../../utils/permisos.js'
+import Loading from '../../dependentComponents/Loading.vue';
 
 export default {
     setup() {
-
         const route = useRoute();
         const idUsuario = route.params.id.toString();
         const elementStore = useElementStore("usuario")();
-        elementStore.fetchElementById(idUsuario).then(() => { nombre.value = `${usuario.value.apellido}, ${usuario.value.nombre}` })
+        elementStore.fetchElementById(idUsuario).then(() => { nombre.value = `${usuario.value.apellido}, ${usuario.value.nombre}`; loading.value = false })
 
         const usuario = computed(() => elementStore.currentElement);
         const router = useRouter();
@@ -143,11 +146,16 @@ export default {
         const showErrores = ref({})
         const nombre = ref(null)
 
-        onMounted( async() =>   {
+        const loading = ref(true)
+
+        onMounted(async () => {
             if (! await cambiosPerfilPropioPermiso(idUsuario)) {
                 router.push(`/unauthorized`);
             }
             elementStore.fetchElements()
+            .then(() => {
+                loading.value = false
+            })
         })
 
         const updateUsuario = async () => {
@@ -155,8 +163,9 @@ export default {
 
             if (!utilsUsuario.errores(showErrores.value)) {
                 if (utils.confirm("modificar", "modificado", "Usuario")) {
+                    loading.value = true
                     await elementStore.patchElement(usuario.value);
-                    location.reload()
+                    router.go(-1)
                 }
             } else {
                 alert("Error detectado en el ingreso de campos")
@@ -170,7 +179,7 @@ export default {
             const day = (fechaActual.getDate() - 1).toString().padStart(2, '0'); // Corregido: Restar 1 día
 
             return `${year}-${month}-${day}`;
-        }      
+        }
 
         function volver() {
             router.go(-1)
@@ -182,7 +191,8 @@ export default {
             showErrores,
             nombre,
             volver,
-            obtenerFechaMax
+            obtenerFechaMax,
+            loading
         };
     },
     data() {
@@ -192,8 +202,8 @@ export default {
             route: useRoute(),
         }
     },
-    methods: {
-        
+    components: {
+        Loading
     }
 };
 </script>

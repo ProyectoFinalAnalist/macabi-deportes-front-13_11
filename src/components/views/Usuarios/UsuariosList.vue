@@ -1,5 +1,5 @@
 <template>
-  <Loading v-if="loading"/>
+  <Loading v-if="loading" />
   <div v-else class="container-fluid ps-5 pe-5 mb-5">
     <div class="text text-center h1">USUARIOS</div>
     <br>
@@ -17,7 +17,7 @@
         <div class="col-12 col-md-auto">
           <input type="text" class="form-control" placeholder="Buscar..." v-model="busqueda">
         </div>
-        <div class="col-12 col-md-auto">
+        <div class="col-12 col-md-auto" v-if="usuarioStore.getRol == 'A'">
           <button class="btn btn-macabi1 mb-1 px-3" type="button" data-bs-toggle="collapse"
             data-bs-target="#checkboxesCollapse" aria-expanded="true" aria-controls="checkboxesCollapse">
             Filtro por ROL
@@ -75,7 +75,8 @@
       </table>
     </div>
     <div class="d-flex justify-content-between my-3">
-      <p class="pe-5" v-if="elementStore.getElements">Usuarios en total: <strong>{{ elementStore.getElements.length }}</strong></p>
+      <p class="pe-5" v-if="elementStore.getElements">Usuarios en total: <strong>{{ elementStore.getElements.length
+      }}</strong></p>
       <code>Si se encuentra en rojo, el usuario no está activo</code>
     </div>
     <div class="d-flex justify-content-center align-items-center">
@@ -103,102 +104,114 @@ import { useElementStore } from "../../../stores/Store";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import Loading from '../../dependentComponents/Loading.vue';
+import { usrStore } from "../../../stores/usrStore";
 
-export default 
-  { components: {
-    Loading,
-  },
-  setup() {
-    const elementStore = useElementStore("usuario")()
-    let busqueda = ""
-    const usuarios = ref(null)
-    const orden = ref(true)
-    const router = useRouter();
-    const loading = ref(true)
+export default
+  {
+    components: {
+      Loading,
+    },
+    setup() {
+      const elementStore = useElementStore("usuario")()
+      let busqueda = ""
+      const usuarios = ref(null)
+      const orden = ref(true)
+      const router = useRouter();
+      const loading = ref(true)
 
-    const size = ref(0)
+      const size = ref(0)
 
-    onMounted(() => {
-      elementStore.currentElement = null
-      elementStore.fetchElements().then(() => {
+      const usuarioStore = usrStore()
+
+      onMounted(() => {
+        elementStore.currentElement = null
+        elementStore.fetchElements().then(() => {
+        }).then(() => {
+          if (usuarioStore.getRol == 'C') {
+            elementStore.setElements(elementStore.getElements.filter((usuario) => usuario.Rol.tipo == 'P'))
+          }
+
+          usuarios.value = elementStore.getElements
+          
+        }).then(() => {
+          size.value = usuarios.value.length || 0
+          loading.value = false
+        })
+
+      })
+      const checkboxes = ref(['P', 'C', 'A'])
+
+      function buscar() {
+        reiniciar();
+        busqueda = this.busqueda;
+
+        if (busqueda !== "") {
+          usuarios.value = elementStore.getElements.filter(item => {
+            const propiedad = item[document.getElementById("filtro").value];
+            const propiedadLowerCase = String(propiedad).toLowerCase();
+            const busquedaLowerCase = String(busqueda).toLowerCase();
+            return propiedadLowerCase.includes(busquedaLowerCase) && checkboxes.value.some(rol => item.Rol.tipo.includes(rol));
+          });
+        } else {
+          usuarios.value = elementStore.getElements.filter(item => {
+            return checkboxes.value.some(rol => item.Rol.tipo.includes(rol));
+          });
+        }
+
+        size.value = usuarios.value.length || 0;
+      }
+
+      function reiniciar() {
         usuarios.value = elementStore.getElements
         size.value = usuarios.value.length || 0
-        loading.value = false
-      })
-    })
+      }
 
-    const checkboxes = ref(['P', 'C', 'A'])
+      function ordenar(columna) {
+        orden.value = !orden.value
 
-    function buscar() {
-      reiniciar();
-      busqueda = this.busqueda;
-
-      if (busqueda !== "") {
-        usuarios.value = elementStore.getElements.filter(item => {
-          const propiedad = item[document.getElementById("filtro").value];
-          const propiedadLowerCase = String(propiedad).toLowerCase();
-          const busquedaLowerCase = String(busqueda).toLowerCase();
-          return propiedadLowerCase.includes(busquedaLowerCase) && checkboxes.value.some(rol => item.Rol.tipo.includes(rol));
-        });
-      } else {
-        usuarios.value = elementStore.getElements.filter(item => {
-          return checkboxes.value.some(rol => item.Rol.tipo.includes(rol));
+        usuarios.value.sort((a, b) => {
+          const factorOrden = orden.value ? -1 : 1;
+          if (a[columna] < b[columna]) return -1 * factorOrden;
+          if (a[columna] > b[columna]) return 1 * factorOrden;
+          return 0;
         });
       }
 
-      size.value = usuarios.value.length || 0;
-    }
-
-    function reiniciar() {
-      usuarios.value = elementStore.getElements
-      size.value = usuarios.value.length || 0
-    }
-
-    function ordenar(columna) {
-      orden.value = !orden.value
-
-      usuarios.value.sort((a, b) => {
-        const factorOrden = orden.value ? -1 : 1;
-        if (a[columna] < b[columna]) return -1 * factorOrden;
-        if (a[columna] > b[columna]) return 1 * factorOrden;
-        return 0;
-      });
-    }
-
-    function irA(id) {
-      if (id != 0) {
-        router.push(`/usuarios/${id}`);
-      }
-    }
-
-    function obtenerRol(rol) {
-      if (rol != null || rol != '') {
-        if (rol == 'A') {
-          return 'Administrador'
-        } else if (rol == 'C') {
-          return 'Coordinador'
-        } else if (rol == 'P') {
-          return 'Profesor'
+      function irA(id) {
+        if (id != 0) {
+          router.push(`/usuarios/${id}`);
         }
-      } else {
-        return 'Rol desconocido'
       }
-    }
 
-    return {
-      elementStore,
-      usuarios,
-      buscar,
-      busqueda,
-      reiniciar,
-      size,
-      ordenar,
-      irA,
-      checkboxes,
-      obtenerRol,
-      loading,
-      Loading
-    }
-  },
-}
+      function obtenerRol(rol) {
+        if (rol != null || rol != '') {
+          if (rol == 'A') {
+            return 'Administrador'
+          } else if (rol == 'C') {
+            return 'Coordinador'
+          } else if (rol == 'P') {
+            return 'Profesor'
+          }
+        } else {
+          return 'Rol desconocido'
+        }
+      }
+
+      return {
+        elementStore,
+        usuarios,
+        buscar,
+        busqueda,
+        reiniciar,
+        size,
+        ordenar,
+        irA,
+        checkboxes,
+        obtenerRol,
+        loading,
+        Loading,
+        usuarioStore
+      }
+    },
+  }
 </script>

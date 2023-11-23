@@ -1,5 +1,6 @@
 <template>
-    <div class="container-fluid">
+    <Loading v-if="loading" />
+    <div v-else class="container-fluid">
         <div class="row">
             <div class="col-md-6 offset-md-3" v-if="socio">
                 <h3 class="text-center">Detalles del Socio: <strong>{{ nombre }}</strong></h3>
@@ -15,26 +16,58 @@
                                 <strong>Nombre: <code>*</code></strong><input type="text" class="form-control"
                                     v-model="socio.nombre" />
                             </p>
+                            <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                v-if="validarNombre(socio.nombre, 'nombre', 24) !== null">
+                                <strong>{{ validarNombre(socio.nombre, 'nombre', 24) }}</strong>
+                            </h6>
+                            <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                v-if="validarSoloLetras(socio.nombre, 'nombre',) !== null">
+                                <strong>{{ validarSoloLetras(socio.nombre, 'nombre',) }}</strong>
+                            </h6>
                             <p class="p pe-2 ps-2">
                                 <strong>Apellido: <code>*</code></strong><input type="text" class="form-control"
                                     v-model="socio.apellido" />
                             </p>
+                            <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                v-if="validarNombre(socio.apellido, 'apellido', 24) !== null">
+                                <strong>{{ validarNombre(socio.apellido, 'apellido', 24) }}</strong>
+                            </h6>
+                            <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                v-if="validarSoloLetras(socio.apellido, 'apellido') !== null">
+                                <strong>{{ validarSoloLetras(socio.apellido, 'apellido') }}</strong>
+                            </h6>
                             <p class="p pe-2 ps-2">
                                 <strong>Dni: <code>*</code></strong><input type="number" min="0" class="form-control"
                                     v-model="socio.dni" />
                             </p>
+                            <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                v-if="validarNumero(socio.dni, 6, 10, 'dni') !== null">
+                                <strong>{{ validarNumero(socio.dni, 6, 10, 'dni') }}</strong>
+                            </h6>
                             <p class="p pe-2 ps-2">
                                 <strong>Email: <code>*</code></strong><input type="email" class="form-control"
                                     v-model="socio.email" />
                             </p>
+                            <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                v-if="validarMail(socio.email) !== null">
+                                <strong>{{ validarMail(socio.email) }}</strong>
+                            </h6>
                             <p class="p pe-2 ps-2">
                                 <strong>Telefono: <code>*</code></strong><input type="number" class="form-control"
                                     v-model="socio.telefono" />
                             </p>
+                            <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                v-if="validarNumero(socio.telefono, 8, 15, 'telefono') !== null">
+                                <strong>{{ validarNumero(socio.telefono, 8, 15, 'telefono') }}</strong>
+                            </h6>
                             <p class="p pe-2 ps-2">
                                 <strong>Dirección: <code>*</code></strong><input type="text" class="form-control"
                                     v-model="socio.direccion" />
                             </p>
+                            <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                v-if="validarNumero(socio.direccion, 5, 50, 'direccion') !== null">
+                                <strong>{{ validarNumero(socio.direccion, 5, 50, 'direccion') }}</strong>
+                            </h6>
                             <p class="p pe-2 ps-2">
                                 <strong>Fecha de Nacimiento: <code>*</code></strong><input type="date" id="fecha"
                                     :max="obtenerFechaMax()" class="form-control" v-model="socio.fechaNacimiento" />
@@ -44,6 +77,10 @@
                                 <textarea style="height: 100px; max-height: 200px;" class="form-control"
                                     v-model="socio.observaciones"></textarea>
                             </p>
+                            <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                v-if="validarObservaciones(socio.observaciones) !== null">
+                                <strong>{{ validarObservaciones(socio.observaciones) }}</strong>
+                            </h6>
                             <div class="d-flex justify-content-center">
                                 <div class="btn-group">
                                     <button class="btn btn-macabi1" @click="updateSocio">Actualizar Socio</button>
@@ -64,18 +101,39 @@
                                         <strong>Nombre: <code>*</code></strong><input type="text" class="form-control"
                                             v-model="contacto.nombre" />
                                     </p>
+                                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                        v-if="validarNombre(contacto.nombre, 'nombre', 50) !== null">
+                                        <strong>{{ validarNombre(contacto.nombre, 'nombre', 50) }}</strong>
+                                    </h6>
+                                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                        v-if="validarSoloLetras(contacto.nombre, 'nombre') !== null">
+                                        <strong>{{ validarSoloLetras(contacto.nombre, 'nombre') }}</strong>
+                                    </h6>
                                     <p class="p pe-2 ps-2">
                                         <strong>Apellido: <code>*</code></strong><input type="text" class="form-control"
                                             v-model="contacto.apellido" />
                                     </p>
+                                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                        v-if="validarNombre(contacto.apellido, 'apellido', 50) !== null">
+                                        <strong>{{ validarNombre(contacto.apellido, 'apellido', 50) }}</strong>
+                                    </h6>
+                                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                        v-if="validarSoloLetras(contacto.apellido, 'apellido') !== null">
+                                        <strong>{{ validarSoloLetras(contacto.apellido, 'apellido') }}</strong>
+                                    </h6>
                                     <p class="p pe-2 ps-2">
                                         <strong>Email: <code>*</code></strong><input type="text" class="form-control"
                                             v-model="contacto.email" />
                                     </p>
+
                                     <p class="p pe-2 ps-2">
                                         <strong>Teléfono: <code>*</code></strong><input type="number" min="0"
                                             class="form-control" v-model="contacto.telefono" />
                                     </p>
+                                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                                        v-if="validarTelefono(contacto.telefono) !== null">
+                                        <strong>{{ validarTelefono(contacto.telefono) }}</strong>
+                                    </h6>
                                     <div class="d-flex justify-content-center">
                                         <div class="btn-group">
                                             <button class="btn btn-macabi1" @click="updateContacto(contacto)">Actualizar
@@ -95,15 +153,16 @@
                     </div>
                 </div>
             </div>
-            <h5 v-else class="alert alert-warning alert-sm mb-0 text-center m-2 mb-3">
-                <strong>No se pudo cargar el socio :c</strong>
-            </h5>
+            <div class="col-md-6 offset-md-3" v-if="!socio">
+                <div class="card fondo-card mb-4">
+                    <div class="card-body" style="border-radius: 10px;">
+                        <h5 class="fw-bold text-center">No se encontró el socio</h5>
+                    </div>
+                </div>
+            </div>
         </div>
-        <h5 v-if="message != null" class="alert alert-danger alert-sm mb-0 text-center m-2 mb-3">
-            <strong>{{ message }}</strong>
-        </h5>
     </div>
-    <div class="d-flex justify-content-center mb-4">
+    <div v-if="!loading" class="d-flex justify-content-center mb-4">
         <button class="btn btn-dark" @click="volver">Volver</button>
     </div>
     <br>
@@ -123,18 +182,42 @@
                         <strong>Nombre: <code>*</code></strong><input type="text" class="form-control"
                             v-model="contactoCreate.nombre" />
                     </p>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                        v-if="validarNombre(contactoCreate.nombre, 'nombre', 50) !== null">
+                        <strong>{{ validarNombre(contactoCreate.nombre, 'nombre', 50) }}</strong>
+                    </h6>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                        v-if="validarSoloLetras(contactoCreate.nombre, 'nombre') !== null">
+                        <strong>{{ validarSoloLetras(contactoCreate.nombre, 'nombre') }}</strong>
+                    </h6>
                     <p class="p pe-2 ps-2">
                         <strong>Apellido: <code>*</code></strong><input type="text" class="form-control"
                             v-model="contactoCreate.apellido" />
                     </p>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                        v-if="validarNombre(contactoCreate.apellido, 'apellido', 50) !== null">
+                        <strong>{{ validarNombre(contactoCreate.apellido, 'apellido', 50) }}</strong>
+                    </h6>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                        v-if="validarSoloLetras(contactoCreate.apellido, 'apellido') !== null">
+                        <strong>{{ validarSoloLetras(contactoCreate.apellido, 'apellido') }}</strong>
+                    </h6>
                     <p class="p pe-2 ps-2">
                         <strong>Email: <code>*</code></strong><input type="text" class="form-control"
                             v-model="contactoCreate.email" />
                     </p>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                        v-if="validarMail(contactoCreate.email) !== null">
+                        <strong>{{ validarMail(contactoCreate.email) }}</strong>
+                    </h6>
                     <p class="p pe-2 ps-2W">
                         <strong>Teléfono: <code>*</code></strong><input type="number" min="0" class="form-control"
                             v-model="contactoCreate.telefono" />
                     </p>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                        v-if="validarTelefono(contactoCreate.telefono) !== null">
+                        <strong>{{ validarTelefono(contactoCreate.telefono) }}</strong>
+                    </h6>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-macabi1" @click="crearContacto">Crear</button>
@@ -142,21 +225,16 @@
                     <div class="text-start"><code>*campos obligatorios</code></div>
                 </div>
             </div>
-            <h5 v-if="messageModal != null" class="alert alert-danger alert-sm mb-0 text-center m-2 mb-3">
-                <strong>{{ messageModal }}</strong>
-            </h5>
         </div>
     </div>
 </template>
-<style>
-@import '../../../assets/alert.css';
-</style>
 <script>
 import { useElementStore } from '../../../utils/Store';
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import apiUrl from '../../../../config/config.js'
 import { Utils } from '../../../utils/utils';
+import Loading from '../../dependentComponents/Loading.vue';
 
 export default {
     setup() {
@@ -173,10 +251,13 @@ export default {
 
         const utils = new Utils()
 
+        const loading = ref(true)
+
         onMounted(async () => {
             await sociosStore.fetchElements(`${apiUrl}/socio/getAll`)
             await sociosStore.fetchElementById(`${apiUrl}/socio/`, idSocio)
             data.value;
+            loading.value = false
         })
 
         const socio = ref(null)
@@ -199,6 +280,8 @@ export default {
         const validateMail = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
         const updateSocio = async () => {
+            message.value = null
+
             const dni = socio.value.dni;
             const email = socio.value.email;
 
@@ -210,9 +293,11 @@ export default {
                 hasDuplicateEmail = sociosStore.getElements.result.some((socio) => socio.email === email && socio.idSocio != idSocio);
             }
             if (hasDuplicateDNI) {
-                message.value = "El DNI no puede repetirse";
+                alert("El DNI no puede repetirse")
+                message.value = "a";
             } else if (hasDuplicateEmail) {
-                message.value = "El correo electrónico no puede repetirse";
+                alert("El correo electrónico no puede repetirse")
+                message.value = "a";
             } else if (!/@/.test(email) && email.trim() === '') {
                 message.value = "El Email debe debe contener '@' y no estar vacío";
             } else if (!validateMail.test(email)) {
@@ -233,27 +318,31 @@ export default {
                 message.value = "El apellido debe tener un minimo de 2 caracteres y un maximo de 24.";
             } else if (!soloLetras.test(socio.value.apellido)) {
                 message.value = "El apellido debe contener solo letras.";
-            } else if (String(socio.value.direccion).length < 5 || String(socio.value.direccion).length > 50) {
-                message.value = "La Direccion debe tener un minimo de 5 caracteres y un maximo de 50.";
+            } else if (!socio.value.direccion || (String(socio.value.direccion).length < 5 || String(socio.value.direccion).length > 50)) {
+                message.value = "La Dirección debe tener un mínimo de 5 caracteres y un máximo de 50.";
             } else if (String(socio.value.observaciones).length > 250) {
                 message.value = "Las observaciones deben tener un maximo de 250 caracteres.";
             }
-            else {
-                if (sociosStore.confirm("modificar", "modificado", "Socio")) {
-                    const socioUpdate = JSON.parse(JSON.stringify(sociosStore.currentElement.result))
-                    try {
-                        await sociosStore.patchElement(`${apiUrl}/socio/${socioUpdate.idSocio}`, socioUpdate)
-                        router.go(-1)
-                    } catch (e) {
-                        console.log(e)
-                        message.value = "Error updating";
-                    }
+
+            console.log(message.value)
+
+            if (message.value != null) {
+                alert("Error detectado en el formulario")
+            } else if (sociosStore.confirm("modificar", "modificado", "Socio")) {
+                const socioUpdate = JSON.parse(JSON.stringify(sociosStore.currentElement.result))
+                try {
+                    await sociosStore.patchElement(`${apiUrl}/socio/${socioUpdate.idSocio}`, socioUpdate)
+                    router.go(-1)
+                } catch (e) {
+                    console.log(e)
+                    alert("Error updating");
                 }
             }
+
         };
 
         async function deleteSocio() {
-            if(utils.confirm("Eliminar", "Eliminado", "Socio")){
+            if (utils.confirm("Eliminar", "Eliminado", "Socio")) {
                 await sociosStore.deleteElement(`${apiUrl}/socio/`, idSocio)
                 router.push('/socios')
             }
@@ -286,33 +375,27 @@ export default {
         });
 
         function validarContacto(tipo, contacto) {
-            let msj = ""
             let crear = false;
 
             if (String(contacto.nombre).length < 2 || String(contacto.nombre).length > 24) {
-                msj = "El nombre debe tener un minimo de 2 caracteres y un maximo de 24.";
             } else if (!soloLetras.test(contacto.nombre)) {
-                msj = "El nombre debe contener solo letras.";
+
             } else if (String(contacto.apellido).length < 2 || String(contacto.apellido).length > 24) {
-                msj = "El apellido debe tener un minimo de 2 caracteres y un maximo de 24.";
+
             } else if (!soloLetras.test(contacto.apellido)) {
-                msj = "El apellido debe contener solo letras.";
+
             } else if (!validateMail.test(contacto.email)) {
-                msj = "Formato Email incorrecto";
+
             } else if (contacto.telefono < 0) {
-                msj = "El Telefono debe ser un número positivo";
+
             } else if (String(contacto.telefono).length < 9 || String(contacto.telefono).length > 30) {
-                msj = "El teléfono debe tener un mínimo de 9 caracteres y un máximo de 30.";
+
             } else {
                 crear = true
             }
 
-            if (msj != "") {
-                if (tipo === "message") {
-                    message.value = msj
-                } else {
-                    messageModal.value = msj
-                }
+            if (!crear) {
+                alert("Error en los campos ingresados")
             }
 
             return crear
@@ -338,6 +421,72 @@ export default {
             router.go(-1)
         }
 
+        function validarNombre(nombre, tipo, max) {
+            if (nombre.length < 2 || nombre.length > max) {
+                return `El ${tipo} debe tener un mínimo de 2 caracteres y un máximo de ${max}`;
+            } else {
+                return null;
+            }
+        }
+
+        function validarSoloLetras(contacto, tipo) {
+            if (!soloLetras.test(contacto)) {
+                return `El ${tipo} solo puede tener letras`;
+            } else {
+                return null;
+            }
+        }
+
+        function validarMail(mail) {
+            if (mail !== '' && !validateMail.test(mail) && mail !== null) {
+                return "Formato de Mail incorrecto"
+            } else {
+                return null;
+            }
+        }
+
+        function validarTelefono(contacto) {
+            if (contacto === null || contacto === '') {
+                return `El telefono no puede ser nulo`;
+            }
+
+            if (contacto !== null && (contacto < 0 || contacto.toString().length > 20)) {
+                return "El número de teléfono debe ser un número positivo y tener un máximo de 20 caracteres";
+            } else {
+                return null;
+            }
+        }
+
+        function validarNumero(contacto, min, max, tipo) {
+            if (contacto === null || contacto === '') {
+                if (tipo === 'direccion') {
+                    return `La ${tipo} no puede ser nula`;
+                } else {
+                    return `El ${tipo} no puede ser nulo`;
+                }
+            }
+
+            const telefonoString = contacto.toString();
+
+            if (telefonoString.length < min || telefonoString.length > max || contacto < 0) {
+                if (tipo === 'direccion') {
+                    return `La ${tipo} debe ser un número positivo y tener entre ${min} y ${max} caracteres`;
+                } else {
+                    return `El ${tipo} debe ser un número positivo y tener entre ${min} y ${max} caracteres`;
+                }
+            }
+
+            return null;
+        }
+
+        function validarObservaciones(observaciones) {
+            if (observaciones !== null && observaciones.length > 250) {
+                return "Las observaciones deben tener un máximo de 250 caracteres";
+            } else {
+                return null;
+            }
+        }
+
         return {
             socio,
             sociosStore,
@@ -353,8 +502,29 @@ export default {
             messageModal,
             nombre,
             nombreContacto,
-            volver
+            volver,
+            loading,
+            validarNombre,
+            validarMail,
+            validarTelefono,
+            validarSoloLetras,
+            validarNumero,
+            validarObservaciones
         }
+    },
+    components: {
+        Loading
     }
 }
 </script>
+<style scoped>
+h6 {
+    background-color: #f8d7da;
+    border-color: #f0959e;
+    color: #723b47;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 4px;
+    padding: 8px;
+}
+</style>

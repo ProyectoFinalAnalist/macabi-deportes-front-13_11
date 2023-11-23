@@ -1,5 +1,6 @@
 <template>
-    <div class="container-fluid">
+    <Loading v-if="loading"/>
+    <div v-else class="container-fluid">
         <div class="row">
             <div class="col-md-6 offset-md-3" v-if="usuario">
                 <h3 class="text-center">Modificar contraseña del Usuario: <br><strong>{{ nombre }}</strong></h3>
@@ -15,7 +16,7 @@
                             <button class="btn btn-outline-dark" type="button" id="togglePassword"
                                 @click="mostrarContrasenaClave">Ver contraseña</button>
                         </div>
-                       
+
                         <p class="p pe-2 ps-2">
                             <strong>Nueva Contraseña: <code>*</code></strong><input class="form-control" :type="mostrar4"
                                 v-model="clave" placeholder="Ingrese nueva contraseña" onpaste="return false;" />
@@ -52,10 +53,6 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="col-md-6 offset-md-3" v-else>
-                <p class="alert alert-warning text-center">El usuario no existe.</p>
-            </div>
             <div class="d-flex justify-content-center">
                 <button class="btn btn-dark" @click="volver">Volver</button>
             </div>
@@ -64,8 +61,6 @@
     <br>
 </template>
 <style scoped>
-@import '../assets/alert.css';
-
 h6 {
     background-color: #f8d7da;
     border-color: #f0959e;
@@ -84,6 +79,7 @@ import { onBeforeMount } from "vue";
 import axios from "axios";
 import apiUrl from "../../config/config";
 import { cambiosPerfilPropioPermiso } from '../utils/permisos';
+import Loading from "./dependentComponents/Loading.vue";
 
 export default {
     setup() {
@@ -92,14 +88,13 @@ export default {
         const idUsuario = route.params.idUsuario.toString();
 
         onBeforeMount(async () => {
-      if(! await cambiosPerfilPropioPermiso(idUsuario)) {
-        router.push(`/unauthorized`)
-      }
-    });
+            if (! await cambiosPerfilPropioPermiso(idUsuario)) {
+                router.push(`/unauthorized`)
+            }
+        });
 
-        
         const elementStore = useElementStore("usuario")();
-        elementStore.fetchElementById(idUsuario).then(() => { nombre.value = `${usuario.value.apellido}, ${usuario.value.nombre}` })
+        elementStore.fetchElementById(idUsuario).then(() => { nombre.value = `${usuario.value.apellido}, ${usuario.value.nombre}`; loading.value = false })
 
         const usuario = computed(() => elementStore.currentElement);
 
@@ -112,6 +107,8 @@ export default {
         const errorClaveConfirm = ref(false)
         const errorSamePass = ref(false)
 
+        const loading = ref(true)
+
         function setInFalse() {
             errorClave.value = false
             errorClaveConfirm.value = false
@@ -122,9 +119,6 @@ export default {
             setInFalse()
 
             let passValidated = false
-
-
-           
 
             passValidated = validarContraseña(clave.value)
 
@@ -145,13 +139,17 @@ export default {
                 };
 
                 try {
+                    loading.value = true
+
                     axios.post(`${apiUrl}/usuario/updatePassword/${idUsuario}`, contraseñas, { withCredentials: true })
                         .then(response => {
                             console.log('Respuesta del servidor:', response.data);
                             alert(`Tu contraseña ha sido modificada correctamente`);
                             router.push("/miUsuario")
+                            loading.value = false
                         }).catch(error => {
                             alert(`Error en la solicitud: ${error.response.data.message}`);
+                            loading.value = false
                         });
                 } catch (e) {
                     console.log(e.response.data)
@@ -194,7 +192,6 @@ export default {
         }
 
         return {
-
             errorSamePass,
             mostrar2,
             mostrar4,
@@ -208,9 +205,13 @@ export default {
             volver,
             clave,
             claveConfirm,
-            oldPass
+            oldPass,
+            loading
         };
     },
+    components: {
+        Loading
+    }
 };
 
 
