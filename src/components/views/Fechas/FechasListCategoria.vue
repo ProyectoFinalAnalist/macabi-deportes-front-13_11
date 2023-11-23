@@ -1,5 +1,7 @@
 <template>
-	<div class="container">
+	<Loading v-if="loading" />
+
+	<div v-else class="container">
 
 		<div class="sub_container_title">{{ titulo }}</div>
 
@@ -43,7 +45,7 @@
 					</svg>
 				</div>
 			</div>
-
+			<br>
 			<div class="d-flex justify-content-between align-items-center">
 				<p class="">Fechas en total: <strong>{{ cantFechasToShow }}</strong></p>
 			</div>
@@ -60,7 +62,7 @@
 					<tbody>
 						<tr v-for="fecha in fechasToShow" :key="fecha.idFecha" class="resaltable"
 							@click="$router.push(`/fechas/${fecha.idFecha}`);">
-							<td data-cell="Fecha Calendario">{{ fecha.fechaCalendario }}</td>
+							<td data-cell="Fecha Calendario">{{ utils.obtenerFechaFormateada(fecha.fechaCalendario) }}</td>
 							<td data-cell="Tipo">{{ mapearTipo(fecha.tipo) }}</td>
 						</tr>
 						<tr v-if="!fechaDeCategoriaStore.getElements">
@@ -76,7 +78,7 @@
 			</div>
 
 			<div style="margin-top: 27px;" class="sub_container_sub_title"> Socios de la Categoria</div>
-
+			<br>
 			<div class="d-flex justify-content-between align-items-center">
 				<p class="">Socios asignados a categoria: <strong>{{ cantSociosToShow }}</strong></p>
 			</div>
@@ -93,11 +95,12 @@
 							<th class="big" style="width: 6%;">A</th>
 							<th class="big" style="width: 6%;">J</th>
 							<th class="big" style="width: 7%;">N/A</th>
-							<th class="big" style="width: 11%;">Presentismo</th>
+							<th class="big text-center" style="width: 11%;">%</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr v-for="socio in sociosToShow" class="resaltable">
+						<tr v-for="socio in sociosToShow" class="resaltable"
+							@click="router.push(`/socios/${socio.idSocio}`)">
 							<td data-cell="Id" class="big">{{ socio.nroSocio }}</td>
 							<td data-cell="Nombre">{{ socio.nombre }} {{ socio.apellido }}</td>
 							<td data-cell="Dni">{{ socio.dni }}</td>
@@ -107,7 +110,7 @@
 								</span>
 							</td>
 							<td data-cell="P" style="font-weight: bold;">
-								<span class="text-success">
+								<span class="text-success text-center">
 									{{ socio.asistencia.P }}
 								</span>
 							</td>
@@ -127,19 +130,20 @@
 								</span>
 							</td>
 							<td data-cell="Asistencia" style="font-weight: bold;">
-								<div class="vertical-bar-container">
-									<div class="vertical-bar" :style="{ height: barHeight(+socio.asistencia.presentismo) + '%', backgroundColor: barColor(+socio.asistencia.presentismo) }">
-									<div class="percentage-label">{{ socio.asistencia.presentismo }}%</div>
+								<div class="vertical-bar-container p-0 pb-2 ">
+									<div class="vertical-bar"
+										:style="{ height: barHeight(+socio.asistencia.presentismo) + '%', backgroundColor: barColor(+socio.asistencia.presentismo) }">
+										<div class="percentage-label">{{ socio.asistencia.presentismo }}%</div>
 									</div>
 								</div>
 							</td>
 
 						</tr>
 						<tr v-if="!sociosDeCategoriaStore.getElements">
-							<td colspan="8" style="text-align: center;"> No hay Socios en la Categoria</td>
+							<td colspan="9" style="text-align: center;"> No hay Socios en la Categoria</td>
 						</tr>
 						<tr v-else-if="sociosToShow.length == 0">
-							<td colspan="8" style="text-align: center;"> No hay Asistencias de ningun Socio en la fecha
+							<td colspan="9" style="text-align: center;"> No hay Asistencias de ningun Socio en la fecha
 								seleccionada </td>
 						</tr>
 
@@ -152,15 +156,15 @@
 		</div>
 
 		<div class="sub_container_buttons2">
-			<button @click="nuevaFecha" class="btn btn-primary primary-macabi">
-				Crear fecha
-			</button>
+			<div class="btn-group">
+				<button @click="nuevaFecha" class="btn btn-primary primary-macabi">
+					Crear fecha
+				</button>
 
-			<button class="btn btn-secondary">
-				<router-link to="/" class="nav-item nav-link" href="#">Volver a Inicio</router-link>
-			</button>
+				<button class="btn btn-dark" @click="router.go(-1)">Volver
+				</button>
+			</div>
 		</div>
-
 	</div>
 </template>
 
@@ -170,9 +174,17 @@ import { useElementStore } from '../../../utils/Store';
 import { useRoute, useRouter } from 'vue-router';
 import apiUrl from '../../../../config/config.js'
 import { verificarAutorizacionCategoria } from "../../../utils/permisos";
+import Loading from '../../dependentComponents/Loading.vue';
 
 import moment from "moment";
 import 'moment/dist/locale/es'
+
+import { Utils } from '../../../utils/utils.js'
+
+
+const loading = ref(true)
+
+const utils = new Utils()
 
 const titulo = ref("Loading....")
 
@@ -197,13 +209,19 @@ let idsFechasSelected = new Set()
 const mesSelected = ref('.....')
 
 onMounted(async () => {
+
 	initDate()
+
 	fechaDeCategoriaStore.elements = null
 	fechaDeCategoriaStore.currentElement = null
 	await fetchCategoria()
+
 	if (!await verificarAutorizacionCategoria(idCategoria)) {
 		router.push({ path: "/unauthorized" })
 	}
+
+
+	loading.value = false	
 
 });
 
@@ -223,8 +241,8 @@ async function fetchCategoria() {
 
 	if (categoriaStore.getElements && categoriaStore.getElements.result && categoriaStore.getElements.result.Deporte) {
 		titulo.value = `${categoriaStore.getElements.result.Deporte.nombre} "${categoriaStore.getElements.result.nombreCategoria}"`
-		fetchFechas()
-		fetchSocios()
+		await fetchFechas()
+		await fetchSocios()
 		existeCategoria = true
 	} else {
 		titulo.value = `La categoria no existe`
@@ -258,7 +276,9 @@ function showFechas() {
 	let fechasFiltered = fechaDeCategoriaStore.getElements.result.Fechas.filter(fechaCat => {
 		let fechaCatMoment = moment(fechaCat.fechaCalendario)
 		return fechaCatMoment >= minDate && fechaCatMoment <= maxDate
-	})
+	}).sort((a, b) => {
+		return moment(a.fechaCalendario) - moment(b.fechaCalendario);
+	});
 
 	fechasToShow.value = fechasFiltered
 	cantFechasToShow.value = fechasFiltered.length
@@ -281,39 +301,39 @@ function showSocios() {
 			return { ...socio, Fechas: fechasFiltradas };
 		});
 
-	
-		console.log("🚀 ~ file: FechasListCategoria.vue:274 ~ showSocios ~ value:", mapAsistencia(sociosProcesados) )
+
+	//console.log("🚀 ~ file: FechasListCategoria.vue:274 ~ showSocios ~ value:", mapAsistencia(sociosProcesados) )
 	sociosToShow.value = mapAsistencia(sociosProcesados)
-	
+
 	cantSociosToShow.value = sociosProcesados.length
 }
 
 
 function mapAsistencia(inputData) {
-  return inputData.map((socio) => {
-    const counts = socio.Fechas.reduce(
-      (acc, fecha) => {
-        const estado = fecha.Asistencia?.estado;
-        acc[estado || 'N/A']++;
-        return acc;
-      },
-      { P: 0, A: 0, J: 0, 'N/A': 0 }
-    );
+	return inputData.map((socio) => {
+		const counts = socio.Fechas.reduce(
+			(acc, fecha) => {
+				const estado = fecha.Asistencia?.estado;
+				acc[estado || 'N/A']++;
+				return acc;
+			},
+			{ P: 0, A: 0, J: 0, 'N/A': 0 }
+		);
 
-    const total = counts.P + counts.A + counts.J + counts['N/A'];
-	const totalSinNA = counts.P + counts.A + counts.J
-    const presentismo = total === 0 ? 'N/A' : ((counts.P / totalSinNA) * 100).toFixed(2);
+		const total = counts.P + counts.A + counts.J + counts['N/A'];
+		const totalSinNA = counts.P + counts.A + counts.J
+		const presentismo = total === 0 ? 'N/A' : ((counts.P / totalSinNA) * 100).toFixed(2);
 
-    return {
-      ...socio,
-      asistencia: {
-        ...counts,
-        total,
-		totalSinNA,
-        presentismo,
-      },
-    };
-  });
+		return {
+			...socio,
+			asistencia: {
+				...counts,
+				total,
+				totalSinNA,
+				presentismo,
+			},
+		};
+	});
 }
 
 function cambiarFecha(cant, tipe) {
@@ -356,27 +376,27 @@ function getCountOfDateTipe(character, dateArray) {
 
 }
 function barColor(presentismo) {
-      if (presentismo === 100) {
-        return '#4CAF50'; // Green
-      } else if (presentismo > 60) {
-        return '#FFC107'; // Yellow
-      } else {
-        return '#FF5252'; // Red
-      }
-    }
+	if (presentismo === 100) {
+		return '#4CAF50'; // Green
+	} else if (presentismo > 60) {
+		return '#FFC107'; // Yellow
+	} else {
+		return '#FF5252'; // Red
+	}
+}
 
 
-	function barHeight(presentismo) {
-      if (presentismo === 100) {
-        return 100
-      } else if (presentismo > 60) {
-        return 90
-      } else {
-        return 80;	
-      }
-    }
-  
-	
+function barHeight(presentismo) {
+	if (presentismo === 100) {
+		return 100
+	} else if (presentismo > 60) {
+		return 90
+	} else {
+		return 80;
+	}
+}
+
+
 
 </script>
 
@@ -431,27 +451,26 @@ function barColor(presentismo) {
 }
 
 .vertical-bar-container {
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  height: 50px;
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: center;
+	height: 50px;
 }
 
 .vertical-bar {
-  position: relative;
-  width: 60px;
-  border-radius: 8px;
-  transition: height 0.5s ease;
+	position: relative;
+	width: 60px;
+	border-radius: 8px;
+	transition: height 0.5s ease;
 }
 
 .percentage-label {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-weight: bold;
-  font-size: 14px
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: white;
+	font-weight: bold;
+	font-size: 14px
 }
-
 </style>

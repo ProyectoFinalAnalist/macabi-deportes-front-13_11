@@ -15,7 +15,7 @@
         <form @submit.prevent="buscar()">
             <div class="row g-2">
                 <div class="col-12 col-md-auto">
-                    <select id="filtro" class="form-select">
+                    <select id="filtro" class="form-select" style="cursor: pointer;">
                         <option disabled>Filtrar por:</option>
                         <option value="nroSocio">Número de Socio</option>
                         <option selected value="nombre">Nombre</option>
@@ -60,8 +60,8 @@
                 <tbody class="pointer">
                     <tr v-for="socio in sociosFiltados" :key="socio.idSocio" @click="irA(socio.idSocio)">
                         <td class="d-none d-sm-table-cell">{{ socio.nroSocio }}</td>
-                        <td>{{ socio.nombre }} <label class="badge bg-macabi ms-3" id="socioNuevo"
-                                v-if="socio.esNuevoSocio">NUEVO</label> </td>
+                        <td>{{ socio.nombre }} <p class="badge bg-macabi ms-3 my-0" id="socioNuevo"
+                                v-if="socio.esNuevoSocio">NUEVO</p> </td>
                         <td>{{ socio.apellido }}</td>
                         <td class="d-none d-sm-table-cell">{{ socio.dni }}</td>
                         <td class="d-none d-lg-table-cell">{{ socio.email }}</td>
@@ -103,6 +103,8 @@
                 <button class="btn btn-dark" @click="volverAtras()">Volver</button>
             </div>
         </div>
+        <hr v-if="listSociosCumple && listSociosCumple.length > 0">
+        <br v-if="listSociosCumple && listSociosCumple.length > 0">
         <div v-if="listSociosCumple && listSociosCumple.length > 0" class="cumpleanos-box mx-1">
         <h2 class="text-center mb-3">Cumpleaños del Mes de {{ obtenerNombreMes() }}</h2>
       <table class="table table-bordered table-hover mt-3" cumpleanos-table>
@@ -166,7 +168,7 @@ export default {
         this.idCategoria = this.$route.params.id;
         const userStore = usrStore();
         this.rolUsuario =  userStore.getRol
-        console.log("La categoia es: " + this.idCategoria);
+        //console.log("La categoia es: " + this.idCategoria);
         if(! await verificarAutorizacionCategoria(this.idCategoria)) {
             this.$router.push(`/unauthorized`);
 
@@ -181,16 +183,16 @@ export default {
             let sociosLista = respuestaSocios.data.sociosDatos
             sociosLista.forEach(socio => {
                 this.listSocios.push(socio)
-                console.log(socio);
+                //console.log(socio);
                 const mesActual = new Date().getMonth() + 1;
 
-                console.log("mes actual: " + mesActual);
+                //console.log("mes actual: " + mesActual);
        
                 let mesNacimiento = new Date(socio.fechaNacimiento);
                 mesNacimiento.setDate(mesNacimiento.getDate() + 1)
                  mesNacimiento = mesNacimiento.getMonth() + 1;
              //   mesNacimiento.setDate(mesNacimiento.getDate() + 1)
-                console.log(" El mes de nacimiento de socio.nombre es: "+ mesNacimiento) ;
+                //console.log(" El mes de nacimiento de socio.nombre es: "+ mesNacimiento) ;
 
                 if (mesNacimiento === mesActual) {
                 this.listSociosCumple.push(socio);
@@ -256,9 +258,9 @@ export default {
 
 
         if ((hoy.getDate() >= fechaNac.getUTCDate())) {
-            return `CUMPLIÓ ${edad} AÑOS`;
+            return `Cumplió ${edad} años`;
         } else {
-            return `CUMPLE ${edad} AÑOS`;
+            return `Cumple ${edad} años`;
         }
     },
 
@@ -335,12 +337,8 @@ export default {
 
 
 #socioNuevo {
-  background-color: blue;
   color: white;
-  padding: 5px;
-  margin-left: 30px;
 }
-
 
 .pointer {
   cursor: pointer;

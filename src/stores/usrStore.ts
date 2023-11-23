@@ -55,7 +55,7 @@ export const usrStore = defineStore('usuariosStore', {
 
 
                 } catch (error) {
-                    alert("no se pudo relogear");
+                    //alert("no se pudo relogear");
                     console.log(error.response.data.message);
                 }
             }

@@ -1,113 +1,106 @@
 <template>
-  <div class="container mt-3">
-    <div class="text text-center pb-3 pt-5 h1">Modificar Fecha</div>
-
+  <div class="container fluid mb-5">
+    <div class="text text-center pb-3 h3">Detalles de la Fecha: <strong>{{
+      utils.obtenerFechaFormateada(fechaDetalle.fechaCalendario) }}</strong></div>
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <br>
+        <div class="card bg-light text-dark mb-4">
+          <div class="card-body">
+            <p><strong class="font-weight-bold">Fecha: <code>*</code></strong><input type="date" class="form-control"
+                v-model="fechaDetalle.fechaCalendario"></p>
+            <p class="mb-1"><strong class="font-weight-bold">Profesor Asignado: </strong></p>
+            <button v-for="(profesor, index) in profesor" :key="index" class="mb-1 mx-1 btn btn-sm btn-dark"
+              @click="verProfesor(profesor.idUsuario)">
+              {{ profesor.apellido }}, {{ profesor.nombre }}
+            </button>
+            <p class="my-2"><strong class="font-weight-bold">Tipo: </strong>{{ mapearTipo(fechaDetalle.tipo) }}</p>
+            <p class="mb-2"><strong class="font-weight-bold">Categoria: </strong>{{ fechaDetalle.Categorium ?
+              fechaDetalle.Categorium.nombreCategoria : 'Sin categoría' }}</p>
+            <p class="mb-0"><strong class="font-weight-bold">Deporte: </strong>{{ deporte }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
     <div>
-      <!-- Muestra los datos de la fecha -->
-      <div class="fecha-details">
-        <div class="form-group">
-          <label for="">Fecha</label>
-          <input
-            v-model="fechaDetalle.fechaCalendario"
-            type="date"
-            name=""
-            id="fecha"
-            class="form-control"
-            required
-          />
-        </div>
-
-        <p>Profesor Asignado: <ul><li v-for="prof in profesor">{{ prof.apellido }}, {{ prof.nombre }}</li></ul></p>
-        <p>Tipo: {{ mapearTipo(fechaDetalle.tipo) }}</p>
-        <p>
-          Categoria:
-          {{
-            fechaDetalle.Categorium
-              ? fechaDetalle.Categorium.nombreCategoria
-              : "Sin categoría"
-          }}
-        </p>
-        <p>Deporte: {{ deporte }}</p>
+      <h4 class="text-center my-4">
+        Socios Anotados en esta Fecha: <strong>{{ sociosAsistencia.sociosFinal.length }}</strong>
+      </h4>
+      <div class="text-center">
+        <code>Solo se eliminan los socios de esta <strong>fecha/citación</strong> pero siguen dentro de la categoría</code>
       </div>
-      <div>
-        <h2>
-          Socios Anotados en esta Fecha: <strong>{{ sociosAsistencia.sociosFinal.length }}</strong>
-        </h2>
-        <table class="table table-striped table-bordered">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Apellido</th>
-              <th>Estado</th>
-              <th  v-if ="fechaDetalle.tipo =='C'">Eliminar</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="socio in sociosAsistencia.sociosFinal" :key="socio.idSocio">
-              <td>{{ socio.nombre }}</td>
-              <td>{{ socio.apellido }}</td>
-              <td>{{ mapearEstado(socio.estado) }}</td>
-              <td  v-if ="fechaDetalle.tipo =='C'">
-                <button class="btn btn-danger" @click="eliminarSocio(socio)">
-                  x
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div v-if="sociosAsistencia.sociosFinal.length === 0">
-          <p class="no-socios">No hay socios anotados en esta fecha.</p>
-        </div>
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th class="d-none d-sm-table-cell">Estado</th>
+            <th v-if="fechaDetalle.tipo == 'C'">Eliminar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="socio in sociosAsistencia.sociosFinal" :key="socio.idSocio">
+            <td @click="irA(socio.idSocio)">{{ socio.nombre }}</td>
+            <td @click="irA(socio.idSocio)">{{ socio.apellido }}</td>
+            <td class="d-none d-sm-table-cell" @click="irA(socio.idSocio)">{{ mapearEstado(socio.estado) }}</td>
+            <td v-if="fechaDetalle.tipo == 'C'">
+              <button class="btn btn-danger" @click="eliminarSocio(socio)">
+                X
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div v-if="sociosAsistencia.sociosFinal.length === 0">
+        <p class="no-socios">No hay socios anotados en esta fecha.</p>
       </div>
     </div>
-<!-- Modal button start -->
-    <div class="justify-content-center d-flex" v-if ="fechaDetalle.tipo =='C'">
-        <button class="btn btn-success mb-3" data-bs-toggle="modal"
-            data-bs-target="#myModal">
-            Agregar Socios
-        </button>
+    <!-- Modal button start -->
+    <div class="justify-content-center d-flex" v-if="fechaDetalle.tipo == 'C'">
+      <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#myModal">
+        Agregar Socios
+      </button>
     </div>
-<!-- Modal button end -->
-
-<!-- Modal start -->
-
-<div class="modal fade"  id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel2">Seleccionar socios para agregar a esta fecha</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div v-for="socio in sociosXCategoria" :key="socio">
-                        <div class="form-check" v-if ="!sociosAsistencia.sociosFinal.some(e=>socio.idSocio==e.idSocio)">
-                            <input class="form-check-input" type="checkbox" :value="socio" v-model="listaSociosAgregar"
-                                >
-                            <label class="form-check-label" for="exampleCheckbox1">
-                                <p class="h6"> {{ socio.nombre }}, {{ socio.apellido }} | DNI: {{
-                                    socio.dni }}</p>
-                            </label>
-                        </div>
-                      </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" @click="agregarSocios" data-bs-dismiss="modal">Guardar</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-<!-- Modal end -->
-  
+    <!-- Modal button end -->
     <div class="d-flex justify-content-center align-items-center">
-      <button @click="volverADetalle()" class="btn btn-secondary">Volver al detalle
-      </button>
-      <button class="btn btn-primary m-3" @click="editFecha()">
-        Editar Fecha
-      </button>
+      <div class="btn-group">
+        <button class="btn btn-macabi1" @click="editFecha()">
+          Editar Fecha
+        </button>
+        <button @click="router.go(-1)" class="btn btn-dark">Volver</button>
+      </div>
+    </div>
+
+    <br>
+  </div>
+
+  <!-- Modal start -->
+  <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel2">Seleccionar socios para agregar a esta fecha</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div v-for="socio in sociosXCategoria" :key="socio">
+            <div class="form-check" v-if="!sociosAsistencia.sociosFinal.some(e => socio.idSocio == e.idSocio)">
+              <input class="form-check-input pointer" type="checkbox" :value="socio" v-model="listaSociosAgregar">
+              <label class="form-check-label" for="exampleCheckbox1">
+                <p class="h6"> {{ socio.nombre }}, {{ socio.apellido }} | DNI: {{
+                  socio.dni }}</p>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-macabi1" @click="agregarSocios" data-bs-dismiss="modal">Guardar</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
     </div>
   </div>
+  <!-- Modal end -->
 </template>
 
 <script>
@@ -116,6 +109,7 @@ import { onBeforeMount, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import apiUrl from "../../../../config/config.js";
 import { verificarAutorizacionFecha } from "../../../utils/permisos";
+import { Utils } from "../../../utils/utils";
 
 
 export default {
@@ -127,7 +121,7 @@ export default {
     const fechaStore = useElementStore("fechas")();
     const sociosXCategoriaStore = useElementStore("sociosXCategoria")();
 
-    const sociosAsistencia = ref({sociosInicial: [], sociosFinal:[]});
+    const sociosAsistencia = ref({ sociosInicial: [], sociosFinal: [] });
     const fechaDetalle = ref([]);
     const sociosXCategoria = ref([])
 
@@ -137,11 +131,13 @@ export default {
     const profesor = ref("");
     const listaSociosAgregar = ref([])
 
+    const utils = new Utils()
+
     onBeforeMount(async () => {
       await fetchs();
       if (!await verificarAutorizacionFecha(idFecha)) {
-	      	router.push({ path: "/unauthorized" })
-	}
+        router.push({ path: "/unauthorized" })
+      }
     });
 
     async function fetchs() {
@@ -149,15 +145,15 @@ export default {
       fechaDetalle.value = await obtenerDetalleFecha();
 
       if (fechaDetalle.value && fechaDetalle.value.idCategoria) {
-          const idCategoria = fechaDetalle.value.idCategoria;
-          deporte.value = await obtenerDeporte(idCategoria);
-          profesor.value = await obtenerProfesor(idCategoria);
-          sociosXCategoria.value= await obtenerSociosXCategoria(idCategoria)
-        }
+        const idCategoria = fechaDetalle.value.idCategoria;
+        deporte.value = await obtenerDeporte(idCategoria);
+        profesor.value = await obtenerProfesor(idCategoria);
+        sociosXCategoria.value = await obtenerSociosXCategoria(idCategoria)
+      }
 
     }
 
-    const obtenerSociosXCategoria = async(idCategoria)=>{
+    const obtenerSociosXCategoria = async (idCategoria) => {
       let res = [];
       try {
         await sociosXCategoriaStore.fetchElements(`${apiUrl}/sociosXCategoria/${idCategoria}`);
@@ -169,8 +165,8 @@ export default {
       return res;
     }
 
-    const obtenerDetalleFecha= async ()=>{
-      let res= []
+    const obtenerDetalleFecha = async () => {
+      let res = []
       try {
         await fechaStore.fetchElements(`${apiUrl}/fecha/fechas/${idFecha}`);
         res = fechaStore.getElements.result[0];
@@ -180,7 +176,7 @@ export default {
       return res;
     }
 
-    const obtenerSociosAnotados = async ()=> {
+    const obtenerSociosAnotados = async () => {
       try {
         await asistenciaStore.fetchElements(`${apiUrl}/asistencia/${idFecha}`);
         sociosAsistencia.value.sociosInicial = asistenciaStore.getElements.result;
@@ -211,9 +207,9 @@ export default {
     const obtenerProfesor = async (idCategoria) => {
       try {
         const response = await fetch(`${apiUrl}/categoria/${idCategoria}/getProfesores`);
-        if (response.ok) {   
+        if (response.ok) {
           const data = await response.json();
-          
+
           return data.usuariosList
         } else {
           console.error("Error al obtener nombre del profesor");
@@ -255,44 +251,44 @@ export default {
 
     }
 
-    function volverADetalle(){
+    function volverADetalle() {
       router.go(-1)
     }
 
-    async function agregarSocios(){
-      sociosAsistencia.value.sociosFinal =sociosAsistencia.value.sociosFinal.concat(...listaSociosAgregar.value)
-      listaSociosAgregar.value = listaSociosAgregar.value.filter(item => !sociosAsistencia.value.sociosFinal.includes(item));      
+    async function agregarSocios() {
+      sociosAsistencia.value.sociosFinal = sociosAsistencia.value.sociosFinal.concat(...listaSociosAgregar.value)
+      listaSociosAgregar.value = listaSociosAgregar.value.filter(item => !sociosAsistencia.value.sociosFinal.includes(item));
     }
 
 
-    async function editFechaCalendario(){
+    async function editFechaCalendario() {
       try {
-        await fechaStore.patchElement(`${apiUrl}/fecha/${idFecha}`,{fechaCalendario: fechaDetalle.value.fechaCalendario,idCategoria:fechaDetalle.value.idCategoria })
-        
+        await fechaStore.patchElement(`${apiUrl}/fecha/${idFecha}`, { fechaCalendario: fechaDetalle.value.fechaCalendario, idCategoria: fechaDetalle.value.idCategoria })
+
       } catch (error) {
         console.log("🚀 ~ file: EditarFecha.vue:196 ~ editFechaCalendario ~ error:", error.message.substring(error.message.length - 3))
-        if(error.message.substring(error.message.length - 3)== 400) throw "La fecha calendario ya existe"
+        if (error.message.substring(error.message.length - 3) == 400) throw "La fecha calendario ya existe"
       }
     }
 
     async function editFecha() {
       try {
-      await editSociosRegistrados();
-      
-      await editFechaCalendario();
-      router.go(-1)
+        await editSociosRegistrados();
+
+        await editFechaCalendario();
+        router.go(-1)
       } catch (error) {
         alert("Error detectado en el ingreso de campos: " + error)
       }
 
     }
 
-    async function editSociosRegistrados(){
-      
+    async function editSociosRegistrados() {
+
       const sociosAgregados = sociosAsistencia.value.sociosFinal.filter(socioFinal => !sociosAsistencia.value.sociosInicial.some(socioInicial => socioFinal.idSocio == socioInicial.idSocio));
 
       const sociosBorrados = sociosAsistencia.value.sociosInicial.filter(socioInicial => !sociosAsistencia.value.sociosFinal.some(socioFinal => socioFinal.idSocio == socioInicial.idSocio));
-    
+
       await agregarSociosDeFechaRequest(sociosAgregados)
 
       await eliminarSociosDeFechaRequest(sociosBorrados);
@@ -309,7 +305,14 @@ export default {
     async function agregarSociosDeFechaRequest(listSociosAgregados) {
       for (const socioAgregado of listSociosAgregados) {
         await asistenciaStore.createElement(
-          `${apiUrl}/asistencia`,{idFecha, idSocio:socioAgregado.idSocio, estado:null} );
+          `${apiUrl}/asistencia`, { idFecha, idSocio: socioAgregado.idSocio, estado: null });
+      }
+    }
+
+    
+    function irA(id) {
+      if (id != 0) {
+        router.push(`/socios/${id}`)
       }
     }
 
@@ -326,7 +329,10 @@ export default {
       sociosXCategoria,
       listaSociosAgregar,
       agregarSocios,
-      volverADetalle
+      volverADetalle,
+      utils,
+      router,
+      irA
     };
   },
   data() {
@@ -337,23 +343,19 @@ export default {
 </script>
 
 <style scoped>
-.fecha-details {
-  border: 6px solid #013a77;
-  background-color: #f0f0f0;
-  padding: 10px;
-  margin: 10px 0;
+@import '../../../assets/btn.css';
+
+.fondo-card {
+  background-color: #f8d7da;
+  border-color: #f0959e;
+  color: #723b47;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 4px;
+  padding: 8px;
 }
 
-.table-bordered {
-  border: 6px solid #013a77;
-}
-
-.table-bordered th,
-.table-bordered td {
-  border: 1px solid #013a77;
-}
-
-.no-socios {
-  color: red;
+.pointer, input {
+  cursor: pointer;
 }
 </style>

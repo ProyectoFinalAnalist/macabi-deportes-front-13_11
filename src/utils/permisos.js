@@ -48,7 +48,9 @@ export const verificarAutorizacionFecha = async (idFecha) => {
   export const cambiosPerfilPropioPermiso = async (idUsuario) => {
     let permitido = true;
     const userStore = usrStore()
-        if(userStore.getId != idUsuario) {
+    let cordinarOProfesor =  (userStore.getRol == 'C' || userStore == 'P')
+
+        if(cordinarOProfesor && userStore.getId != idUsuario) {
            permitido = false
         }
     

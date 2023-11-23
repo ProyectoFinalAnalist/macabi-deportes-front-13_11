@@ -1,11 +1,12 @@
 <template>
-  <div class="container-fluid ps-5 pe-5 mb-5">
+  <Loading v-if="loading"/>
+  <div v-else class="container-fluid ps-5 pe-5 mb-5">
     <div class="text text-center h1">USUARIOS</div>
     <br>
     <form @submit.prevent="buscar()">
       <div class="row g-2">
         <div class="col-12 col-md-auto">
-          <select id="filtro" class="form-select">
+          <select id="filtro" class="form-select" style="cursor: pointer;">
             <option disabled>Filtrar por:</option>
             <option value="nombre">Nombre</option>
             <option value="apellido">Apellido</option>
@@ -25,13 +26,13 @@
             data-bs-parent="#checkboxAccordion">
             <div class="accordion-body my-1">
               <input type="checkbox" id="admin" name="A" value="A" v-model="checkboxes"
-                class="form-check-input form-check-input-sm mx-1">
+                class="form-check-input form-check-input-sm mx-1" style="cursor: pointer;">
               <label for="Administrador" class="form-check-label">Administrador</label><br>
               <input type="checkbox" id="coordinador" name="C" value="C" v-model="checkboxes"
-                class="form-check-input form-check-input-sm mx-1">
+                class="form-check-input form-check-input-sm mx-1" style="cursor: pointer;">
               <label for="Coordinador" class="form-check-label">Coordinador</label><br>
               <input type="checkbox" id="profesor" name="P" value="P" v-model="checkboxes"
-                class="form-check-input form-check-input-sm mx-1">
+                class="form-check-input form-check-input-sm mx-1" style="cursor: pointer;">
               <label for="Profesor" class="form-check-label">Profesor</label>
             </div>
           </div>
@@ -50,7 +51,7 @@
       </div>
     </form>
     <br>
-    <div class="d-flex justify-content-end input-group">
+    <div class="d-flex justify-content-end input-group" v-if="usuarios">
       <table class="table table-bordered table-hover">
         <thead>
           <tr>
@@ -101,14 +102,19 @@ tbody {
 import { useElementStore } from "../../../stores/Store";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import Loading from '../../dependentComponents/Loading.vue';
 
-export default {
+export default 
+  { components: {
+    Loading,
+  },
   setup() {
     const elementStore = useElementStore("usuario")()
     let busqueda = ""
     const usuarios = ref(null)
     const orden = ref(true)
     const router = useRouter();
+    const loading = ref(true)
 
     const size = ref(0)
 
@@ -117,6 +123,7 @@ export default {
       elementStore.fetchElements().then(() => {
         usuarios.value = elementStore.getElements
         size.value = usuarios.value.length || 0
+        loading.value = false
       })
     })
 
@@ -188,7 +195,9 @@ export default {
       ordenar,
       irA,
       checkboxes,
-      obtenerRol
+      obtenerRol,
+      loading,
+      Loading
     }
   },
 }

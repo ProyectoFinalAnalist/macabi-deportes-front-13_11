@@ -1,30 +1,57 @@
 <template>
-  <div id="formulario-container">
-    <form class="formulario-box">
-      <h1>Citación de socios para la fecha: {{ fechaCitacion }}</h1>
-      <div class="form-group">
-        <label class="form-label">Nro. de Socio</label>
-        <label class="form-label">Nombre</label>
-        <label class="form-label">Apellido</label>
-        <label class="form-label">Seleccionar</label>
+  <div class="container-fluid px-3 px-sm-5 mb-5">
+    <div class="row m">
+      <h3 class="text-center mt-2">Citación de socios para la fecha: <strong> {{
+        utils.obtenerFechaFormateada(fechaCitacion) }}</strong></h3>
+      <h4 class="text-center mt-2">Categoria: <strong>{{ this.nombreCategoria }}</strong></h4>
+      <h5 class="text-center mt-2">Deporte: <strong>{{ this.nombreDeporte }}</strong></h5>
+      <code class="text-end" v-if="users.length != 0"># Seleccionar socios para la citación</code>
+      <table class="table table-bordered table-hover mt-2" v-if="users.length != 0">
+        <thead>
+          <tr>
+            <th class="d-none d-sm-table-cell">Nro. de Socio</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th class="d-none d-sm-table-cell">DNI</th>
+            <th class="text-center">#</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(user, index) in users" :key="index" @click="toggleSociosElegidos(user.idSocio)" style="cursor: pointer;">
+            <td class="d-none d-sm-table-cell">{{ user.nroSocio }}</td>
+            <td>{{ user.nombre }}</td>
+            <td>{{ user.apellido }}</td>
+            <td class="d-none d-sm-table-cell">{{ user.dni }}</td>
+            <td class="text-center">
+              <input style="height: 20px; width: 20px;" type="checkbox" :value="{ idSocio: user.idSocio }"
+                v-model="usersElegidos">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div v-if="users.length == 0" class="mt-3">
+        <div class="card fondo-card">
+          <div class="card-body" style="border-radius: 10px;">
+            <h5 class="fw-bold text-center">{{ mensajeNoHaySocios }}</h5>
+          </div>
+        </div>
       </div>
-      <div class="form-group" v-for="(user, index) in users" :key="index">
-        <input type="text" class="form-control" :value="user.nroSocio" disabled>
-        <input type="text" class="form-control" :value="user.nombre" disabled>
-        <input type="text" class="form-control" :value="user.apellido" disabled>
-        <input type="checkbox" :name="'seleccionar-' + user.id" :value="{ idSocio: user.idSocio }"
-          v-model="usersElegidos">
+      <code v-if="users.length != 0" class="text-center">Seleccionar o Des-Selecionar todos los socios</code>
+      <div v-if="users.length != 0" class="d-flex align-items-center justify-content-center mt-3">
+        <div class="btn-group">
+          <button @click="selectAll" class="btn btn-success">Todos</button>
+          <button @click="deleteAll" class="btn btn-danger">Quitar</button>
+        </div>
       </div>
-      <div v-if="users.length == 0"><p class="no-fechas">{{mensajeNoHaySocios}}</p></div>
-
-      
-        
-    
-      <div class="form-group">
-        <button @click="nuevaCitacion" class="btn btn-primary">Confirmar</button>
+      <div class="d-flex align-items-center justify-content-center mt-3">
+        <div class="btn-group">
+          <button @click="nuevaCitacion" class="btn btn-macabi1">Confirmar</button>
+          <button @click="this.$router.go(-2)" class="btn btn-dark">Volver</button>
+        </div>
       </div>
-    </form>
+    </div>
   </div>
+  <br>
 </template>
 
 
@@ -32,22 +59,27 @@
 import axios from "axios";
 import apiUrl from '../../../../config/config.js'
 import { verificarAutorizacionCategoria } from "../../../utils/permisos";
-
+import { Utils } from '../../../utils/utils.js'
 
 export default {
   name: "NuevaFechaCitacion",
   components: {},
   data: () => ({
-    mensajeNoHaySocios:"No hay socios asignados a esta categoria. Podes generar la fecha y asignar socios a la citación más tarde",
+    mensajeNoHaySocios: "No hay socios asignados a esta categoria. Podes generar la fecha y asignar socios a la citación más tarde",
     fechaCitacion: "21/05/1997",
     categoria: "",
     users: [],
     usersElegidos: [],
+    utils: new Utils(),
+    nombreDeporte: '',
+    nombreCategoria: '',
   }),
   async created() {
     try {
       this.fechaCitacion = this.$route.query.fecha;
       this.categoria = this.$route.params.idCategoria;
+      this.nombreCategoria = this.$route.query.categoria;
+      this.nombreDeporte = this.$route.query.deporte;
 
       if (!await verificarAutorizacionCategoria(this.categoria)) {
         this.$router.push("/unauthorized")
@@ -61,9 +93,7 @@ export default {
     }
   },
   methods: {
-
     async nuevaCitacion() {
-      event.preventDefault();
       try {
         let parametro = {
           idCategoria: this.categoria,
@@ -71,75 +101,48 @@ export default {
           tipo: 'C',
           idSocios: this.usersElegidos
         };
-
-        console.log("La fecha es : " + parametro.fechaCalendario + " el id categoria: " + parametro.idCategoria + " y el tipo: " + parametro.tipo);
         let result = await axios.post(`${apiUrl}/fecha/`, parametro, { withCredentials: true });
-        this.$router.push({ path: '/fechas' });
+        this.$router.push(`/fechasCategoria/${this.categoria}`);
 
       } catch (e) {
         alert(e.response.data.message)
-        this.$router.push({ path: '/fechas' });
+        this.$router.push(`/fechasCategoria/${this.categoria}`);
 
       }
-    }
+    },
 
+    selectAll() {
+      this.usersElegidos = this.users.map(user => ({ idSocio: user.idSocio }));
+    },
+
+    deleteAll() {
+      this.usersElegidos = []
+    },
+
+    toggleSociosElegidos(idSocio) {
+      const index = this.usersElegidos.findIndex(socio => socio.idSocio === idSocio);
+
+      if (index !== -1) {
+        this.usersElegidos.splice(index, 1);
+      } else {
+        this.usersElegidos.push({ idSocio: idSocio });
+      }
+    }
   },
+
 };
 
 </script>
-
 <style scoped>
-#formulario-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
+@import '../../../assets/btn.css';
 
-.formulario-box {
-  background-color: #f4f4f4;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  max-width: 1000px;
-}
-
-.form-group button {
-  margin-right: 10px;
-  margin-top: 20px;
-  background-color: #014187;
-}
-
-#btnVolver {
-  background-color: rgb(130, 130, 130);
-}
-
-.form-group {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-}
-
-.form-label {
-  font-weight: bold;
-}
-
-.form-control {
-  flex: 1;
-  margin: 0 10px;
-}
-.no-fechas {
-  text-align: center;
-  padding: 10px;
-  background-color: rgb(1,65,135);
-  border: 1px solid #ffffff;
+.fondo-card {
+  background-color: #f8d7da;
+  border-color: #f0959e;
+  color: #723b47;
+  border-width: 2px;
+  border-style: solid;
   border-radius: 4px;
-  margin: 20px auto;
-  max-width: 300px;
-  color:white;
+  padding: 8px;
 }
-</style>
-
-  
+</style>  

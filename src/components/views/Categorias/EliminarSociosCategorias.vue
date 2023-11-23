@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid px-5 mb-5">
+    <div class="container-fluid  mb-5 px-md-5">
         <div class="text text-center">
             <h2>Eliminar socios de la Categoria: <strong>{{ nombreCategoria }}</strong> </h2>
             <h4>Deporte: <strong>{{ deporteCategoria }}</strong> </h4>
@@ -8,7 +8,7 @@
         <form @submit.prevent="buscar()">
             <div class="row g-2">
                 <div class="col-12 col-md-auto">
-                    <select id="filtro" class="form-select">
+                    <select id="filtro" class="form-select" style="cursor: pointer;">
                         <option disabled>Filtrar por:</option>
                         <option value="nroSocio">Número de Socio</option>
                         <option selected value="nombre">Nombre</option>
@@ -36,7 +36,7 @@
         </form>
         <br>
         <div v-if="listSocios && listSocios.length > 0">
-            <table class="table table-bordered table-hover">
+            <table class="table table-bordered table-hover ">
                 <thead>
                     <tr>
                         <th class="d-none d-sm-table-cell">NroSocio:
@@ -47,7 +47,7 @@
                         <th class="d-none d-sm-table-cell">Dni:
                             <button class="btn bg-success" @click="ordenar('dni')"></button>
                         </th>
-                        <th class="d-none d-lg-table-cell">Eliminar</th>
+                        <th>Eliminar</th>
                     </tr>
                 </thead>
                 <tbody class="pointer">

@@ -11,7 +11,7 @@
 				<table class="tabla_macabi1">
 					<tr>
 						<th class="big">Nombre</th>
-						<th class="big" style="width: 20%;">dni</th>
+						<th class="big" style="width: 20%;">DNI</th>
 						<th class="big" style="width: 40%;">Email</th>
 						<th class="big" style="width: 15%;">Estado</th>
 
@@ -38,7 +38,7 @@
 						<th>Categorias</th>
 					</tr>
 
-					<tr v-for="categoria in categorias" class="resaltable"
+					<tr v-for="categoria in categorias" class="resaltable text-center"
 						@click="$router.push(`/detalleCategoria/${categoria.idCategoria}`);">
 						<td data-cell="Nombre">{{ categoria.nombreCategoria }}</td>
 					</tr>
@@ -77,16 +77,16 @@
       </div>
   </div>
 
-	<div class="sub_container_buttons">
-		<button v-if="rolUsuario == 'A' " style="margin-right: 10px;" class="btn btn-primary primary-macabi"
+	<div class="sub_container_buttons btn-group mb-5">
+		<button v-if="rolUsuario == 'A' " class="btn btn-primary primary-macabi"
 			@click="$router.push(`/editarDeporte/${idDeporte}`);">Editar Deporte</button>
 			<div class="justify-content-center d-flex">
                              
                           </div>
-		<button v-if="rolUsuario == 'C' " style="margin-right: 10px;" class="btn btn-primary primary-macabi" data-bs-toggle="modal"
+		<button v-if="rolUsuario == 'C' " class="btn btn-primary primary-macabi" data-bs-toggle="modal"
                                   data-bs-target="#categoriaModal"
 			>Agregar nueva categoria</button>
-		<button style="margin-left: 10px;" class="btn btn-dark" @click="$router.go(-1)">Volver Atras</button>
+		<button class="btn btn-dark" @click="$router.go(-1)">Volver</button>
 	</div>
 </template>
 

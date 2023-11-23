@@ -1,35 +1,52 @@
 <template>
-  <div id="formulario-container">
-    <form class="formulario-box">
-      <h1>Crear fecha</h1>
-      <div class="form-group">
-        <label class="form-label">Categoria</label>
-        <input type="text" class="form-control" aria-describedby="emailHelp" :value="nombreCategoria" disabled>
+  <div class="container-fluid mb-5">
+    <div class="row m">
+      <div class="col-md-6 offset-md-3">
+        <h3 class="text-center mt-2">Crear Fecha</h3>
+        <div class="text-end"><code>*campos obligatorios</code></div>
+        <div class="card bg-light text-dark mb-4">
+          <div class="card-body">
+            <div class="form-group mb-3">
+              <label class="fw-bold">Categoria: <code>*</code></label>
+              <input type="text" class="form-control" aria-describedby="emailHelp" :value="nombreCategoria" disabled>
+            </div>
+            <div class="form-group mb-3">
+              <label for="tipoFecha" class="fw-bold">Tipo de fecha: <code>*</code></label>
+              <select id="tipoFecha" class="form-control" v-model="selectedTipoFecha">
+                <option v-for="opcion in opciones" :value="opcion.value">{{ opcion.label }}</option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="" class="fw-bold">Deporte: <code>*</code></label>
+              <input type="text" class="prueba form-control" aria-describedby="emailHelp" :value="nombreDeporte" disabled>
+            </div>
+            <div class="form-group mb-3">
+              <label for="" class="fw-bold">Fecha: <code>*</code></label>
+              <input v-model="fechaElegida" type="date" name="" id="fecha" class="form-control" :min="fechaMin">
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="tipoFecha">Tipo de fecha</label>
-        <select id="tipoFecha" class="form-control" v-model="selectedTipoFecha" required>
-          <option v-for="opcion in opciones" :value="opcion.value" >{{ opcion.label }}</option>
-        </select>
+      <div class="d-flex justify-content-center align-items-center mb-1">
+        <button type="button" class="btn btn-success" data-bs-toggle="collapse" data-bs-target="#demo">Ayuda</button>
       </div>
-      <div class="form-group">
-        <label for="">Deporte</label>
-        <input type="text" class="prueba form-control" aria-describedby="emailHelp" :value="nombreDeporte" disabled>
+      <div class="d-flex justify-content-center align-items-center">
+        <div id="demo" class="collapse">
+          <code><strong>"Entrenamiento"</strong> para automaticamente citar a todos los socios de la <strong>Categoría.</strong>
+                <br><strong>"Citacion"</strong> para poder elegir que socios citar a la fecha de la <strong>Categoría.</strong>
+              </code>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="">Fecha</label>
-        <input v-model="fechaElegida" type="date" name="" id="fecha" class="form-control" required :min="fechaMin">
+      <div class="d-flex justify-content-center align-items-center mt-4">
+        <div class="btn-group">
+          <button @click="ingresarFecha" class="btn btn-macabi1">Crear fecha</button>
+          <button class="btn btn-dark" @click="this.$router.go(-1)">Volver</button>
+        </div>
       </div>
-      <div class="form-group">
-        <button v-if="selectedTipoFecha && fechaElegida"  @click="ingresarFecha" class="btn btn-primary">Confirmar</button>
-        <button v-if="!selectedTipoFecha || !fechaElegida" disabled  @click="ingresarFecha" class="btn btn-primary">Confirmar</button>
-        <button id="btnVolver" class="btn btn">Volver</button>
-      </div>
-    </form>
+    </div>
   </div>
+  <br>
 </template>
-
-
 <script>
 import axios from "axios";
 import apiUrl from '../../../../config/config.js'
@@ -39,7 +56,7 @@ import { verificarAutorizacionCategoria } from "../../../utils/permisos";
 export default {
   components: {},
   data: () => ({
-    fechaMin:"",
+    fechaMin: "",
     minFecha: "",
     fechaElegida: null,
     nombreCategoria: null,
@@ -47,30 +64,27 @@ export default {
     tiposDisponibles: ['Entrenamiento, Citación'],
     tipoFecha: "",
     selectedTipoFecha: '', // Aquí almacenarás el valor seleccionado,
-    idCat:0,
+    idCat: 0,
     opciones: [
       { value: 'E', label: 'Entrenamiento' },
       { value: 'C', label: 'Citación' }],
   }),
 
   async created() {
-   
 
-      const date = new Date()
-      date.setDate(date.getDate());
-      date.setFullYear(date.getFullYear() - 1)
-      this.fechaMin = date.toISOString().slice(0, 10);
 
-      //console.log("Ahora la fecha de hoy es " + this.fechaMin);
-    
+    const date = new Date()
+    date.setDate(date.getDate());
+    date.setFullYear(date.getFullYear() - 1)
+    this.fechaMin = date.toISOString().slice(0, 10);
 
     this.idCat = this.$route.params.idCategoria,
-    
+
       this.minFecha = new Date().toISOString().split('T')[0]
 
-      if (!await verificarAutorizacionCategoria(this.idCat)) {
-        this.$router.push("/unauthorized")
-      }
+    if (!await verificarAutorizacionCategoria(this.idCat)) {
+      this.$router.push("/unauthorized")
+    }
 
     let nombreDeLaCategoria = await axios.get(`${apiUrl}/categoria/${this.idCat}/nombreCategoria`, { withCredentials: true });
 
@@ -83,8 +97,14 @@ export default {
 
   methods: {
     async ingresarFecha(event) {
-      event.preventDefault();
-     
+
+      if (this.fechaElegida == null || this.selectedTipoFecha == '') {
+        alert("Error, complete todos los campos")
+      } else {
+
+
+        event.preventDefault();
+
 
         if (this.selectedTipoFecha == "E") {
           let parametro = {
@@ -96,14 +116,14 @@ export default {
           try {
             const result = await axios.post(`${apiUrl}/fecha/`, parametro, { withCredentials: true });
 
-            if (result.status == 200){
+            if (result.status == 200) {
               this.$router.push({ path: `/fechasCategoria/${this.idCat}` });
             }
-            
 
 
 
-           
+
+
           } catch (e) {
 
             if (e.response && e.response.data && e.response.data.message) {
@@ -112,73 +132,54 @@ export default {
           }
 
         } else {
-          this.$router.push({
-            path: `/nuevaCitacion/${this.idCat}`,
-            query: {
-              fecha: this.fechaElegida
+
+          try {
+
+            let parametro = {
+              idCategoria: this.idCat,
+              fechaCalendario: this.fechaElegida,
+            };
+
+            const result = await axios.post(`${apiUrl}/fecha/citacionDisponible`, parametro, { withCredentials: true });
+
+            if (result.status == 200) {
+              this.$router.push({
+                path: `/nuevaCitacion/${this.idCat}`,
+                query: {
+                  fecha: this.fechaElegida,
+                  categoria: this.nombreCategoria,
+                  deporte: this.nombreDeporte
+                }
+              });
             }
-          });
+          } catch (e) {
+            if (e.response && e.response.data && e.response.data.message) {
+              alert(e.response.data.message)
+            }
+          }
+
 
         }
-      
 
 
+      }
     },
     confirmarFecha() {
       let fechaCorrecta = true;
       const fechaSeleccionada = new Date(this.fechaElegida);
       let diaDeHoy = new Date()
 
-      console.log("LA fecha elegida es: " + fechaSeleccionada);
-      console.log("LA fecha de hoyes: " + diaDeHoy);
-
-
-      if (fechaSeleccionada < diaDeHoy ) {
+      if (fechaSeleccionada < diaDeHoy) {
         alert('No puedes seleccionar una fecha anterior a la fecha actual.');
         fechaCorrecta = false;
       }
 
       return fechaCorrecta;
     },
- 
+
   },
 };
 </script>
-
 <style scoped>
-#formulario-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
-
-.formulario-box {
-  background-color: #f4f4f4;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  max-width: 400px;
-}
-
-.form-group button {
-  margin-right: 10px;
-  margin-top: 20px;
-  background-color: #014187;
-}
-
-#btnVolver {
-  background-color: rgb(130, 130, 130);
-}
-
-
-
-@media (max-width: 768px) {
-  .formulario-box {
-    max-width: 90%;
-
-  }
-}
+@import '../../../assets/btn.css';
 </style>
