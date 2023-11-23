@@ -1,5 +1,6 @@
 <template>
-    <div class="container-fluid">
+    <Loading v-if="loading"/>
+    <div v-else class="container-fluid">
         <div class="row m">
             <div class="col-md-6 offset-md-3" v-if="usuario">
                 <h3 class="text-center mt-2">Registrar Usuario</h3>
@@ -95,13 +96,11 @@
             </div>
         </div>
     </div>
-    <div class="d-flex justify-content-center align-items-center mb-4">
+    <div v-if="!loading" class="d-flex justify-content-center align-items-center mb-4">
         <button class="btn btn-dark" v-on:click="volver()">Volver</button>
     </div>
 </template>
 <style scoped>
-@import '../../../assets/alert.css';
-
 h6 {
     background-color: #f8d7da;
     border-color: #f0959e;
@@ -117,10 +116,10 @@ import { useElementStore } from "../../../stores/Store";
 import { useRouter } from "vue-router";
 import { computed, ref, onMounted } from "vue";
 import { UtilsUsuario, Utils } from '../../../utils/utils.js'
+import Loading from "../../dependentComponents/Loading.vue";
 
 export default {
     setup() {
-
         const elementStore = useElementStore("usuario")();
         elementStore.setCurrentElement({
             nombre: "",
@@ -140,8 +139,13 @@ export default {
         const utilsUsuario = new UtilsUsuario()
         const showErrores = ref({})
 
+        const loading = ref(true)
+
         onMounted(() => {
             elementStore.fetchElements()
+            .then(() => {
+                loading.value = false
+            })
         })
 
         const crearUsuario = async () => {
@@ -149,6 +153,7 @@ export default {
 
             if (!utilsUsuario.errores(showErrores.value)) {
                 if (utils.confirm("crear", "registrado", "Usuario")) {
+                    loading.value = true
                     await elementStore.createElement(usuario.value);
                     router.push("/usuarios");
                 }
@@ -170,7 +175,8 @@ export default {
             crearUsuario,
             usuario,
             showErrores,
-            obtenerFechaMax
+            obtenerFechaMax,
+            loading
         };
     },
     data() {
@@ -189,6 +195,9 @@ export default {
         volver() {
             this.$router.go(-1)
         }
+    },
+    components: {
+        Loading
     }
 };
 </script>

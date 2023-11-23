@@ -1,5 +1,6 @@
 <template>
-    <div class="container-fluid mb-5">
+    <loading v-if="loading" />
+    <div v-else class="container-fluid mb-5">
         <div class="row">
             <div class="col-md-6 offset-md-3" v-if="usuario">
                 <h3 class="text-center">Detalles del Usuario: <strong>{{ usuario.apellido }}, {{ usuario.nombre }}</strong>
@@ -54,7 +55,7 @@
                         </div>
                         <div id="demo" class="collapse">
                             <code><strong>"Click"</strong> en el nombre de la <strong>Categoría</strong> para ir hacia los detalles de esa Categoría.
-                                    <br><strong>"Click"</strong> en el nombre del <strong>Deporte</strong> para ir a los detalles de ese Deporte.</code>
+                                                        <br><strong>"Click"</strong> en el nombre del <strong>Deporte</strong> para ir a los detalles de ese Deporte.</code>
                         </div>
                         <div class="d-flex justify-content-end input-group">
                             <table class="table table-bordered">
@@ -89,13 +90,21 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 offset-md-3" v-else>
-                <strong class="alert alert-warning text-center">El usuario no existe.</strong>
+            <div class="col-md-6 offset-md-3" v-if="!usuario">
+                <div class="card fondo-card mb-4">
+                    <div class="card-body" style="border-radius: 10px;">
+                        <h5 class="fw-bold text-center">No se encontró el usuario</h5>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-dark" @click="volver">Volver</button>
+                </div>
             </div>
             <div class="d-flex justify-content-center" v-if="usuario">
-                    <div class="btn-group">
-                        <router-link class="btn btn-macabi1" v-if="rolUser != 'P'" :to="`/modificarusuario/${usuario.idUsuario}`">Modificar
-                            Usuario</router-link>
+                <div class="btn-group">
+                    <router-link class="btn btn-macabi1" v-if="rolUser != 'P'"
+                        :to="`/modificarusuario/${usuario.idUsuario}`">Modificar
+                        Usuario</router-link>
 
                     <button class="btn btn-dark" @click="volver">Volver</button>
                 </div>
@@ -133,6 +142,7 @@ import { Utils } from "../../../utils/utils"
 import apiUrl from "../../../../config/config";
 import axios from "axios";
 import { usrStore } from '../../../stores/usrStore';
+import Loading from "../../dependentComponents/Loading.vue";
 
 export default {
     setup() {
@@ -144,15 +154,27 @@ export default {
         const elementStore = useElementStore("usuario")();
         const utils = new Utils()
 
+        const loading = ref(true)
+
         elementStore.fetchElementById(idUsuario)
             .then(() => {
-                switch (elementStore.currentElement.Rol.tipo) {
-                    case 'C':
-                        obtenerDeportes()
-                        break;
-                    case 'P':
-                        obtenerCategorias()
-                        break;
+                try {
+                    switch (elementStore.currentElement.Rol.tipo) {
+                        case 'C':
+                            obtenerDeportes()
+                            break;
+                        case 'P':
+                            obtenerCategorias()
+                            break;
+                        default:
+                            loading.value = false
+                    }
+                }
+                catch (e) {
+                    console.log(e.response.data)
+                }
+                finally {
+                    loading.value = false
                 }
             })
 
@@ -171,6 +193,9 @@ export default {
                 })
                 .catch(error => {
                     messageError.value = `${error.response.data.message} asignados`
+                })
+                .finally(() => {
+                    loading.value = false;
                 });
         }
 
@@ -181,6 +206,9 @@ export default {
                 })
                 .catch(error => {
                     messageError.value = error.response.data.message
+                })
+                .finally(() => {
+                    loading.value = false;
                 });
         }
 
@@ -195,7 +223,8 @@ export default {
             volver,
             asignaciones,
             irA,
-            messageError
+            messageError,
+            loading
         };
     },
     computed: {
@@ -214,6 +243,9 @@ export default {
         activo() {
             return this.usuario.activo ? "Si" : "No"
         }
+    },
+    components: {
+        Loading
     }
 };
 </script>

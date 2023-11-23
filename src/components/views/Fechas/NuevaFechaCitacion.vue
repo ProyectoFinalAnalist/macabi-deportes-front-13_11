@@ -1,5 +1,6 @@
 <template>
-  <div class="container-fluid px-3 px-sm-5 mb-5">
+  <Loading v-if="this.loading" />
+  <div v-else class="container-fluid px-3 px-sm-5 mb-5">
     <div class="row m">
       <h3 class="text-center mt-2">Citación de socios para la fecha: <strong> {{
         utils.obtenerFechaFormateada(fechaCitacion) }}</strong></h3>
@@ -17,7 +18,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(user, index) in users" :key="index" @click="toggleSociosElegidos(user.idSocio)" style="cursor: pointer;">
+          <tr v-for="(user, index) in users" :key="index" @click="toggleSociosElegidos(user.idSocio)"
+            style="cursor: pointer;">
             <td class="d-none d-sm-table-cell">{{ user.nroSocio }}</td>
             <td>{{ user.nombre }}</td>
             <td>{{ user.apellido }}</td>
@@ -60,6 +62,7 @@ import axios from "axios";
 import apiUrl from '../../../../config/config.js'
 import { verificarAutorizacionCategoria } from "../../../utils/permisos";
 import { Utils } from '../../../utils/utils.js'
+import Loading from "../../dependentComponents/Loading.vue";
 
 export default {
   name: "NuevaFechaCitacion",
@@ -73,7 +76,12 @@ export default {
     utils: new Utils(),
     nombreDeporte: '',
     nombreCategoria: '',
+
+    loading: true
   }),
+  components: {
+    Loading
+  },
   async created() {
     try {
       this.fechaCitacion = this.$route.query.fecha;
@@ -90,10 +98,13 @@ export default {
 
     } catch (e) {
       throw e
+    } finally {
+      this.loading = false
     }
   },
   methods: {
     async nuevaCitacion() {
+      this.loading = true
       try {
         let parametro = {
           idCategoria: this.categoria,
@@ -108,6 +119,8 @@ export default {
         alert(e.response.data.message)
         this.$router.push(`/fechasCategoria/${this.categoria}`);
 
+      } finally {
+        this.loading = false
       }
     },
 

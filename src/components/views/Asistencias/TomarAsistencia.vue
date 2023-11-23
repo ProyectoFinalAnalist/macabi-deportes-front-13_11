@@ -1,5 +1,6 @@
 <template>
-  <div class="container mb-5">
+  <Loading v-if="loading" />
+  <div v-else class="container mb-5">
     <div class="text text-center pb-3 h3">Asignar asistencia a la fecha: <strong>{{
       utils.obtenerFechaFormateada(fechaDetalle.fechaCalendario)
     }}</strong></div>
@@ -35,24 +36,31 @@
             <strong> {{ socio.apellido }}, {{ socio.nombre }}</strong>
             <div class="d-flex align-items-center justify-content-center my-1 columnas-responsive">
               <div class="my-1">
-                <input type="radio" :id="'p' + socio.idSocio" v-model="socio.estado" value="P" :checked="socio.estado === 'P'" class="me-1" />
+                <input type="radio" :id="'p' + socio.idSocio" v-model="socio.estado" value="P"
+                  :checked="socio.estado === 'P'" class="me-1" />
                 <label class="me-0 me-sm-3 pointer" :for="'p' + socio.idSocio">Presente</label>
               </div>
 
               <div class="my-1">
-                <input type="radio" :id="'j' + socio.idSocio" v-model="socio.estado" value="J" :checked="socio.estado === 'J'" class="me-1" />
+                <input type="radio" :id="'j' + socio.idSocio" v-model="socio.estado" value="J"
+                  :checked="socio.estado === 'J'" class="me-1" />
                 <label class="me-0 me-sm-3 pointer" :for="'j' + socio.idSocio">Justificado</label>
               </div>
 
               <div class="my-1">
-                <input type="radio" :id="'a' + socio.idSocio" v-model="socio.estado" value="A" :checked="socio.estado === 'A'" />
+                <input type="radio" :id="'a' + socio.idSocio" v-model="socio.estado" value="A"
+                  :checked="socio.estado === 'A'" />
                 <label class="me-0 me-sm-1 pointer" :for="'a' + socio.idSocio">Ausente</label>
               </div>
             </div>
           </li>
         </ul>
         <div v-if="sociosAsistenciaFecha.length === 0">
-          <p class="no-socios">No hay socios anotados en esta fecha.</p>
+          <div class="card fondo-card my-3">
+            <div class="card-body" style="border-radius: 10px;">
+              <h5 class="fw-bold text-center">No hay socios anotados a la fecha</h5>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -75,6 +83,7 @@ import { useRoute, useRouter } from "vue-router";
 import apiUrl from "../../../../config/config.js";
 import { verificarAutorizacionFecha } from "../../../utils/permisos";
 import { Utils } from "../../../utils/utils";
+import Loading from "../../dependentComponents/Loading.vue";
 
 export default {
   setup() {
@@ -89,6 +98,7 @@ export default {
     const deporte = ref("");
     const profesor = ref("");
     const utils = new Utils()
+    const loading = ref(true)
 
     onBeforeMount(async () => {
       await fetchs();
@@ -119,6 +129,8 @@ export default {
       } catch (error) {
         console.error("Error fetching fecha detalle:", error);
       }
+
+      loading.value = false
     }
 
     const obtenerDeporte = async (idCategoria) => {
@@ -144,7 +156,6 @@ export default {
         const response = await fetch(`${apiUrl}/categoria/${idCategoria}/getProfesores`);
         if (response.ok) {
           const data = await response.json();
-
           return data.usuariosList
         } else {
           console.error("Error al obtener nombre del profesor");
@@ -185,6 +196,7 @@ export default {
     const guardarAsistencia = async () => {
       try {
         const cambiosAsistencia = [];
+        loading.value = true
 
         // Itera sobre los socios y agrega los cambios de estado
         sociosAsistenciaFecha.value.forEach((socio) => {
@@ -227,7 +239,8 @@ export default {
       profesor,
       cancelar,
       guardarAsistencia,
-      utils
+      utils,
+      loading
     };
   },
   data() {
@@ -239,13 +252,17 @@ export default {
       this.$router.push({ path: "/editarFecha/" + idFecha });
     },
   },
+  components: {
+    Loading
+  }
 };
 </script>
 
 <style scoped>
 @import '../../../assets/btn.css';
 
-input, .pointer {
+input,
+.pointer {
   cursor: pointer
 }
 
@@ -255,4 +272,13 @@ input, .pointer {
     align-items: center;
   }
 }
-</style>
+
+.fondo-card {
+  background-color: #f8d7da;
+  border-color: #f0959e;
+  color: #723b47;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 4px;
+  padding: 8px;
+}</style>

@@ -1,5 +1,6 @@
 <template>
-    <div class="container-fluid px-5 mb-5">
+    <loading v-if="loading" />
+    <div v-else class="container-fluid px-5 mb-5">
         <div v-if="deporteStore.getElements != null">
             <div style="width: 100%;" class="text text-center h1">DEPORTES</div>
             <br>
@@ -53,10 +54,13 @@
                 <p>Deportes en total: <strong>{{ deporteStore.getElements.result.length }}</strong></p>
             </div>
         </div>
-        <h5 v-else class="alert alert-warning alert-sm mb-0 text-center m-2 mb-3">
-            <strong>No hay deportes cargados :c</strong>
-        </h5>
-        <br>
+        <div class="col-md-6 offset-md-3 mb-4" v-if="!deporteStore.getElements">
+            <div class="card fondo-card">
+                <div class="card-body" style="border-radius: 10px;">
+                    <h5 class="fw-bold text-center">No se encontraron deportes</h5>
+                </div>
+            </div>
+        </div>
         <div class="d-flex justify-content-center align-items-center">
             <div class="btn-group">
                 <button class="btn btn-macabi1" data-bs-toggle="modal" data-bs-target="#deporteModal">Crear Deporte</button>
@@ -102,6 +106,16 @@
         width: 100% !important;
     }
 }
+
+.fondo-card {
+    background-color: #f8d7da;
+    border-color: #f0959e;
+    color: #723b47;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 4px;
+    padding: 8px;
+}
 </style>
 <script>
 import { useElementStore } from '../../../utils/Store';
@@ -109,6 +123,8 @@ import { onBeforeMount, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import apiUrl from '../../../../config/config';
+
+import Loading from '../../dependentComponents/Loading.vue';
 
 export default {
     setup() {
@@ -120,18 +136,32 @@ export default {
         const router = useRouter();
         let busqueda = ""
 
+        const loading = ref(true)
+
         onBeforeMount(async () => { fetchs() })
 
         async function fetchs() {
-            await categoriasStore.fetchElements(`${apiUrl}/categoria/getAll`)
-                .then(() => {
-                    categorias.value = categoriasStore.getElements.result
-                })
-            await deporteStore.fetchElements(`${apiUrl}/deporte/getAll`)
-                .then(() => {
-                    size.value = deporteStore.getElements.result.length
-                    deportes.value = deporteStore.getElements.result
-                })
+            try {
+
+                try {
+                    await categoriasStore.fetchElements(`${apiUrl}/categoria/getAll`)
+                        .then(() => {
+                            categorias.value = categoriasStore.getElements.result
+                        })
+                } catch (e) {
+                    categorias.value = []
+                }
+
+                await deporteStore.fetchElements(`${apiUrl}/deporte/getAll`)
+                    .then(() => {
+                        size.value = deporteStore.getElements.result.length
+                        deportes.value = deporteStore.getElements.result
+                    })
+            } catch (e) {
+                console.log(e)
+            } finally {
+                loading.value = false
+            }
         }
 
         function buscar() {
@@ -194,7 +224,13 @@ export default {
         }
 
         function validarRepeticion() {
-            return deportes.value.some((deporte) => deporte.nombre == nombreDeporte.value)
+            let existe = false
+
+            if (deportes.value) {
+                existe = deportes.value.some((deporte) => deporte.nombre == nombreDeporte.value)
+            }
+
+            return existe
         }
 
         return {
@@ -209,7 +245,11 @@ export default {
             crearDeporte,
             messageModal,
             nombreDeporte,
+            loading
         }
     },
+    components: {
+        Loading,
+    }
 }
 </script>

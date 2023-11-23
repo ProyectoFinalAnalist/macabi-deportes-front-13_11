@@ -1,5 +1,6 @@
 <template>
-    <div class="container_grid macabi_color_fondo tamaño_m">
+    <Loading v-if="this.loading"/>
+    <div v-else class="container_grid macabi_color_fondo tamaño_m">
 
         <div class="sub_container_title lightgrey_color_fondo">
             Registrar Socio
@@ -114,7 +115,7 @@
         </div>
     </div>
     <br>
-    <div class="d-flex justify-content-center align-items-center">
+    <div v-if="!this.loading" class="d-flex justify-content-center align-items-center">
         <button type="submit" class="btn btn-dark" @click="volver">Cancelar</button>
     </div>
     <br>
@@ -123,6 +124,7 @@
 <script>
 import axios from 'axios';
 import apiUrl from "../../../../config/config.js"
+import Loading from '../../dependentComponents/Loading.vue';
 
 export default {
     data() {
@@ -146,10 +148,16 @@ export default {
             errorMsj: '',
             isInvalid: '',
             selectedDate: null,
+
+            loading: true
         };
     },
+    components: {
+        Loading
+    }, 
     async created() {
         this.initializeDate()
+        this.loading = false
     },
     methods: {
 
@@ -218,8 +226,9 @@ export default {
                     observaciones: this.observaciones,
                 };
 
-                let response
+                this.loading = true
 
+                let response                
 
                 if (!this.nroSocioAutoGen) {
 
@@ -252,6 +261,8 @@ export default {
                     this.showErrors(erroresArray)
                 }
 
+            } finally {
+                this.loading = false
             }
 
         },

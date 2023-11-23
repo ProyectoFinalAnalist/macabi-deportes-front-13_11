@@ -18,7 +18,7 @@
                 </div>
 
                 <div class="sub_container_buttons">
-                    <button type="" class="btn btn-secondary" @click="$router.go(-1)">Regresar</button>
+                    <button type="" class="btn btn-dark" @click="$router.go(-1)">Regresar</button>
 
                     <button type="" class="btn btn-primary primary-macabi" @click="enviarEmailRecuperacion">
 
@@ -82,7 +82,7 @@
 
 
                 <div class="sub_container_buttons">
-                    <button type="" class="btn btn-secondary" @click="$router.go(-1)">Regresar</button>
+                    <button type="" class="btn btn-dark" @click="$router.go(-1)">Regresar</button>
 
                     <button type="" class="btn btn-primary primary-macabi" @click="reenviarEmailRecuperacion()">
                         <span :class="isLoading" class="spinner-border spinner-border-sm" role="status"
@@ -105,7 +105,7 @@
                 </div>
 
                 <div class="sub_container_buttons2">
-                    <button type="" class="btn btn-secondary" @click="$router.push(`/login`);">Iniciar Seción</button>
+                    <button type="" class="btn btn-dark" @click="$router.push(`/login`);">Iniciar Seción</button>
                 </div>
 
 

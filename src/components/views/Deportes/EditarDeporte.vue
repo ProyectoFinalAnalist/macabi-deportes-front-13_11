@@ -1,5 +1,6 @@
 <template>
-    <div class="container-fluid mt-2">
+    <Loading v-if="loading" />
+    <div v-else class="container-fluid mt-2">
         <div class="row">
             <div class="col-md-6 offset-md-3" v-if="deporte">
                 <div class="card bg-light text-dark mb-5" style="width: 100%;">
@@ -15,7 +16,7 @@
                             <p>
                                 <strong>Categorias asignadas: </strong>
                             </p>
-                            <ul class="list-group mt-1 mb-4 text-center"
+                            <ul v-if="categoriasStore.getElements" class="list-group mt-1 mb-4 text-center"
                                 style="font-size: x-large; max-height: 300px; overflow-y: auto;">
                                 <li class="list-group text-dark" v-on:click="irA(categoria.idCategoria, 'detalleCategoria')"
                                     :class="[categoria.idCategoria == 0 ? 'list-group-item list-group-item-danger' : 'list-group-item list-group-item-action list-group-item-light']"
@@ -23,6 +24,11 @@
                                     {{ categoria.nombreCategoria }}
                                 </li>
                             </ul>
+                            <div v-else>
+                                <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3">
+                                    <strong>Deporte {{ nombre }} no posee categorías</strong>
+                                </h6>
+                            </div>
                             <div class="justify-content-center d-flex">
                                 <button class="btn btn-success mb-3" data-bs-toggle="modal"
                                     data-bs-target="#categoriaModal">Agregar Categoria</button>
@@ -30,7 +36,7 @@
                             <p>
                                 <strong>Coordinadores: </strong>
                             </p>
-                            <table class="table table-bordered table-hover" v-if="coordinadores">
+                            <table class="table table-bordered table-hover" v-if="coordinadores != 0">
                                 <thead>
                                     <tr>
                                         <th>Nombre:</th>
@@ -40,7 +46,7 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="coordinador in coordinadores" :key="coordinador.idUsuario"
-                                    @click="irA(coordinador.idUsuario, 'usuarios')">
+                                        @click="irA(coordinador.idUsuario, 'usuarios')">
                                         <td>{{ coordinador.nombre }}</td>
                                         <td>{{ coordinador.apellido }}</td>
                                         <td class="d-none d-sm-table-cell">{{ coordinador.dni }}</td>
@@ -68,12 +74,16 @@
                     </div>
                 </div>
             </div>
-            <h5 v-else class="alert alert-warning alert-sm mb-0 text-center m-2 mb-3">
-                <strong>No se pudo cargar el deporte :c</strong>
-            </h5>
+            <div class="col-md-6 offset-md-3 mb-4" v-else>
+                <div class="card fondo-card">
+                    <div class="card-body" style="border-radius: 10px;">
+                        <h5 class="fw-bold text-center">No se encontró el deporte</h5>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="d-flex justify-content-center mb-5">
+    <div v-if="!loading" class="d-flex justify-content-center mb-5">
         <button type="button" @click="router.go(-1)" class="btn btn-dark" href="#">Volver</button>
     </div>
     <br>
@@ -149,6 +159,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import apiUrl from '../../../../config/config.js';
+import Loading from "../../dependentComponents/Loading.vue";
 
 
 export default {
@@ -162,6 +173,7 @@ export default {
 
         const idDeporte = route.params.id
         const nombre = ref(null)
+        const loading = ref(true)
 
         onMounted(async () => {
             categoriasStore.deleteElements()
@@ -170,8 +182,9 @@ export default {
             await deporteStore.fetchElements(`${apiUrl}/deporte/getAll`)
             await categoriasStore.fetchElements(`${apiUrl}/categoria/${idDeporte}/deporte`)
             await usuariosStore.fetchElements(`${apiUrl}/deporte/${idDeporte}/coordinadores`)
-
+            loading.value = false
             data.value;
+
         });
 
         const categorias = ref(null)
@@ -184,7 +197,13 @@ export default {
         const data = computed(() => {
             if (deporteStore.currentElement != null) {
                 deporte.value = deporteStore.currentElement.result;
-                categorias.value = categoriasStore.getElements.result
+
+                if (categoriasStore.getElements !== null) {
+                    categorias.value = categoriasStore.getElements.result
+                } else {
+                    categorias.value = []
+                }
+
                 coordinadores.value = usuariosStore.getElements.result.CoordinadoresAsignados
 
                 deportes.value = deporteStore.getElements.result.filter(deporte => deporte.idDeporte != idDeporte)
@@ -200,9 +219,10 @@ export default {
 
         const updateNombre = async () => {
             if (validarNombre() && deporteStore.confirm("modificar", "modificado", "nombre del Deporte")) {
+                loading.value = true
                 const deporteMod = JSON.parse(JSON.stringify(deporteStore.currentElement.result))
                 deporteStore.updateElement(`${apiUrl}/deporte/`, deporteMod, "idDeporte")
-                location.reload()
+                router.go(-1)
             }
         }
 
@@ -212,9 +232,9 @@ export default {
             const nombreDuplicado = deportes.value.some((deporte2) => deporte2.nombre == deporte.value.nombre);
 
             if (String(deporte.value.nombre).length < 2 || String(deporte.value.nombre).length > 24) {
-                message.value = "El nombre debe tener un minimo de 2 caracteres y un maximo de 24.";
+                alert("El nombre debe tener un minimo de 2 caracteres y un maximo de 24.")
             } else if (nombreDuplicado) {
-                message.value = "El nombre no se puede repetir"
+                alert("El nombre no se puede repetir")
             } else {
                 resultado = true
             }
@@ -255,6 +275,8 @@ export default {
         }
 
         async function updateCoordinadores() {
+            loading.value = true
+
             await usuariosStore.deleteElement(`${apiUrl}/deporte/`, idDeporte);
 
             const usuarios = { idUsuarios: [] }
@@ -271,7 +293,15 @@ export default {
             }
         }
 
-        function isChecked(id) { return coordinadores.value.some(coordinador => coordinador.idUsuario == id); }
+        function isChecked(id) {
+            let checked = false
+
+            if (coordinadores.value) {
+                checked = coordinadores.value.some(coordinador => coordinador.idUsuario == id);
+            }
+
+            return checked
+        }
 
         function irA(id, route) {
             if (id != 0) {
@@ -288,10 +318,12 @@ export default {
                 idDeporte: idDeporte,
             };
 
+            loading.value = true
+
             try {
                 const response = await axios.post(apiUrl + '/categoria', nuevaCategoria, { withCredentials: true });
-                alert("Categoria creada con éxito")          
-                location.reload()      
+                alert("Categoria creada con éxito")
+                location.reload()
             } catch (error) {
                 const msj = error.response.data.message
                 if (msj != "Los IDs de Usuarios estan en un formato Incorrecto") {
@@ -299,6 +331,8 @@ export default {
                 } else {
                     location.reload()
                 }
+            } finally {
+                loading.value = false
             }
         }
 
@@ -309,7 +343,7 @@ export default {
                     "deporte/" + idDeporte + "/eliminarDeporte"
                 );
                 alert("Deporte eliminado con éxito");
-                router.push("/deportes");
+                location.reload()
             } catch (error) {
                 console.error("Error al eliminar el deporte:", error);
             }
@@ -346,9 +380,12 @@ export default {
             messageModal,
             categoriasStore,
             confirmarEliminarDeporte,
-            router
+            router,
+            loading
         }
+    },
+    components: {
+        Loading
     }
-
 }
 </script>

@@ -1,5 +1,6 @@
 <template>
-	<div class="container_grid tamaño_xl">
+	<Loading v-if="loading" />
+	<div v-else class="container_grid tamaño_xl">
 
 		<div class="sub_container_title">
 			{{ titulo }}
@@ -53,39 +54,38 @@
 
 	<!--MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / MODAL / -->
 	<div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">Crear Categoría</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                  <p class="p pe-3">
-                      <strong>Nombre: <code>*</code></strong><input type="text" class="form-control"
-                          v-model="nombreCategoria" />
-                  </p>
-              </div>
-              <div class="modal-footer">
-                  <button type="button" class="btn btn-macabi1" @click="crearCategoria">Crear</button>
-                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
-                  <div class="text-start"><code>*campos obligatorios</code></div>
-              </div>
-          </div>
-          <h5 v-if="messageModal != null" class="alert alert-danger alert-sm mb-0 text-center m-2 mb-3">
-              <strong>{{ messageModal }}</strong>
-          </h5>
-      </div>
-  </div>
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Crear Categoría</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p class="p pe-3">
+						<strong>Nombre: <code>*</code></strong><input type="text" class="form-control"
+							v-model="nombreCategoria" />
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-macabi1" @click="crearCategoria">Crear</button>
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+					<div class="text-start"><code>*campos obligatorios</code></div>
+				</div>
+			</div>
+			<h5 v-if="messageModal != null" class="alert alert-danger alert-sm mb-0 text-center m-2 mb-3">
+				<strong>{{ messageModal }}</strong>
+			</h5>
+		</div>
+	</div>
 
-	<div class="sub_container_buttons btn-group mb-5">
-		<button v-if="rolUsuario == 'A' " class="btn btn-primary primary-macabi"
+	<div v-if="!loading" class="sub_container_buttons btn-group mb-5">
+		<button v-if="rolUsuario == 'A'" class="btn btn-primary primary-macabi"
 			@click="$router.push(`/editarDeporte/${idDeporte}`);">Editar Deporte</button>
-			<div class="justify-content-center d-flex">
-                             
-                          </div>
-		<button v-if="rolUsuario == 'C' " class="btn btn-primary primary-macabi" data-bs-toggle="modal"
-                                  data-bs-target="#categoriaModal"
-			>Agregar nueva categoria</button>
+		<div class="justify-content-center d-flex">
+
+		</div>
+		<button v-if="rolUsuario == 'C'" class="btn btn-primary primary-macabi" data-bs-toggle="modal"
+			data-bs-target="#categoriaModal">Agregar nueva categoria</button>
 		<button class="btn btn-dark" @click="$router.go(-1)">Volver</button>
 	</div>
 </template>
@@ -101,6 +101,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { verificarDeportePermitidoCoordinador } from "../../../utils/permisos";
+import Loading from '../../dependentComponents/Loading.vue';
 
 
 const router2 = useRouter()
@@ -109,6 +110,8 @@ const router = useRoute()
 const idDeporte = router.params.id
 const userStore = usrStore()
 const rolUsuario = userStore.getRol
+
+const loading = ref(true)
 
 let titulo = ref("Loading...")
 let coordinadores = ref([])
@@ -122,47 +125,53 @@ onMounted(async () => {
 		router2.push({ path: "/unauthorized" })
 	}
 
-	await deporteStore.fetchElementById(`${apiUrl}/deporte/${idDeporte}/coordinadores`)
+	try {
+		await deporteStore.fetchElementById(`${apiUrl}/deporte/${idDeporte}/coordinadores`)
 
-	if (deporteStore.currentElement && deporteStore.currentElement.success) {
-		titulo.value = deporteStore.currentElement.result.nombre
-		coordinadores.value = deporteStore.currentElement.result.CoordinadoresAsignados
+		if (deporteStore.currentElement && deporteStore.currentElement.success) {
+			titulo.value = deporteStore.currentElement.result.nombre
+			coordinadores.value = deporteStore.currentElement.result.CoordinadoresAsignados
 
-		await categoriasDeDeporteStore.fetchElements(`${apiUrl}/categoria/${idDeporte}/deporte`)
+			await categoriasDeDeporteStore.fetchElements(`${apiUrl}/categoria/${idDeporte}/deporte`)
 
-		categorias.value = categoriasDeDeporteStore.getElements.result
+			categorias.value = categoriasDeDeporteStore.getElements.result
 
-	} else {
-		titulo.value = "Deporte No Encontrado"
+		} else {
+			titulo.value = "Deporte No Encontrado"
+		}
+	} catch (e) {
+		console.log(e)
+	} finally {
+		loading.value = false
 	}
 
 })
 
 const nombreCategoria = ref(null)
-      const messageModal = ref(null);
+const messageModal = ref(null);
 
-      async function crearCategoria() {
-          const nuevaCategoria = {
-              nombreCategoria: nombreCategoria.value,
-              idDeporte: idDeporte,
-          };
+async function crearCategoria() {
+	const nuevaCategoria = {
+		nombreCategoria: nombreCategoria.value,
+		idDeporte: idDeporte,
+	};
 
-          try {
-              const response = await axios.post(apiUrl + '/categoria', nuevaCategoria, { withCredentials: true });
-              console.log('Respuesta del servidor:', response.data);
-			  alert("Categoria creada con éxito")
-			  location.reload()
+	try {
+		const response = await axios.post(apiUrl + '/categoria', nuevaCategoria, { withCredentials: true });
+		console.log('Respuesta del servidor:', response.data);
+		alert("Categoria creada con éxito")
+		location.reload()
 
-          } catch (error) {
-              const msj = error.response.data.message
-              if (msj != 'idProfesores is not iterable') {
-                  messageModal.value = msj;
-              } else {
-                  location.reload()
-              }
-          }
-      };
-	  
+	} catch (error) {
+		const msj = error.response.data.message
+		if (msj != 'idProfesores is not iterable') {
+			messageModal.value = msj;
+		} else {
+			location.reload()
+		}
+	}
+};
+
 
 </script>
 

@@ -1,5 +1,6 @@
 <template>
-    <div class="mb-5">
+    <loading v-if="this.loading" />
+    <div class="mb-5" v-else>
 
         <div v-if="usuarioStore.getRol == 'A'" class="container_flex">
             <div style="width: 100%;" class="text text-center pb-5 h1">Opciones de Administrador</div>
@@ -43,6 +44,9 @@
         </div>
 
         <div class="container_flex">
+            <router-link to="/usuarios" class="fs-4 btn btn-success btn-home emergencia" v-if="this.usuarioStore.getRol == 'C'">
+                <h4 class="text-center pt-3 pb-1"><strong>PROFESORES</strong></h4>
+            </router-link>
             <router-link to="/contactosEmergencia" class="fs-4 btn btn-danger btn-home emergencia">
                 <h4 class="text-center pt-3 pb-1"><strong>CONTACTOS DE EMERGENCIA</strong></h4>
             </router-link>
@@ -54,14 +58,19 @@
 import { useElementStore } from "../utils/Store"
 import { usrStore } from '../stores/usrStore.ts'
 import apiUrl from "../../config/config";
+import Loading from "./dependentComponents/Loading.vue";
 
 export default {
     data() {
         return {
             usuarioStore: usrStore(),
             deportesDeUsuario: useElementStore("deportesDeUsuario")(),
-            categoriasDeUsuario: useElementStore("categoriasDeUsuario")()
+            categoriasDeUsuario: useElementStore("categoriasDeUsuario")(),
+            loading: true
         }
+    },
+    components: {
+        Loading
     },
     async mounted() {
 
@@ -78,16 +87,20 @@ export default {
             case 'P':
                 this.obtenerCategorias()
                 break;
+            default:
+                this.loading = false
         }
 
     },
     methods: {
         obtenerDeportes() {
             this.deportesDeUsuario.fetchElements(`${apiUrl}/usuario/${this.usuarioStore.getId}/deportes`)
+            this.loading = false
         },
 
         obtenerCategorias() {
             this.categoriasDeUsuario.fetchElements(`${apiUrl}/usuario/${this.usuarioStore.getId}/categorias`)
+            this.loading = false
         },
     },
 }

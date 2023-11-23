@@ -1,5 +1,6 @@
 <template>
-  <div class="container-fluid mb-5">
+  <Loading v-if="this.loading" />
+  <div v-else class="container-fluid mb-5">
     <div class="row m">
       <div class="col-md-6 offset-md-3">
         <h3 class="text-center mt-2">Crear Fecha</h3>
@@ -33,8 +34,8 @@
       <div class="d-flex justify-content-center align-items-center">
         <div id="demo" class="collapse">
           <code><strong>"Entrenamiento"</strong> para automaticamente citar a todos los socios de la <strong>Categoría.</strong>
-                <br><strong>"Citacion"</strong> para poder elegir que socios citar a la fecha de la <strong>Categoría.</strong>
-              </code>
+                      <br><strong>"Citacion"</strong> para poder elegir que socios citar a la fecha de la <strong>Categoría.</strong>
+                    </code>
         </div>
       </div>
       <div class="d-flex justify-content-center align-items-center mt-4">
@@ -51,7 +52,8 @@
 import axios from "axios";
 import apiUrl from '../../../../config/config.js'
 import { verificarAutorizacionCategoria } from "../../../utils/permisos";
-
+import Loading from "../../dependentComponents/Loading.vue";
+import { routerKey } from "vue-router";
 
 export default {
   components: {},
@@ -68,8 +70,12 @@ export default {
     opciones: [
       { value: 'E', label: 'Entrenamiento' },
       { value: 'C', label: 'Citación' }],
-  }),
 
+    loading: true
+  }),
+  components: {
+    Loading
+  },
   async created() {
 
 
@@ -86,13 +92,20 @@ export default {
       this.$router.push("/unauthorized")
     }
 
-    let nombreDeLaCategoria = await axios.get(`${apiUrl}/categoria/${this.idCat}/nombreCategoria`, { withCredentials: true });
+    try {
+      let nombreDeLaCategoria = await axios.get(`${apiUrl}/categoria/${this.idCat}/nombreCategoria`, { withCredentials: true });
 
-    this.nombreCategoria = nombreDeLaCategoria.data.nombreCategoria
+      this.nombreCategoria = nombreDeLaCategoria.data.nombreCategoria
 
-    let nombreDeporteBuscado = await axios.get(`${apiUrl}/categoria/${this.idCat}/nombreDeporte`, { withCredentials: true });
+      let nombreDeporteBuscado = await axios.get(`${apiUrl}/categoria/${this.idCat}/nombreDeporte`, { withCredentials: true });
 
-    this.nombreDeporte = nombreDeporteBuscado.data.nombreDeporte
+      this.nombreDeporte = nombreDeporteBuscado.data.nombreDeporte
+    } catch(e) {
+      alert(e.response.data.message)
+      this.$router.go(-1)
+    } finally {
+      this.loading = false
+    }
   },
 
   methods: {
@@ -102,6 +115,7 @@ export default {
         alert("Error, complete todos los campos")
       } else {
 
+        this.loading = true
 
         event.preventDefault();
 
@@ -129,6 +143,8 @@ export default {
             if (e.response && e.response.data && e.response.data.message) {
               alert(e.response.data.message)
             }
+          } finally {
+            this.loading = false
           }
 
         } else {
@@ -156,6 +172,8 @@ export default {
             if (e.response && e.response.data && e.response.data.message) {
               alert(e.response.data.message)
             }
+          } finally {
+            this.loading = false
           }
 
 

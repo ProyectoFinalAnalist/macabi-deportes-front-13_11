@@ -1,5 +1,6 @@
 <template>
-  <div class="container mb-5">
+  <Loading v-if="loading" />
+  <div v-else class="container mb-5">
     <div class="text text-center pb-3 h3">Detalles de la Fecha: <strong>{{
       utils.obtenerFechaFormateada(fechaDetalle.fechaCalendario) }}</strong></div>
     <div class="row">
@@ -10,10 +11,17 @@
             <p class="mb-2"><strong class="font-weight-bold">Fecha: </strong>{{
               utils.obtenerFechaFormateada(fechaDetalle.fechaCalendario) }}</p>
             <p class="mb-1"><strong class="font-weight-bold">Profesores Asignados: </strong></p>
-            <button v-for="(profesor, index) in profesor" :key="index" class="mb-1 mx-1 btn btn-sm btn-dark"
-              @click="verProfesor(profesor.idUsuario)">
+            <button v-if="profesor" v-for="(profesor, index) in profesor" :key="index"
+              class="mb-1 mx-1 btn btn-sm btn-dark" @click="verProfesor(profesor.idUsuario)">
               {{ profesor.apellido }}, {{ profesor.nombre }}
             </button>
+            <div v-else>
+              <div class="card fondo-card my-3">
+                <div class="card-body" style="border-radius: 10px;">
+                  <h6 class="fw-bold text-center">No se encontraron profesores asignados a la Categoría</h6>
+                </div>
+              </div>
+            </div>
             <p class="my-2"><strong class="font-weight-bold">Tipo: </strong>{{ mapearTipo(fechaDetalle.tipo) }}</p>
             <p class="mb-2"><strong class="font-weight-bold">Categoria: </strong>{{ fechaDetalle.Categorium ?
               fechaDetalle.Categorium.nombreCategoria : 'Sin categoría' }}</p>
@@ -24,7 +32,7 @@
       <h4 class="text-center my-4">
         Socios Anotados en esta Fecha: <strong>{{ size }}</strong>
       </h4>
-      <table class="table table-bordered table-hover">
+      <table class="table table-bordered table-hover" v-if="sociosAsistenciaFecha.length !== 0">
         <thead>
           <tr>
             <th>Nombre</th>
@@ -33,7 +41,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="socio in sociosAsistenciaFecha" :key="socio.idSocio" @click="irA(socio.idSocio)" style="cursor: pointer;">
+          <tr v-for="socio in sociosAsistenciaFecha" :key="socio.idSocio" @click="irA(socio.idSocio)"
+            style="cursor: pointer;">
             <td>{{ socio.nombre }}</td>
             <td>{{ socio.apellido }}</td>
             <td>{{ mapearEstado(socio.estado) }}</td>
@@ -41,13 +50,17 @@
         </tbody>
       </table>
       <div v-if="sociosAsistenciaFecha.length === 0">
-        <p class="no-socios">No hay socios anotados en esta fecha.</p>
+        <div class="card fondo-card my-3">
+          <div class="card-body" style="border-radius: 10px;">
+            <h5 class="fw-bold text-center">No hay socios anotados a la fecha</h5>
+          </div>
+        </div>
       </div>
     </div>
     <div class="d-flex justify-content-center align-items-center mb-4 mt-3">
       <div class="btn-group">
         <router-link class="btn btn-macabi1" :to="`/editarfecha/${fechaDetalle.idFecha}`">Editar Fecha</router-link>
-        <button class="btn btn-success" @click="asignarAsistencia">Asignar/Modificar asistencias</button>
+        <button class="btn btn-success" @click="asignarAsistencia" v-if="sociosAsistenciaFecha.length !== 0">Asignar/Modificar asistencias</button>
       </div>
     </div>
     <div class="d-flex justify-content-center align-items-center">
@@ -66,8 +79,12 @@ import { useRoute, useRouter } from "vue-router";
 import apiUrl from "../../../../config/config.js";
 import { verificarAutorizacionFecha } from "../../../utils/permisos";
 import { Utils } from "../../../utils/utils";
+import Loading from "../../dependentComponents/Loading.vue";
 
 export default {
+  components: {
+    Loading
+  },
   setup() {
     const asistenciaStore = useElementStore("asistencias")();
     const fechaStore = useElementStore("fechas")();
@@ -79,6 +96,9 @@ export default {
     const size = ref(0);
     const deporte = ref("");
     const profesor = ref("");
+
+    const loading = ref(true)
+
     onBeforeMount(async () => {
       await fetchs();
     });
@@ -100,8 +120,6 @@ export default {
       try {
         await fechaStore.fetchElements(`${apiUrl}/fecha/fechas/${idFecha}`);
         fechaDetalle.value = fechaStore.getElements.result[0];
-        //console.log("🚀 ~ file: DetalleFecha.vue:85 ~ fetchs ~ fechaDetalle.value :", fechaDetalle.value )
-
         if (fechaDetalle.value && fechaDetalle.value.idCategoria) {
           const idCategoria = fechaDetalle.value.idCategoria;
           deporte.value = await obtenerDeporte(idCategoria);
@@ -109,6 +127,8 @@ export default {
         }
       } catch (error) {
         console.error("Error fetching fecha detalle:", error);
+      } finally {
+        loading.value = false
       }
     }
 
@@ -226,7 +246,8 @@ export default {
       utils,
       irA,
       router,
-      verProfesor
+      verProfesor,
+      loading
     };
   }, data() {
     return {

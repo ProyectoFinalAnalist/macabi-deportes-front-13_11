@@ -1,5 +1,6 @@
 <template>
-    <div class="container mt-4">
+    <Loading v-if="loading"/>
+    <div v-else class="container mt-4">
         <div class="row">
             <div class="col-md-6 offset-md-3" v-if="categoria">
                 <div class="card bg-light text-dark mb-5">
@@ -18,7 +19,7 @@
                             </p>
                             <ul class="list-group mt-1 mb-4 text-center">
                                 <li class="list-group-item list-group-item-light list-group-item-action text-dark"
-                                @click="irA(categoria.idDeporte, 'detalleDeporte')">
+                                    @click="irA(categoria.idDeporte, 'detalleDeporte')">
                                     <strong>{{ obtenerNombreDeporte(categoria.idDeporte).nombre }}</strong>
                                 </li>
                             </ul>
@@ -34,7 +35,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="profesor in profesores" :key="profesor.idUsuario" @click="irA(profesor.idUsuario, 'usuarios')">
+                                    <tr v-for="profesor in profesores" :key="profesor.idUsuario"
+                                        @click="irA(profesor.idUsuario, 'usuarios')">
                                         <td>{{ profesor.nombre }}</td>
                                         <td>{{ profesor.apellido }}</td>
                                         <td class="d-none d-sm-table-cell">{{ profesor.dni }}</td>
@@ -59,12 +61,16 @@
                     </div>
                 </div>
             </div>
-            <h5 v-else class="alert alert-warning alert-sm mb-0 text-center m-2 mb-3">
-                <strong>No se pudo cargar la categoria :c</strong>
-            </h5>
+            <div class="col-md-6 offset-md-3 mb-4" v-else>
+                <div class="card fondo-card">
+                    <div class="card-body" style="border-radius: 10px;">
+                        <h5 class="fw-bold text-center">No se encontró la categoría</h5>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="d-flex justify-content-center">
+    <div v-if="!loading" class="d-flex justify-content-center">
         <button class="btn btn-dark" @click="volverAtras()">Volver</button>
     </div>
     <h5 v-if="message != null" class="alert alert-danger alert-sm mb-0 text-center m-2 mb-3">
@@ -101,7 +107,8 @@
 <style scoped>
 @import "../../../assets/btn.css";
 
-h6 {
+h6,
+.fondo-card {
     background-color: #f8d7da;
     border-color: #f0959e;
     color: #723b47;
@@ -111,7 +118,8 @@ h6 {
     padding: 8px;
 }
 
-li, tbody {
+li,
+tbody {
     cursor: pointer;
 }
 </style>
@@ -123,6 +131,7 @@ import apiUrl from '../../../../config/config.js'
 import axios from 'axios'
 import { usrStore } from '../../../stores/usrStore';
 import { verificarAutorizacionCategoria } from "../../../utils/permisos";
+import Loading from '../../dependentComponents/Loading.vue';
 
 export default {
     setup() {
@@ -130,7 +139,7 @@ export default {
         const deporteStore = useElementStore("deportes")()
         const usuariosStore = useElementStore("usuarios")()
         const profesoresStore = useElementStore("profesores")()
-        
+
         const userStore = usrStore();
         const rolUsuario = userStore.getRol
         const message = ref(null)
@@ -140,18 +149,21 @@ export default {
         const idCategoria = route.params.id
         const idDeporte = ref(0)
 
+        const loading = ref(true)
+
         const nombre = ref(null)
 
         onMounted(async () => {
             if (!await verificarAutorizacionCategoria(idCategoria)) {
-		router.push({ path: "/unauthorized" })
-	}
+                router.push({ path: "/unauthorized" })
+            }
             await categoriasStore.fetchElementById(`${apiUrl}/categoria/`, idCategoria)
             await deporteStore.fetchElements(`${apiUrl}/deporte/getAll`)
             usuariosStore.elements = null;
             usuariosStore.elementsList = null;
             await usuariosStore.fetchElements(`${apiUrl}/categoria/${idCategoria}/getProfesores`)
             await profesoresStore.fetchElements(`${apiUrl}/usuario/3/rol/activos`)
+            loading.value = false
             data.value;
         })
 
@@ -216,7 +228,7 @@ export default {
             const mensaje = `¿Estás seguro de eliminar esta categoria: "${nombre.value}"?`;
             if (window.confirm(mensaje)) {
                 deleteCategoria();
-            } 
+            }
         };
 
         function volverAtras() {
@@ -241,7 +253,7 @@ export default {
                 resultado = categoriasDelDeporte.value.some((c) => c.nombreCategoria == categoria.value.nombreCategoria && c.idCategoria != idCategoria);
             }
 
-            if (resultado) { message.value = "El nombre no puede repetirse"; }
+            if (resultado) { alert("El nombre no puede repetirse dentro de las categorías del mismo deporte") }
 
             return resultado;
         };
@@ -274,6 +286,8 @@ export default {
 
         async function updateProfesores() {
             await usuariosStore.deleteElement(`${apiUrl}/categoria/eliminarProfesores`, idCategoria);
+
+            loading.value = true
 
             const usuarios = { idUsuarios: [] }
             for (const profe of profesores.value) {
@@ -320,8 +334,12 @@ export default {
             isChecked,
             confirmarEliminarCategoria,
             deleteCategoria,
-            irA
+            irA,
+            loading
         }
+    },
+    components: {
+        Loading
     }
 }
 </script>

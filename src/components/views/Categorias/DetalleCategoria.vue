@@ -1,15 +1,23 @@
 <template>
-    <div class="container-fluid px-0 px-md-5 mb-5">
+    <Loading v-if="this.loading" />
+    <div v-else class="container-fluid px-0 px-md-5 mb-5">
         <div class="text text-center">
             <h1>Categoria: <strong>{{ nombreCategoria }}</strong> </h1>
             <h4>Deporte: <strong>{{ deporteCategoria }}</strong> </h4>
         </div>
         <h6 class="my-3"><strong>Profesor/es:</strong></h6>
-        <div class="ms-5 mb-0">
+        <div class="ms-5 mb-0" v-if="profesoresCategoria != 0">
             <button v-for="(profesor, index) in profesoresCategoria" :key="index" class="mb-1 mx-1 btn btn-sm btn-dark"
                 @click="verProfesor(profesor.idUsuario)">
                 {{ profesor.apellido }}, {{ profesor.nombre }}
             </button>
+        </div>
+        <div v-else>
+            <div class="card fondo-card">
+                <div class="card-body" style="border-radius: 10px;">
+                    <h5 class="fw-bold text-center">No se encontraron prfesores asignados a la categoría</h5>
+                </div>
+            </div>
         </div>
         <br>
         <form @submit.prevent="buscar()">
@@ -61,7 +69,8 @@
                     <tr v-for="socio in sociosFiltados" :key="socio.idSocio" @click="irA(socio.idSocio)">
                         <td class="d-none d-sm-table-cell">{{ socio.nroSocio }}</td>
                         <td>{{ socio.nombre }} <p class="badge bg-macabi ms-3 my-0" id="socioNuevo"
-                                v-if="socio.esNuevoSocio">NUEVO</p> </td>
+                                v-if="socio.esNuevoSocio">NUEVO</p>
+                        </td>
                         <td>{{ socio.apellido }}</td>
                         <td class="d-none d-sm-table-cell">{{ socio.dni }}</td>
                         <td class="d-none d-lg-table-cell">{{ socio.email }}</td>
@@ -71,15 +80,15 @@
             <div class="text text-start mb-2">
                 <p>Socios en la categoría: <strong>{{ this.listSocios.length }}</strong></p>
             </div>
-            
+
             <div class="text text-center">
                 <p class="badge bg-macabi me-2 mb-0">NUEVO</p>
                 <br>
                 <code>* El socio fue agregado a la categoría dentro de los últimos 7 días</code>
             </div>
-            
+
         </div>
-       
+
         <div v-else class="text text-center fw-bold h3 alert alert-danger">No se encontraron socios asignados a la categoria
         </div>
         <hr>
@@ -98,7 +107,8 @@
         </div>
         <div class="d-flex justify-content-center mb-5">
             <div class="btn-group">
-                <router-link v-if="  this.rolUsuario != 'P'" :to="`/modificarCategoria/${this.idCategoria}`" class="btn btn-macabi1">Editar
+                <router-link v-if="this.rolUsuario != 'P'" :to="`/modificarCategoria/${this.idCategoria}`"
+                    class="btn btn-macabi1">Editar
                     Categoría</router-link>
                 <button class="btn btn-dark" @click="volverAtras()">Volver</button>
             </div>
@@ -106,24 +116,25 @@
         <hr v-if="listSociosCumple && listSociosCumple.length > 0">
         <br v-if="listSociosCumple && listSociosCumple.length > 0">
         <div v-if="listSociosCumple && listSociosCumple.length > 0" class="cumpleanos-box mx-1">
-        <h2 class="text-center mb-3">Cumpleaños del Mes de {{ obtenerNombreMes() }}</h2>
-      <table class="table table-bordered table-hover mt-3" cumpleanos-table>
-        <thead>
-          <tr>
-            <th class="d-none d-md-table-cell">Nombre:</th>
-            <th>Apellido:</th>
-            <th >Cumpleaños:</th>
-          </tr>
-        </thead>
-        <tbody class="pointer">
-          <tr v-for="socio in listSociosCumple" :key="socio.idSocio" @click="irA(socio.idSocio)">
-            <td class="d-none d-md-table-cell">{{ socio.nombre }}</td>
-            <td>{{ socio.apellido }}</td>
-            <td> <b>  {{ obtenerFechaFormateada(socio.fechaNacimiento) }} </b> ({{calcularEdad(socio.fechaNacimiento) }})</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            <h2 class="text-center mb-3">Cumpleaños del Mes de {{ obtenerNombreMes() }}</h2>
+            <table class="table table-bordered table-hover mt-3" cumpleanos-table>
+                <thead>
+                    <tr>
+                        <th class="d-none d-md-table-cell">Nombre:</th>
+                        <th>Apellido:</th>
+                        <th>Cumpleaños:</th>
+                    </tr>
+                </thead>
+                <tbody class="pointer">
+                    <tr v-for="socio in listSociosCumple" :key="socio.idSocio" @click="irA(socio.idSocio)">
+                        <td class="d-none d-md-table-cell">{{ socio.nombre }}</td>
+                        <td>{{ socio.apellido }}</td>
+                        <td> <b> {{ obtenerFechaFormateada(socio.fechaNacimiento) }} </b>
+                            ({{ calcularEdad(socio.fechaNacimiento) }})</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
@@ -133,14 +144,17 @@ import apiUrl from '../../../../config/config.js';
 import { useElementStore } from '../../../utils/Store';
 import { verificarAutorizacionCategoria } from '../../../utils/permisos.js'
 import { usrStore } from '../../../stores/usrStore';
-import {Utils} from "../../../utils/utils"
-
+import { Utils } from "../../../utils/utils"
+import Loading from '../../dependentComponents/Loading.vue';
 
 export default {
     setup() {
         const socioStore = useElementStore("categoria")(); // Asegúrate de usar la tienda correcta
         const { currentElement, fetchElementById, elements } = socioStore;
         return { currentElement, fetchElementById, elements };
+    },
+    components: {
+        Loading
     },
     data() {
         return {
@@ -157,19 +171,21 @@ export default {
 
             ],
 
-            fecha1SemanaAtras:"",
-            rolUsuario:"",
+            fecha1SemanaAtras: "",
+            rolUsuario: "",
             listSociosCumple: [],
-        utils : new Utils()
-            
+            utils: new Utils(),
+
+            loading: true
+
         };
     },
     async created() {
         this.idCategoria = this.$route.params.id;
         const userStore = usrStore();
-        this.rolUsuario =  userStore.getRol
+        this.rolUsuario = userStore.getRol
         //console.log("La categoia es: " + this.idCategoria);
-        if(! await verificarAutorizacionCategoria(this.idCategoria)) {
+        if (! await verificarAutorizacionCategoria(this.idCategoria)) {
             this.$router.push(`/unauthorized`);
 
         }
@@ -187,19 +203,19 @@ export default {
                 const mesActual = new Date().getMonth() + 1;
 
                 //console.log("mes actual: " + mesActual);
-       
+
                 let mesNacimiento = new Date(socio.fechaNacimiento);
                 mesNacimiento.setDate(mesNacimiento.getDate() + 1)
-                 mesNacimiento = mesNacimiento.getMonth() + 1;
-             //   mesNacimiento.setDate(mesNacimiento.getDate() + 1)
+                mesNacimiento = mesNacimiento.getMonth() + 1;
+                //   mesNacimiento.setDate(mesNacimiento.getDate() + 1)
                 //console.log(" El mes de nacimiento de socio.nombre es: "+ mesNacimiento) ;
 
                 if (mesNacimiento === mesActual) {
-                this.listSociosCumple.push(socio);
+                    this.listSociosCumple.push(socio);
                 }
-});
+            });
 
-            
+
 
 
 
@@ -220,6 +236,9 @@ export default {
 
 
         } catch (e) {
+            console.log(e)
+        } finally {
+            this.loading = false
         }
 
     },
@@ -242,38 +261,38 @@ export default {
 
         },
         obtenerNombreMes() {
-        const meses = [
-            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-        ];
-        const mesActual = new Date().getMonth();
-        return meses[mesActual];
-    },
+            const meses = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            const mesActual = new Date().getMonth();
+            return meses[mesActual];
+        },
 
 
-    calcularEdad(fechaNacimiento) {
-        const fechaNac = new Date(fechaNacimiento);
-        const hoy = new Date();
-        const edad = hoy.getFullYear() - fechaNac.getFullYear();
+        calcularEdad(fechaNacimiento) {
+            const fechaNac = new Date(fechaNacimiento);
+            const hoy = new Date();
+            const edad = hoy.getFullYear() - fechaNac.getFullYear();
 
 
-        if ((hoy.getDate() >= fechaNac.getUTCDate())) {
-            return `Cumplió ${edad} años`;
-        } else {
-            return `Cumple ${edad} años`;
-        }
-    },
+            if ((hoy.getDate() >= fechaNac.getUTCDate())) {
+                return `Cumplió ${edad} años`;
+            } else {
+                return `Cumple ${edad} años`;
+            }
+        },
 
 
-    obtenerFechaFormateada(fecha) {
+        obtenerFechaFormateada(fecha) {
             return this.utils.obtenerFechaFormateada(fecha);
         },
 
 
         ordenarListaPorFecha() {
-      this.listSociosCumple.sort((a, b) => {
-        return new Date(a.fechaNacimiento) - new Date(b.fechaNacimiento);
-      });
+            this.listSociosCumple.sort((a, b) => {
+                return new Date(a.fechaNacimiento) - new Date(b.fechaNacimiento);
+            });
         },
 
 
@@ -330,62 +349,74 @@ export default {
 </script>
 
 <style scoped>
+.fondo-card {
+    background-color: #f8d7da;
+    border-color: #f0959e;
+    color: #723b47;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 4px;
+    padding: 8px;
+}
 
 #explicacion {
-  color: red;
+    color: red;
 }
 
 
 #socioNuevo {
-  color: white;
+    color: white;
 }
 
 .pointer {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 
 /* En tu archivo de estilos (por ejemplo, styles.css) */
 .cumpleanos-box {
-   /* Ajusta el margen según sea necesario */
-  padding: 15px;
-  border: 4px solid #013a77; /* Color del borde del cuadro */
-  border-radius: 10px; /* Esquinas redondeadas */
+    /* Ajusta el margen según sea necesario */
+    padding: 15px;
+    border: 4px solid #013a77;
+    /* Color del borde del cuadro */
+    border-radius: 10px;
+    /* Esquinas redondeadas */
 }
 
 
 .cumpleanos-table th,
 .cumpleanos-table td {
-  border: 5px solid #013a77; /* Color del borde de las celdas de la tabla */
-  padding: 8px;
+    border: 5px solid #013a77;
+    /* Color del borde de las celdas de la tabla */
+    padding: 8px;
 }
 
 
 @media (max-width: 767px) {
-  .cumpleanos-box {
-    margin: 10px;
-    padding: 10px;
-  }
+    .cumpleanos-box {
+        margin: 10px;
+        padding: 10px;
+    }
 
 
-  .cumpleanos-table th,
-  .cumpleanos-table td {
-    padding: 6px;
-  }
+    .cumpleanos-table th,
+    .cumpleanos-table td {
+        padding: 6px;
+    }
 }
 
 
 @media (max-width: 479px) {
-  .cumpleanos-box {
-    margin: 5px;
-    padding: 5px;
-  }
+    .cumpleanos-box {
+        margin: 5px;
+        padding: 5px;
+    }
 
 
-  .cumpleanos-table th,
-  .cumpleanos-table td {
-    padding: 4px;
-  }
+    .cumpleanos-table th,
+    .cumpleanos-table td {
+        padding: 4px;
+    }
 }
 
 .bg-macabi {

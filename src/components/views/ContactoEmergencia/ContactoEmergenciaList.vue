@@ -1,5 +1,6 @@
 <template>
-    <div class="container-fluid">
+    <loading v-if="loading"/>
+    <div v-else class="container-fluid">
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <h3 class="text-center"><strong>CONTACTOS DE EMERGENCIA</strong></h3>
@@ -33,7 +34,7 @@
             </div>
         </div>
     </div>
-    <div class="d-flex justify-content-center mb-5">
+    <div v-if="!loading" class="d-flex justify-content-center mb-5">
         <div class="btn-group">
             <button v-if="usrStore.getRol == 'A'" class="btn btn-macabi1"><router-link to="/contactosEmergencia/admin"
                     class="nav-item nav-link" href="#">Modificar Contactos</router-link></button>
@@ -60,13 +61,17 @@ import { useElementStore } from '../../../utils/Store';
 import { ref, onMounted, computed } from "vue";
 import apiUrl from '../../../../config/config.js'
 import { usrStore } from '../../../stores/usrStore';
+import Loading from '../../dependentComponents/Loading.vue';
 
 export default {
     setup() {
         const contactosStore = useElementStore("contactoEmergencia")()
 
+        const loading = ref(true)
+
         onMounted(async () => {
             await contactosStore.fetchElements(`${apiUrl}/contactoEmergencia/getAll`)
+            loading.value = false
             data.value;
         })
 
@@ -78,6 +83,7 @@ export default {
 
         return {
             contactosEmergencia,
+            loading
         }
     },
     data() {
@@ -85,5 +91,8 @@ export default {
             usrStore: usrStore(),
         };
     },
+    components:{
+        Loading
+    }
 }
 </script>

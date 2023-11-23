@@ -1,9 +1,10 @@
 <template>
-	<div v-if="!this.usrStore.isLogged" class="borde_doble">
+	<!-- <div v-if="!this.usrStore.isLogged" class="borde_doble">
 		<div class="container_basic">
 			<h1>no estas logeado</h1>
 		</div>
-	</div>
+	</div> -->
+	<loading v-if="this.loading"/>
 	<div class="container-fluid mt-3 mb-5" v-else>
 		<div class="row">
 			<div class="col-md-6 offset-md-3" v-if="this.user">
@@ -28,9 +29,6 @@
 				<div class="text-end my-3 ms-5">
                     <code>* Edad calculada a partir de la fecha de nacimiento automáticamente</code>
                 </div>
-			</div>
-			<div class="col-md-6 offset-md-3" v-else>
-				<strong class="alert alert-warning text-center">El usuario no existe.</strong>
 			</div>
 
 			<div v-if="this.user" class="d-flex justify-content-center mb-3">
@@ -61,6 +59,7 @@ import axios from 'axios';
 import apiUrl from '../../config/config';
 import { Utils } from '../utils/utils';
 import { useRouter } from 'vue-router';
+import Loading from './dependentComponents/Loading.vue';
 
 export default {
 	data() {
@@ -68,8 +67,12 @@ export default {
 			usrStore: usrStore(),
 			user: null,
 			utils: new Utils(),
-			router: useRouter()
+			router: useRouter(),
+			loading: true
 		}
+	},
+	components: {
+		Loading
 	},
 	mounted() {
 
@@ -81,10 +84,11 @@ export default {
 			axios.get(`${apiUrl}/usuario/${this.usrStore.currentUser.idUsuario}`, { withCredentials: true })
 				.then(response => {
 					this.user = response.data.result;
-
+					this.loading = false
 				})
 				.catch(error => {
 					console.error('Error al obtener los datos:', error);
+					alert("No se encontró el usuario")
 				});
 		}
 	},

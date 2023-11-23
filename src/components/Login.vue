@@ -1,8 +1,5 @@
 <template>
-	<div v-if="usrStore.isLogged" class="">
-		<h1>you are already logged in</h1>
-		<button type="submit" class="" @click="salir">cerrar</button>
-	</div>
+	<Loading v-if="this.loading" />
 
 	<div v-else class="container_grid macabi_color_fondo tamaño_xs">
 
@@ -33,14 +30,10 @@
 			</div>
 
 			<div class="sub_container_buttons">
-				<button type="" class="btn btn-secondary" @click="this.$router.push('/newPassword');">Recuperar Clave</button>				
+				<button type="" class="btn btn-dark" @click="this.$router.push('/newPassword');">Recuperar Clave</button>				
 				<button type="" class="btn btn-primary primary-macabi" @click="ingresar">Iniciar Sesión</button>
 			</div>
-
-			<div v-if="this.error" class="alert alert-danger" role="alert">
-				{{ this.msjError }}
-			</div>
-
+		
 		</div>
 
 	</div>
@@ -49,6 +42,7 @@
 <script>
 
 import { usrStore } from '../stores/usrStore.ts'
+import Loading from './dependentComponents/Loading.vue';
 
 export default {
 	data() {
@@ -58,8 +52,12 @@ export default {
 			clave: "",
 			error: false,
 			msjError: "",
-			capslock: ""
+			capslock: "",
+			loading: true
 		};
+	},
+	components: {
+		Loading
 	},
 	async created() {
 
@@ -72,10 +70,11 @@ export default {
 
 		document.title = "Iniciar Sesion"
 
+		this.loading = false
 	},
 	updated() {
 		if (this.usrStore.isLogged) {
-			this.$router.push("/miUsuario");
+			this.$router.push("/");
 		}
 
 	},
@@ -95,21 +94,23 @@ export default {
 
 			if (this.email == "" || this.clave == "") {
 
-				this.error = true;
-				this.msjError = `email o contraseña no ingreados`
+				alert(`Email o Contraseña no ingresados`)
 
 			} else {
 
+				this.loading = true
+
 				let mensajeError = await this.usrStore.logIn(this.email, this.clave);
 
+				this.loading = false
+
 				if (mensajeError == null) {
-					this.error = false;
+
 					this.$router.push("/");
 					location.reload();
 				} else {
-
-					this.error = true;
-					this.msjError = mensajeError;
+					this.error = true
+					alert(mensajeError)
 				}
 			}
 		},
