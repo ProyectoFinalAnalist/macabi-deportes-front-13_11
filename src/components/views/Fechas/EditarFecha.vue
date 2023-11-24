@@ -65,7 +65,7 @@
     <div class="d-flex justify-content-center align-items-center">
       <div class="btn-group">
         <button class="btn btn-macabi1" @click="editFecha()">
-          Editar Fecha
+          Confirmar cambios
         </button>
         <button @click="router.go(-1)" class="btn btn-dark">Volver</button>
       </div>
@@ -262,6 +262,7 @@ export default {
 
 
     async function editFechaCalendario() {
+      
       try {
         await fechaStore.patchElement(`${apiUrl}/fecha/${idFecha}`, { fechaCalendario: fechaDetalle.value.fechaCalendario, idCategoria: fechaDetalle.value.idCategoria })
 
@@ -271,8 +272,12 @@ export default {
       }
     }
 
+
+    
     async function editFecha() {
-      try {
+      var respuesta = confirm("¿Estás seguro de que deseas confirmar los cambios?");
+      if (respuesta) {
+        try {
         await editSociosRegistrados();
 
         await editFechaCalendario();
@@ -280,6 +285,14 @@ export default {
       } catch (error) {
         alert("Error detectado en el ingreso de campos: " + error)
       }
+   
+} else {
+    // El usuario hizo clic en "Cancelar" o cerró el cuadro de diálogo
+    // Puedes realizar otra acción o simplemente ignorar
+    alert("Acción cancelada");
+}
+      
+      
 
     }
 
