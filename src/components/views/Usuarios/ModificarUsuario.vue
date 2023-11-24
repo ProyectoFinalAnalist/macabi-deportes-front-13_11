@@ -57,12 +57,21 @@
                         </h6>
                         <p class="p pe-2 ps-2">
                             <strong>Rol: <code>*</code></strong>
-                            <select id="filtro" class="form-select" v-model="usuario.idRol">
-
-                                <option selected disabled value="">Seleccione un Rol</option>
+                            <select v-if="rolUser == 'A'" id="filtro" class="form-select" v-model="usuario.idRol">
+                                
+                                <option selected disabled value="">Seleccione el Rol</option>
                                 <option value="1">Administrador</option>
                                 <option value="2">Coordinador</option>
                                 <option value="3">Profesor</option>
+                            </select>
+
+                            
+                            <select v-else-if="this.usrStore.getId != usuario.idUsuario"  class="form-select" v-model="usuario.idRol">
+                                <option value="3">Profesor</option>
+                            </select>
+
+                            <select v-else-if="this.usrStore.getId == usuario.idUsuario"  class="form-select" v-model="usuario.idRol">
+                                <option disabled value="2">Coordinador</option>
                             </select>
                         </p>
                         <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="showErrores.rol">
@@ -145,6 +154,7 @@ export default {
         const utilsUsuario = new UtilsUsuario()
         const showErrores = ref({})
         const nombre = ref(null)
+        
 
         const loading = ref(true)
 
@@ -196,7 +206,8 @@ export default {
             nombre,
             volver,
             obtenerFechaMax,
-            loading
+            loading,
+            
         };
     },
     data() {
