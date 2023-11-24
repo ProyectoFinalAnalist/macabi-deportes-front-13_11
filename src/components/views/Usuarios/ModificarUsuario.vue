@@ -129,7 +129,7 @@ import { useElementStore } from "../../../stores/Store";
 import { useRouter, useRoute } from "vue-router";
 import { computed, ref, onMounted } from "vue";
 import { UtilsUsuario, Utils } from '../../../utils/utils.js'
-import { cambiosPerfilPropioPermiso } from '../../../utils/permisos.js'
+import { permisosModificarPerfil } from '../../../utils/permisos.js'
 import Loading from '../../dependentComponents/Loading.vue';
 
 export default {
@@ -149,13 +149,17 @@ export default {
         const loading = ref(true)
 
         onMounted(async () => {
-            if (! await cambiosPerfilPropioPermiso(idUsuario)) {
-                router.push(`/unauthorized`);
-            }
+            
             elementStore.fetchElements()
-            .then(() => {
+            .then( async () => {
                 loading.value = false
+
+               if(! await permisosModificarPerfil(idUsuario, usuario.value.idRol)) {
+                router.push(`/unauthorized`);
+
+                }
             })
+           
         })
 
         const updateUsuario = async () => {
