@@ -102,7 +102,8 @@
             </div>
             <div class="d-flex justify-content-center" v-if="usuario">
                 <div class="btn-group">
-                    <router-link class="btn btn-macabi1" v-if="rolUser != 'P'"
+                    
+                    <router-link class="btn btn-macabi1" v-if= "(rolUser != 'P') && (rolUser == 'A') || ( (idUser == usuario.idUsuario ) || (rolUser == 'C' && usuario.idRol != 2) )"
                         :to="`/modificarusuario/${usuario.idUsuario}`">Modificar
                         Usuario</router-link>
 
@@ -149,6 +150,7 @@ import { vistaPerfilUsuario } from '../../../utils/permisos';
 export default {
     setup() {
         const userStore = usrStore()
+        const idUser = userStore.getId
         const rolUser = userStore.getRol
         const route = useRoute();
         const router = useRouter();
@@ -240,7 +242,8 @@ export default {
             asignaciones,
             irA,
             messageError,
-            loading
+            loading,
+            idUser
         };
     },
     computed: {
