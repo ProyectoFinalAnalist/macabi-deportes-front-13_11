@@ -72,7 +72,15 @@
     </div>
     <div class="d-flex justify-content-center align-items-center">
       <div class="btn-group ">
-        <button @click="agregarSociosACategoria" class="btn botonHabilitado mr-2"> Agregar socios </button>
+     
+        
+        <button disabled v-if="this.sociosList.length == 0" @click="agregarSociosACategoria" class="btn btn-success mr-2"> Agregar socios </button>
+        <button v-else @click="agregarSociosACategoria" class="btn btn-success  mr-2"> Agregar socios </button>
+
+        <button disabled v-if="this.sociosList.length == 0" @click="vaciarLista" class="btn btn-danger mr-2"> Vaciar lista</button>
+        <button  v-else @click="vaciarLista" class="btn btn-danger mr-2"> Vaciar lista</button>
+
+
         <button class="btn btn-dark ml-2" @click="this.$router.go(-1)">Volver</button>
       </div>
     </div>
@@ -196,6 +204,10 @@ export default {
 
       return existe;
     },
+
+    vaciarLista(){
+      this.sociosList = []
+    },
     eliminarDeListaSocios(index) {
       this.sociosList.splice(index, 1)
     },
@@ -229,7 +241,7 @@ export default {
     },
 
 
-    async agregarSociosACategoria() {
+    async agregarSociosACategoria() { 
       this.loading = true
       try {
         let parametro = { socios: [] }
