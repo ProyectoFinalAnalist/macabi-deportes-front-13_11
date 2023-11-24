@@ -320,6 +320,13 @@ export default {
                     return propiedadLowerCase.includes(busquedaLowerCase);
                 });
                 this.size = this.sociosFiltados.length || 0;
+
+                if (this.size == 0) {
+                    if (this.busqueda !== "") {
+                        alert(`No se encontraron socios con el filtro: "${this.tipoFiltro}" y con la búsqueda: "${this.busqueda}"`)
+                    }
+                    this.reiniciar()
+                }
             }
 
 

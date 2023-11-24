@@ -92,7 +92,8 @@
                     <p class="p pe-3">
                         <strong>Email: </strong><input type="text" class="form-control" v-model="contactoCreate.email" />
                     </p>
-                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="validarMail(contactoCreate.email) !== null">
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
+                        v-if="validarMail(contactoCreate.email) !== null">
                         <strong>{{ validarMail(contactoCreate.email) }}</strong>
                     </h6>
                     <p class="p pe-3">
@@ -195,29 +196,47 @@ export default {
         });
 
         function validarContacto(contacto) {
-            let crear = false;
+            let msg = null
+            let crear = true;
 
-            // JUAMPI: se ve así el método porque dentro de los ifs tiraba los errores pero
-            // ahora se cambiaron los carteles pero el método lo necesito jaja
+            msg = validarNombre(contacto.nombre)
 
-            if (String(contacto.nombre).length < 2 || String(contacto.nombre).length > 50) {
-
-            } else if (contacto.email === '') {
-
-            } else if (!validateMail.test(contacto.email) && contacto.email !== null) {
-
-            } else if (contacto.telefono < 0) {
-
-            } else if (String(contacto.telefono).length > 20) {
-
-            } else if (String(contacto.observaciones).length > 250) {
-
-            } else {
-                crear = true
+            if (msg != null) {
+                alert(msg)
+                crear = false
             }
 
-            if (!crear) {
-                alert("Error en los campos ingresados")
+            msg = null
+
+            msg = validarMail(contacto.email)
+
+            if (msg != null) {
+                alert(msg)
+                crear = false
+            }
+
+            msg = null
+
+            if (contacto.email === '') {
+                contacto.email = null
+            }
+
+            msg = validarTelefono(contacto.telefono)
+
+            if (msg != null) {
+                alert(msg)
+                crear = false
+            }
+
+            msg = null
+
+            contacto.observaciones = contacto.observaciones.trim()
+
+            msg = validarObservaciones(contacto.observaciones)
+
+            if (msg != null) {
+                alert(msg)
+                crear = false
             }
 
             return crear
@@ -238,6 +257,8 @@ export default {
         }
 
         function validarNombre(nombre) {
+            nombre = nombre.trim()
+
             if (nombre.length < 2 || nombre.length > 50) {
                 return "El nombre debe tener un mínimo de 2 caracteres y un máximo de 50";
             } else {
@@ -248,8 +269,12 @@ export default {
         const validateMail = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
         function validarMail(mail) {
-            if (mail !== '' && !validateMail.test(mail) && mail !== null) {
-                return "Formato de Mail incorrecto"
+            if (mail) {
+                mail = mail.trim();
+            }
+
+            if (mail !== null && mail !== undefined && mail !== '' && !validateMail.test(mail)) {
+                return "Formato de Correo Electrónico incorrecto";
             } else {
                 return null;
             }

@@ -57,20 +57,23 @@
                         </h6>
                         <p class="p pe-2 ps-2">
                             <strong>Rol: <code>*</code></strong>
-                            <select v-if="rolUser == 'A'" id="filtro" class="form-select" v-model="usuario.idRol">
-                                
+                            <select v-if="this.usrStore.getRol == 'A'" id="filtro" class="form-select"
+                                v-model="usuario.idRol">
+
                                 <option selected disabled value="">Seleccione el Rol</option>
                                 <option value="1">Administrador</option>
                                 <option value="2">Coordinador</option>
                                 <option value="3">Profesor</option>
                             </select>
 
-                            
-                            <select v-else-if="this.usrStore.getId != usuario.idUsuario"  class="form-select" v-model="usuario.idRol">
+
+                            <select v-else-if="this.usrStore.getId != usuario.idUsuario" class="form-select"
+                                v-model="usuario.idRol">
                                 <option value="3">Profesor</option>
                             </select>
 
-                            <select v-else-if="this.usrStore.getId == usuario.idUsuario"  class="form-select" v-model="usuario.idRol">
+                            <select v-else-if="this.usrStore.getId == usuario.idUsuario" class="form-select"
+                                v-model="usuario.idRol">
                                 <option disabled value="2">Coordinador</option>
                             </select>
                         </p>
@@ -154,22 +157,22 @@ export default {
         const utilsUsuario = new UtilsUsuario()
         const showErrores = ref({})
         const nombre = ref(null)
-        
+
 
         const loading = ref(true)
 
         onMounted(async () => {
-            
+
             elementStore.fetchElements()
-            .then( async () => {
-                loading.value = false
+                .then(async () => {
+                    loading.value = false
 
-               if(! await permisosModificarPerfil(idUsuario, usuario.value.idRol)) {
-                router.push(`/unauthorized`);
+                    if (! await permisosModificarPerfil(idUsuario, usuario.value.idRol)) {
+                        router.push(`/unauthorized`);
 
-                }
-            })
-           
+                    }
+                })
+
         })
 
         const updateUsuario = async () => {
@@ -207,7 +210,7 @@ export default {
             volver,
             obtenerFechaMax,
             loading,
-            
+
         };
     },
     data() {

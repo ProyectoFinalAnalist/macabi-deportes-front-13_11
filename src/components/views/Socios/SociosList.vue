@@ -115,9 +115,9 @@ export default {
 
         async function fetchs() {
             await sociosStore.fetchElements(`${apiUrl}/socio/getAll`)
-            .then(() => {
-                loading.value = false
-            })
+                .then(() => {
+                    loading.value = false
+                })
         }
 
         function buscar() {
@@ -134,6 +134,13 @@ export default {
                 });
 
                 size.value = socios.value.length || 0;
+
+                if (size.value == 0) {
+                    if (busqueda !== "") {
+                        alert(`No se encontraron socios con el filtro: "${document.getElementById("filtro").value}" y con la búsqueda: "${busqueda}"`)
+                    }
+                    reiniciar()
+                }
             } else {
                 size.value = 0;
             }
