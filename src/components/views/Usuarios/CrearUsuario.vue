@@ -72,13 +72,19 @@
                         </h6>
                         <p>
                             <strong>Rol: <code>*</code></strong>
-                            <select id="filtro" class="form-select" v-model="usuario.idRol">
-
+                            
+                            <select v-if="rolUser == 'A'" id="filtro" class="form-select" v-model="usuario.idRol">
+                                
                                 <option selected disabled value="">Seleccione el Rol</option>
                                 <option value="1">Administrador</option>
                                 <option value="2">Coordinador</option>
                                 <option value="3">Profesor</option>
                             </select>
+
+                            <select v-else  class="form-select" v-model="usuario.idRol">
+                                <option value="3">Profesor</option>
+                            </select>
+
                         </p>
                         <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="showErrores.rol">
                             <strong>El rol no debe estar vacio</strong>
@@ -117,6 +123,7 @@ import { useRouter } from "vue-router";
 import { computed, ref, onMounted } from "vue";
 import { UtilsUsuario, Utils } from '../../../utils/utils.js'
 import Loading from "../../dependentComponents/Loading.vue";
+import { usrStore } from "../../../stores/usrStore";
 
 export default {
     setup() {
@@ -138,6 +145,8 @@ export default {
         const utils = new Utils()
         const utilsUsuario = new UtilsUsuario()
         const showErrores = ref({})
+        const userStore = usrStore()
+        const rolUser = userStore.getRol
 
         const loading = ref(true)
 
@@ -176,7 +185,8 @@ export default {
             usuario,
             showErrores,
             obtenerFechaMax,
-            loading
+            loading,
+            rolUser
         };
     },
     data() {

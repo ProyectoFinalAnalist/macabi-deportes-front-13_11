@@ -15,7 +15,7 @@
         <div v-else>
             <div class="card fondo-card">
                 <div class="card-body" style="border-radius: 10px;">
-                    <h5 class="fw-bold text-center">No se encontraron prfesores asignados a la categoría</h5>
+                    <h5 class="fw-bold text-center">No se encontraron profesores asignados a la categoría</h5>
                 </div>
             </div>
         </div>

@@ -102,7 +102,8 @@
             </div>
             <div class="d-flex justify-content-center" v-if="usuario">
                 <div class="btn-group">
-                    <router-link class="btn btn-macabi1" v-if="rolUser != 'P'"
+                    
+                    <router-link class="btn btn-macabi1" v-if= "(rolUser != 'P') && (rolUser == 'A') || ( (idUser == usuario.idUsuario ) || (rolUser == 'C' && usuario.idRol != 2) )"
                         :to="`/modificarusuario/${usuario.idUsuario}`">Modificar
                         Usuario</router-link>
 
@@ -143,10 +144,13 @@ import apiUrl from "../../../../config/config";
 import axios from "axios";
 import { usrStore } from '../../../stores/usrStore';
 import Loading from "../../dependentComponents/Loading.vue";
+import { vistaPerfilUsuario } from '../../../utils/permisos';
+
 
 export default {
     setup() {
         const userStore = usrStore()
+        const idUser = userStore.getId
         const rolUser = userStore.getRol
         const route = useRoute();
         const router = useRouter();
@@ -154,10 +158,14 @@ export default {
         const elementStore = useElementStore("usuario")();
         const utils = new Utils()
 
+
+      
+
         const loading = ref(true)
 
         elementStore.fetchElementById(idUsuario)
-            .then(() => {
+        
+            .then( async () => {
                 try {
                     switch (elementStore.currentElement.Rol.tipo) {
                         case 'C':
@@ -169,6 +177,12 @@ export default {
                         default:
                             loading.value = false
                     }
+
+                    if(!await vistaPerfilUsuario(elementStore.currentElement.Rol.tipo)){
+                        router.push({ path: "/unauthorized" })
+
+
+                    }
                 }
                 catch (e) {
                     console.log(e.response.data)
@@ -179,12 +193,16 @@ export default {
             })
 
         const usuario = computed(() => elementStore.currentElement)
+
+        
+
         const asignaciones = ref(null)
         const messageError = ref(null)
 
         function volver() {
             router.go(-1)
         }
+
 
         function obtenerDeportes() {
             axios.get(`${apiUrl}/usuario/${usuario.value.idUsuario}/deportes`, { withCredentials: true })
@@ -224,7 +242,8 @@ export default {
             asignaciones,
             irA,
             messageError,
-            loading
+            loading,
+            idUser
         };
     },
     computed: {

@@ -113,8 +113,7 @@ const router = createRouter({
 
 export const rutasNoAutorizadasParaCoordinador = [
   "/contactosEmergencia/admin",
-  //"/modificarusuario/:id", //¿habría q ver si puede editar o no. xq si quiere darlos de baja debería poder. Perso si le damos acceso, puede cambiarles el rol.
-  //"/crearusuario",
+  "/socios",
   "/deportes",
   "/editarDeporte/:id",
 ];
@@ -122,7 +121,7 @@ export const rutasNoAutorizadasParaCoordinador = [
 export const rutasNoAutorizadasParaProfesor = [
   "/usuarios",
   "/crearusuario",
-  "/usuarios/:id",
+  //"/usuarios/:id",
   "/modificarusuario/:id",
   "/registrarSocio",
   "/socios",
