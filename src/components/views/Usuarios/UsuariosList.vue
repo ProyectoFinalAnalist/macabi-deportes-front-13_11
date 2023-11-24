@@ -132,7 +132,7 @@ export default
           }
 
           usuarios.value = elementStore.getElements
-          
+
         }).then(() => {
           size.value = usuarios.value.length || 0
           loading.value = false
@@ -158,7 +158,28 @@ export default
           });
         }
 
+        const rolesMap = {
+          'P': 'Profesores',
+          'A': 'Administradores',
+          'C': 'Coordinadores'
+        };
+
+        let msjCheckboxes = ''
+
+        if (checkboxes.value.length === 3) {
+          msjCheckboxes = 'Usuarios';
+        } else if (checkboxes.value.length > 0) {
+          msjCheckboxes = checkboxes.value.map(rol => rolesMap[rol]).join(', ');
+        }
+
         size.value = usuarios.value.length || 0;
+
+        if (size.value == 0) {
+          if (busqueda !== "") {
+            alert(`No se encontraron "${msjCheckboxes}" con el filtro: "${document.getElementById("filtro").value}" y con la búsqueda: "${busqueda}"`)
+          }
+          reiniciar()
+        }
       }
 
       function reiniciar() {
@@ -181,6 +202,17 @@ export default
         if (id != 0) {
           router.push(`/usuarios/${id}`);
         }
+      }
+
+      function generarCorreos(cantidad) {
+        let correos = [];
+
+        for (let i = 1; i <= cantidad; i++) {
+          let correo = `email${i}@gmail.com`;
+          correos.push(correo);
+        }
+
+        return correos;
       }
 
       function obtenerRol(rol) {

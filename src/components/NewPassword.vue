@@ -101,11 +101,11 @@
             <div v-else-if="claveCambiada">
 
                 <div class="form-text text" id="basic-addon4" style="text-align: center;">
-                    Tu contraseña se a actualizado Ecitosamente 
+                    Tu contraseña se ha actualizado exitosamente 
                 </div>
 
                 <div class="sub_container_buttons2">
-                    <button type="" class="btn btn-dark" @click="$router.push(`/login`);">Iniciar Seción</button>
+                    <button type="" class="btn btn-dark" @click="$router.push(`/login`);">Iniciar Sesión</button>
                 </div>
 
 

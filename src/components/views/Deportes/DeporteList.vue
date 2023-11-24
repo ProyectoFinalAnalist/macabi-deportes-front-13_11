@@ -33,7 +33,7 @@
                             <strong class="text-uppercase fs-5">{{ deporte.nombre }}</strong>
                         </div>
                         <ul class="list-group mt-1 mx-3 mt-2 fs-5" style="max-height: 200px; overflow-y: auto;">
-                            <li class="list-group text-dark text-center" v-on:click="irA(categoria.idCategoria)"
+                            <li class="list-group text-dark text-center my-1" v-on:click="irA(categoria.idCategoria)"
                                 :class="[categoria.idCategoria == 0 ? 'list-group-item list-group-item-danger' : 'pointer list-group-item list-group-item-action list-group-item-light']"
                                 v-for="categoria in categoriasXDeporte(deporte.idDeporte)" :key="categoria.idCategoria">
                                 {{ categoria.nombreCategoria }}
@@ -178,6 +178,13 @@ export default {
                 });
 
                 size.value = deportes.value.length || 0;
+
+                if (size.value == 0) {
+                    if (busqueda !== "") {
+                        alert(`No se encontraron deportes con la búsqueda: "${busqueda}"`)
+                    }
+                    reiniciar()
+                }
             }
         }
 
