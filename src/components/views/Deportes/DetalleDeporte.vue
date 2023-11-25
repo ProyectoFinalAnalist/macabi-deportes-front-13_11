@@ -22,10 +22,10 @@
 
 					<tr v-for="coordinador in coordinadores" @click="$router.push(`/usuarios/${coordinador.idUsuario}`);"
 						class="resaltable">
-						<td data-cell="Nombre">{{ coordinador.nombre }} {{ coordinador.apellido }}</td>
-						<td data-cell="DNI">{{ coordinador.dni }}</td>
-						<td data-cell="Email">{{ coordinador.email }}</td>
-						<td data-cell="Estado">
+						<td class="show_data_cell" data-cell="Nombre">{{ coordinador.nombre }} {{ coordinador.apellido }}</td>
+						<td class="show_data_cell" data-cell="DNI">{{ coordinador.dni }}</td>
+						<td class="show_data_cell" data-cell="Email">{{ coordinador.email }}</td>
+						<td class="show_data_cell" data-cell="Estado">
 							<span class="text-success fw-bold" v-if="coordinador.activo"> Activo </span>
 							<span class="text-danger fw-bold" v-else> Inactivo </span>
 						</td>
@@ -42,7 +42,7 @@
 
 					<tr v-for="categoria in categorias" class="resaltable text-center"
 						@click="$router.push(`/detalleCategoria/${categoria.idCategoria}`);">
-						<td data-cell="Nombre">{{ categoria.nombreCategoria }}</td>
+						<td class="show_data_cell" data-cell="Nombre">{{ categoria.nombreCategoria }}</td>
 					</tr>
 
 				</table>

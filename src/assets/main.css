@@ -154,8 +154,6 @@ body {
     cursor: pointer;
 }
 
-
-
 .tabla_macabi1 .small {
     display: none;
 }
@@ -211,7 +209,7 @@ body {
         display: block;
     }
 
-    .tabla_macabi1 td::before {
+    .tabla_macabi1 .show_data_cell::before {
         content: attr(data-cell) ": ";
         font-weight: 700;
     }

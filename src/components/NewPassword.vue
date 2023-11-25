@@ -45,7 +45,7 @@
 
                 <div class="form-floating mb-3 mt-3">
                     <input type="text" class="form-control" id="tokenInput" placeholder="" :class="tokenValid"
-                        v-model="token">
+                        v-model="token" autocomplete="off">
                     <label for="tokenInput">Token</label>
                 </div>
 
@@ -53,7 +53,8 @@
 
                 <div class="form-floating mb-3">
                     <input type="password" class="form-control " id="claveInput" :class="claveValid" placeholder=""
-                        v-model="nuevaClave" @keyup="isMayus($event, 'mayusAlert1')" @focusout="desactivar('mayusAlert1')">
+                        v-model="nuevaClave" @keyup="isMayus($event, 'mayusAlert1')" @focusout="desactivar('mayusAlert1')"
+                        autocomplete="off">
 
                     <label for="claveInput">Clave</label>
 
@@ -68,7 +69,7 @@
                 <div class="form-floating mb-3">
                     <input type="password" class="form-control " id="claveConfirmInput" :class="claveValid" placeholder=""
                         v-model="confirmNuevaClave" @keyup="isMayus($event, 'mayusAlert2')"
-                        @focusout="desactivar('mayusAlert2')">
+                        @focusout="desactivar('mayusAlert2')" autocomplete="off">
 
                     <label for="claveConfirmInput">Clave</label>
 
@@ -101,7 +102,7 @@
             <div v-else-if="claveCambiada">
 
                 <div class="form-text text" id="basic-addon4" style="text-align: center;">
-                    Tu contraseña se ha actualizado exitosamente 
+                    Tu contraseña se ha actualizado exitosamente
                 </div>
 
                 <div class="sub_container_buttons2">

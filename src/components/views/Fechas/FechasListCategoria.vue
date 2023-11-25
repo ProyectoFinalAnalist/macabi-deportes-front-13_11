@@ -62,8 +62,9 @@
 					<tbody>
 						<tr v-for="fecha in fechasToShow" :key="fecha.idFecha" class="resaltable"
 							@click="$router.push(`/fechas/${fecha.idFecha}`);">
-							<td data-cell="Fecha Calendario">{{ utils.obtenerFechaFormateada(fecha.fechaCalendario) }}</td>
-							<td data-cell="Tipo">{{ mapearTipo(fecha.tipo) }}</td>
+							<td class="show_data_cell" data-cell="Fecha Calendario">{{
+								utils.obtenerFechaFormateada(fecha.fechaCalendario) }}</td>
+							<td class="show_data_cell" data-cell="Tipo">{{ mapearTipo(fecha.tipo) }}</td>
 						</tr>
 						<tr v-if="!fechaDeCategoriaStore.getElements">
 							<td colspan="2" style="text-align: center;"> No hay Fechas en la Categoria</td>
@@ -84,7 +85,7 @@
 			</div>
 
 			<div v-if="sociosToShow !== null">
-				<table class="tabla_macabi1">
+				<table class="tabla_macabi1 socios_table">
 					<thead>
 						<tr>
 							<th class="big">Numero Socio</th>
@@ -96,43 +97,70 @@
 							<th class="big" style="width: 6%;">J</th>
 							<th class="big" style="width: 7%;">N/A</th>
 							<th class="big text-center" style="width: 11%;">%</th>
+							<th class="small">Socios:</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr v-for="socio in sociosToShow" class="resaltable"
 							@click="router.push(`/socios/${socio.idSocio}`)">
-							<td data-cell="Id" class="big">{{ socio.nroSocio }}</td>
-							<td data-cell="Nombre">{{ socio.nombre }} {{ socio.apellido }}</td>
-							<td data-cell="Dni">{{ socio.dni }}</td>
-							<td data-cell="Total" style="font-weight: bold;">
+
+							<td class="big" data-cell="Id">{{ socio.nroSocio }}</td>
+							<td class="show_data_cell" data-cell="Nombre">{{ socio.nombre }} {{ socio.apellido }}</td>
+							<td class="show_data_cell" data-cell="Dni">{{ socio.dni }}</td>
+
+							<td class="show_data_cell" data-cell="Total" style="font-weight: bold;">
 								<span>
 									{{ socio.Fechas.length }}
 								</span>
 							</td>
-							<td data-cell="P" style="font-weight: bold;">
+
+							<td class="big" data-cell="P" style="font-weight: bold;">
 								<span class="text-success text-center">
 									{{ socio.asistencia.P }}
 								</span>
 							</td>
-							<td data-cell="A" style="font-weight: bold;">
+							<td class="big" data-cell="A" style="font-weight: bold;">
 								<span class="text-danger">
 									{{ socio.asistencia.A }}
 								</span>
 							</td>
-							<td data-cell="J" style="font-weight: bold;">
+							<td class="big" data-cell="J" style="font-weight: bold;">
 								<span class="text-warning">
 									{{ socio.asistencia.J }}
 								</span>
 							</td>
-							<td data-cell="N/A" style="font-weight: bold;">
+
+							<td class="small2" style="font-weight: bold;">
+								<div style="text-align: start;">
+									P:
+									<span class="text-success text-center">
+										{{ socio.asistencia.P }}
+									</span>
+								</div>
+								<div style="text-align: start;">
+									A:
+									<span class="text-danger">
+										{{ socio.asistencia.A }}
+									</span>
+								</div>
+								<div style="text-align: start;">
+									J:
+									<span class="text-warning">
+										{{ socio.asistencia.J }}
+									</span>
+								</div>
+
+							</td>
+							<td class="show_data_cell" data-cell="N/A" style="font-weight: bold;">
 								<span class="text-secondary">
 									{{ socio.asistencia["N/A"] }}
 								</span>
 							</td>
-							<td data-cell="Asistencia" style="font-weight: bold;">
-								<div class="vertical-bar-container p-0 pb-2 ">
+							<td class="show_data_cell" data-cell="Asistencia"
+								style="font-weight: bold; display: flex; align-items: center; justify-content: space-between;">
+								<div class="vertical-bar-container">
 									<div class="vertical-bar"
-										:style="{ height: barHeight(+socio.asistencia.presentismo) + '%', backgroundColor: barColor(+socio.asistencia.presentismo) }">
+										:style="{ backgroundColor: barColor(+socio.asistencia.presentismo) }">
 										<div class="percentage-label">{{ socio.asistencia.presentismo }}%</div>
 									</div>
 								</div>
@@ -221,7 +249,7 @@ onMounted(async () => {
 	}
 
 
-	loading.value = false	
+	loading.value = false
 
 });
 
@@ -401,6 +429,24 @@ function barHeight(presentismo) {
 </script>
 
 <style scoped>
+.tabla_macabi1 .small2 {
+	display: none;
+}
+
+@media screen and (max-width:1000px) {
+	.tabla_macabi1 .small2 {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+	}
+
+	.socios_table td {
+		padding: 0.5rem 1rem;
+	}
+
+}
+
+
+
 .mes {
 	display: flex;
 }
@@ -454,7 +500,7 @@ function barHeight(presentismo) {
 	display: flex;
 	flex-direction: column-reverse;
 	align-items: center;
-	height: 50px;
+	height: 35px;
 }
 
 .vertical-bar {
@@ -462,6 +508,7 @@ function barHeight(presentismo) {
 	width: 60px;
 	border-radius: 8px;
 	transition: height 0.5s ease;
+	height: 100%;
 }
 
 .percentage-label {
