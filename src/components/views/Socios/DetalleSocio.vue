@@ -34,7 +34,7 @@
                                     <strong>{{ socio.nombre }} no posee datos de contacto</strong>
                                 </h6>
                             </div>
-                            <div v-else class="card" style="background-color: rgb(236, 236, 236);"
+                            <div v-else class="card mb-2" style="background-color: rgb(236, 236, 236);"
                                 v-for="contacto in infoContactos">
                                 <div class="card-body">
                                     <h5>Contacto: <br></h5>

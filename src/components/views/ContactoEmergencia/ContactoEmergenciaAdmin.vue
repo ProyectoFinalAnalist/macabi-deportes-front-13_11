@@ -5,7 +5,7 @@
             <div class="col-md-6 offset-md-3" v-if="contactosEmergencia != null">
                 <h3 class="text-center"><strong>MODIFICAR CONTACTOS DE EMERGENCIA</strong></h3>
                 <div class="text-end mb-1"><code>*campos obligatorios</code></div>
-                <div class="card bg-light text-dark mt-3 ms-3 me-0 mb-3" v-for="contacto in contactosEmergencia">
+                <div class="card bg-light text-dark mt-3 ms-3 me-0 mb-3" v-for="contacto in contactosEmergencia" :key="contacto.idContactoEmergencia">
                     <div class="card-body">
                         <h4 class="mb-3">Detalles del Contacto: <strong>{{ obtenerNombre(contacto.idContactoEmergencia)
                         }}</strong></h4>
@@ -85,33 +85,29 @@
                         <strong>Nombre: <code>*</code></strong><input type="text" class="form-control"
                             v-model="contactoCreate.nombre" />
                     </p>
-                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
-                        v-if="validarNombre(contactoCreate.nombre) !== null">
-                        <strong>{{ validarNombre(contactoCreate.nombre) }}</strong>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="errorNombre !== null">
+                        <strong>{{ errorNombre }}</strong>
                     </h6>
                     <p class="p pe-3">
                         <strong>Email: </strong><input type="text" class="form-control" v-model="contactoCreate.email" />
                     </p>
-                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
-                        v-if="validarMail(contactoCreate.email) !== null">
-                        <strong>{{ validarMail(contactoCreate.email) }}</strong>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="errorMail !== null">
+                        <strong>{{ errorMail }}</strong>
                     </h6>
                     <p class="p pe-3">
                         <strong>Teléfono: </strong><input type="number" min="0" class="form-control"
                             v-model="contactoCreate.telefono" />
                     </p>
-                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
-                        v-if="validarTelefono(contactoCreate.telefono) !== null">
-                        <strong>{{ validarTelefono(contactoCreate.telefono) }}</strong>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="errorTelefono !== null">
+                        <strong>{{ errorTelefono }}</strong>
                     </h6>
                     <p class="p pe-3">
                         <strong>Observaciones: </strong>
                         <textarea style="height: 100px; max-height: 200px;" class="form-control"
                             v-model="contactoCreate.observaciones"></textarea>
                     </p>
-                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
-                        v-if="validarObservaciones(contactoCreate.observaciones) !== null">
-                        <strong>{{ validarObservaciones(contactoCreate.observaciones) }}</strong>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="errorObservaciones !== null">
+                        <strong>{{ errorObservaciones }}</strong>
                     </h6>
                 </div>
                 <div class="modal-footer">
@@ -120,9 +116,6 @@
                     <div class="text-start"><code>*campos obligatorios</code></div>
                 </div>
             </div>
-            <!-- <h5 v-if="messageModal != null" class="alert alert-danger alert-sm mb-0 text-center m-2 mb-3">
-                <strong>{{ messageModal }}</strong>
-            </h5> -->
         </div>
     </div>
 </template>
@@ -195,14 +188,24 @@ export default {
             }
         });
 
+        const errorNombre = ref(null)
+        const errorMail = ref(null)
+        const errorTelefono = ref(null)
+        const errorObservaciones = ref(null)
+
         function validarContacto(contacto) {
             let msg = null
             let crear = true;
 
+            errorNombre.value = null
+            errorMail.value = null
+            errorTelefono.value = null
+            errorObservaciones.value = null
+
             msg = validarNombre(contacto.nombre)
 
             if (msg != null) {
-                alert(msg)
+                errorNombre.value = msg
                 crear = false
             }
 
@@ -211,7 +214,7 @@ export default {
             msg = validarMail(contacto.email)
 
             if (msg != null) {
-                alert(msg)
+                errorMail.value = msg
                 crear = false
             }
 
@@ -224,19 +227,21 @@ export default {
             msg = validarTelefono(contacto.telefono)
 
             if (msg != null) {
-                alert(msg)
+                errorTelefono.value = msg
                 crear = false
             }
 
             msg = null
 
-            contacto.observaciones = contacto.observaciones.trim()
-
             msg = validarObservaciones(contacto.observaciones)
 
             if (msg != null) {
-                alert(msg)
+                errorObservaciones.value = msg
                 crear = false
+            }
+
+            if(!crear) {
+                alert("Error detectado en el ingreso de campos")
             }
 
             return crear
@@ -289,7 +294,7 @@ export default {
         }
 
         function validarObservaciones(observaciones) {
-            if (observaciones !== null && observaciones.length > 250) {
+            if (observaciones !== null && observaciones.trim().length > 250) {
                 return "Las observaciones deben tener un máximo de 250 caracteres";
             } else {
                 return null;
@@ -308,7 +313,11 @@ export default {
             validarNombre,
             validarMail,
             validarTelefono,
-            validarObservaciones
+            validarObservaciones,
+            errorNombre,
+            errorMail,
+            errorTelefono,
+            errorObservaciones
         }
     },
     components: {

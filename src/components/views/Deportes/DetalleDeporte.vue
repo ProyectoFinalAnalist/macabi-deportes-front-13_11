@@ -9,6 +9,7 @@
 		<div class="container_basic">
 
 			<div>
+				<h4 class="text-center fw-bold d-none d-lg-block">Coordinadores</h4>
 				<table class="tabla_macabi1">
 					<tr>
 						<th class="big">Nombre</th>
