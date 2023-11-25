@@ -85,47 +85,48 @@
                                 <strong>Datos de contacto: </strong>
                                 <br>
                             <div class="card mt-3" style="background-color: rgb(236, 236, 236);"
-                                v-for="contacto in infoContactos">
+                                v-for="(contacto, index) in infoContactos" :key="index">
                                 <div class="card-body">
-                                    <h5>Contacto: <strong>{{ nombreContacto }}</strong></h5>
+                                    <h5>Contacto: <strong>{{ nombreContacto[index] }}</strong></h5>
                                     <div class="text-end"><code>*campos obligatorios</code></div>
                                     <p class="p pe-2 ps-2">
                                         <strong>Nombre: <code>*</code></strong><input type="text" class="form-control"
                                             v-model="contacto.nombre" />
                                     </p>
                                     <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
-                                        v-if="errorNombreContacto !== null">
-                                        <strong>{{ errorNombreContacto }}</strong>
+                                        v-if="errorNombreContacto[index + 1].error">
+                                        <strong>{{ errorNombreContacto[index + 1].msg }}</strong>
                                     </h6>
                                     <p class="p pe-2 ps-2">
                                         <strong>Apellido: <code>*</code></strong><input type="text" class="form-control"
                                             v-model="contacto.apellido" />
                                     </p>
                                     <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
-                                        v-if="errorApellidoContacto !== null">
-                                        <strong>{{ errorApellidoContacto }}</strong>
+                                        v-if="errorApellidoContacto[index + 1].error">
+                                        <strong>{{ errorApellidoContacto[index + 1].msg }}</strong>
                                     </h6>
                                     <p class="p pe-2 ps-2">
                                         <strong>Email: <code>*</code></strong><input type="text" class="form-control"
                                             v-model="contacto.email" />
                                     </p>
                                     <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
-                                        v-if="errorMailContacto !== null">
-                                        <strong>{{ errorMailContacto }}</strong>
+                                        v-if="errorMailContacto[index + 1].error">
+                                        <strong>{{ errorMailContacto[index + 1].msg }}</strong>
                                     </h6>
                                     <p class="p pe-2 ps-2">
                                         <strong>Teléfono: <code>*</code></strong><input type="number" min="0"
                                             class="form-control" v-model="contacto.telefono" />
                                     </p>
                                     <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3"
-                                        v-if="errorTelefonoContacto !== null">
-                                        <strong>{{ errorTelefonoContacto }}</strong>
+                                        v-if="errorTelefonoContacto[index + 1].error">
+                                        <strong>{{ errorTelefonoContacto[index + 1].msg }}</strong>
                                     </h6>
                                     <div class="d-flex justify-content-center">
                                         <div class="btn-group">
-                                            <button class="btn btn-macabi1" @click="updateContacto(contacto)">Actualizar
+                                            <button class="btn btn-macabi1"
+                                                @click="updateContacto(contacto, index + 1)">Actualizar
                                                 Contacto</button>
-                                            <button class="btn btn-danger" @click="deleteContacto(contacto)">Borrar
+                                            <button class="btn btn-danger" @click="deleteContacto(contacto, index)">Borrar
                                                 Contacto</button>
                                         </div>
                                     </div>
@@ -174,35 +175,34 @@
                         <strong>Nombre: <code>*</code></strong><input type="text" class="form-control"
                             v-model="contactoCreate.nombre" />
                     </p>
-                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="errorNombreContacto !== null">
-                        <strong>{{ errorNombreContacto }}</strong>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="errorNombreContacto[0].error">
+                        <strong>{{ errorNombreContacto[0].msg }}</strong>
                     </h6>
                     <p class="p pe-2 ps-2">
                         <strong>Apellido: <code>*</code></strong><input type="text" class="form-control"
                             v-model="contactoCreate.apellido" />
                     </p>
-                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="errorApellidoContacto !== null">
-                        <strong>{{ errorApellidoContacto }}</strong>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="errorApellidoContacto[0].error">
+                        <strong>{{ errorApellidoContacto[0].msg }}</strong>
                     </h6>
                     <p class="p pe-2 ps-2">
                         <strong>Email: <code>*</code></strong><input type="text" class="form-control"
                             v-model="contactoCreate.email" />
                     </p>
-                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="errorMailContacto !== null">
-                        <strong>{{ errorMailContacto }}</strong>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="errorMailContacto[0].error">
+                        <strong>{{ errorMailContacto[0].msg }}</strong>
                     </h6>
                     <p class="p pe-2 ps-2">
                         <strong>Teléfono: <code>*</code></strong><input type="number" min="0" class="form-control"
                             v-model="contactoCreate.telefono" />
                     </p>
-                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="errorTelefonoContacto !== null">
-                        <strong>{{ errorTelefonoContacto }}</strong>
+                    <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="errorTelefonoContacto[0].error">
+                        <strong>{{ errorTelefonoContacto[0].msg }}</strong>
                     </h6>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-macabi1" @click="crearContacto">Crear</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                        @click="cleanErrors">Cerrar</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
                     <div class="text-start"><code>*campos obligatorios</code></div>
                 </div>
             </div>
@@ -251,8 +251,10 @@ export default {
 
                 if (socio.value.InfoContactos.length != 0) {
                     infoContactos.value = socio.value.InfoContactos
-                    nombreContacto.value = `${infoContactos.value[0].apellido}, ${infoContactos.value[0].nombre}`
+                    nombreContacto.value = infoContactos.value.map(contacto => `${contacto.apellido}, ${contacto.nombre}`);
                 }
+
+                createErrorsArray()
             }
         });
 
@@ -313,7 +315,6 @@ export default {
                     await sociosStore.patchElement(`${apiUrl}/socio/${socioUpdate.idSocio}`, socioUpdate)
                     router.go(-1)
                 } catch (e) {
-                    console.log(e)
                     alert("Error updating");
                 }
             }
@@ -338,15 +339,15 @@ export default {
         });
 
         const crearContacto = (async () => {
-            if (validarContacto(contactoCreate.value) && contactoStore.confirm("crear", "registrado", "contacto")) {
+            if (validarContacto(contactoCreate.value, 0) && contactoStore.confirm("crear", "registrado", "contacto")) {
                 await contactoStore.createElement(`${apiUrl}/contacto/`, JSON.parse(JSON.stringify(contactoCreate.value)));
                 location.reload()
             }
         });
 
-        const updateContacto = (async (contacto) => {
+        const updateContacto = (async (contacto, pos) => {
 
-            if (validarContacto(contacto) && contactoStore.confirm("modificar", "modificado", "Contacto de " + nombreContacto.value)) {
+            if (validarContacto(contacto, pos) && contactoStore.confirm("modificar", "modificado", "Contacto de " + nombreContacto.value[pos - 1])) {
                 await contactoStore.updateElement(`${apiUrl}/contacto/`, JSON.parse(JSON.stringify(contacto)), "idInfoContacto");
                 location.reload()
             }
@@ -357,30 +358,67 @@ export default {
         const errorMailContacto = ref(null)
         const errorTelefonoContacto = ref(null)
 
-        function cleanErrors() {
-            errorNombreContacto.value = null
-            errorApellidoContacto.value = null
-            errorMailContacto.value = null
-            errorTelefonoContacto.value = null
+        function createErrorsArray() {
+            if (socio.value.InfoContactos.length == 0) {
+
+                errorNombreContacto.value = [({ error: ref(false), msg: ref(null) })]
+
+                errorApellidoContacto.value = [({ error: ref(false), msg: ref(null) })]
+
+                errorMailContacto.value = [({ error: ref(false), msg: ref(null) })]
+
+                errorTelefonoContacto.value = [({ error: ref(false), msg: ref(null) })]
+
+            } else {
+                errorNombreContacto.value = Array.from({ length: infoContactos.value.length }, (_) => ({ error: ref(false), msg: ref(null) }));
+                errorNombreContacto.value.unshift(({ error: ref(false), msg: ref(null) }))
+
+                errorApellidoContacto.value = Array.from({ length: infoContactos.value.length }, (_) => ({ error: ref(false), msg: ref(null) }));
+                errorApellidoContacto.value.unshift(({ error: ref(false), msg: ref(null) }))
+
+                errorMailContacto.value = Array.from({ length: infoContactos.value.length }, (_) => ({ error: ref(false), msg: ref(null) }));
+                errorMailContacto.value.unshift(({ error: ref(false), msg: ref(null) }))
+
+                errorTelefonoContacto.value = Array.from({ length: infoContactos.value.length }, (_) => ({ error: ref(false), msg: ref(null) }));
+                errorTelefonoContacto.value.unshift(({ error: ref(false), msg: ref(null) }))
+            }
         }
 
-        function validarContacto(contacto) {
+        function cleanErrors(pos) {
+            errorNombreContacto.value[pos].msg = null
+            errorNombreContacto.value[pos].error = false
+
+            errorApellidoContacto.value[pos].msg = null
+            errorApellidoContacto.value[pos].error = false
+
+            errorMailContacto.value[pos].msg = null
+            errorMailContacto.value[pos].error = false
+
+            errorTelefonoContacto.value[pos].msg = null
+            errorTelefonoContacto.value[pos].error = false
+        }
+
+        function validarContacto(contacto, pos) {
             let msg = null
             let crear = true;
 
-            cleanErrors()
+            cleanErrors(pos)
 
             msg = validarNombre(contacto.nombre, 'nombre', 50)
 
             if (msg != null) {
-                errorNombreContacto.value = msg
+                errorNombreContacto.value[pos].msg = msg
+                errorNombreContacto.value[pos].error = true
+
                 crear = false
             }
 
             msg = validarNombre(contacto.apellido, 'apellido', 50)
 
             if (msg != null) {
-                errorApellidoContacto.value = msg
+                errorApellidoContacto.value[pos].msg = msg
+                errorApellidoContacto.value[pos].error = true
+
                 crear = false
             }
 
@@ -389,14 +427,18 @@ export default {
             msg = validarMail(contacto.email)
 
             if (msg != null) {
-                errorMailContacto.value = msg
+                errorMailContacto.value[pos].msg = msg
+                errorMailContacto.value[pos].error = true
+
                 crear = false
             }
 
             msg = validarTelefono(contacto.telefono)
 
             if (msg != null) {
-                errorTelefonoContacto.value = msg
+                errorTelefonoContacto.value[pos].msg = msg
+                errorTelefonoContacto.value[pos].error = true
+
                 crear = false
             }
 
@@ -407,8 +449,8 @@ export default {
             return crear
         }
 
-        const deleteContacto = (async (contacto) => {
-            if (contactoStore.confirm("eliminar", "eliminado", `Contacto de ${contacto.nombre}`)) {
+        const deleteContacto = (async (contacto, pos) => {
+            if (contactoStore.confirm("eliminar", "eliminado", `Contacto de ${nombreContacto.value[pos]}`)) {
                 await contactoStore.deleteElement(`${apiUrl}/contacto/`, contacto.idInfoContacto);
                 location.reload()
             }

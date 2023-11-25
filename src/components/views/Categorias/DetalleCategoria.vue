@@ -15,7 +15,7 @@
         <div v-else>
             <div class="card fondo-card margenes">
                 <div class="card-body" style="border-radius: 10px;">
-                    <h5 class="fw-bold text-center">No se encontraron profesores asignados a la categoría</h5>
+                    <h6 class="fw-bold text-center">No se encontraron profesores asignados a la categoría</h6>
                 </div>
             </div>
         </div>
@@ -88,9 +88,13 @@
             </div>
 
         </div>
-
-        <div v-else class="text text-center fw-bold h3 alert alert-danger margenes">No se encontraron socios asignados a la
-            categoria
+        <div v-else>
+            <div class="card fondo-card margenes">
+                <div class="card-body" style="border-radius: 10px;">
+                    <h6 class="fw-bold text-center">No se encontraron socios asignados a la
+                        categoria</h6>
+                </div>
+            </div>
         </div>
         <hr>
         <div class="d-flex justify-content-center">
@@ -160,8 +164,8 @@ export default {
     data() {
         return {
             idCategoria: "",
-            nombreCategoria: "nombreCategoria",
-            deporteCategoria: "nombreDeporteCategoria",
+            nombreCategoria: "Categoría No encontrada",
+            deporteCategoria: "Deporte No encontrado",
             listSocios: [],
             busqueda: "",
             sociosFiltados: [],
@@ -358,15 +362,16 @@ export default {
     border-radius: 4px;
     padding: 8px;
 }
+
 .margenes {
-    margin-left: 4%;
-    margin-right: 4%;
+    margin-left: 6%;
+    margin-right: 6%;
 }
 
 @media (min-width: 800px) {
     .margenes {
-        margin-left: 20%;
-        margin-right: 20%;
+        margin-left: 30%;
+        margin-right: 30%;
     }
 }
 

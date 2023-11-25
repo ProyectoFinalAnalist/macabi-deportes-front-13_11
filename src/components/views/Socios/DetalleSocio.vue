@@ -37,7 +37,6 @@
                             <div v-else class="card mb-2" style="background-color: rgb(236, 236, 236);"
                                 v-for="contacto in infoContactos">
                                 <div class="card-body">
-                                    <h5>Contacto: <br></h5>
                                     <h5 class="text-center"><strong>{{ contacto.nombre }} {{ contacto.apellido }}</strong>
                                     </h5>
                                     <p class="p pe-3 mb-2 mt-4">
