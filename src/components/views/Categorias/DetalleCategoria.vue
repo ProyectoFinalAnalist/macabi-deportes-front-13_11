@@ -13,7 +13,7 @@
             </button>
         </div>
         <div v-else>
-            <div class="card fondo-card">
+            <div class="card fondo-card margenes">
                 <div class="card-body" style="border-radius: 10px;">
                     <h5 class="fw-bold text-center">No se encontraron profesores asignados a la categoría</h5>
                 </div>
@@ -89,7 +89,8 @@
 
         </div>
 
-        <div v-else class="text text-center fw-bold h3 alert alert-danger">No se encontraron socios asignados a la categoria
+        <div v-else class="text text-center fw-bold h3 alert alert-danger margenes">No se encontraron socios asignados a la
+            categoria
         </div>
         <hr>
         <div class="d-flex justify-content-center">
@@ -184,7 +185,6 @@ export default {
         this.idCategoria = this.$route.params.id;
         const userStore = usrStore();
         this.rolUsuario = userStore.getRol
-        //console.log("La categoia es: " + this.idCategoria);
         if (! await verificarAutorizacionCategoria(this.idCategoria)) {
             this.$router.push(`/unauthorized`);
 
@@ -199,17 +199,11 @@ export default {
             let sociosLista = respuestaSocios.data.sociosDatos
             sociosLista.forEach(socio => {
                 this.listSocios.push(socio)
-                //console.log(socio);
                 const mesActual = new Date().getMonth() + 1;
-
-                //console.log("mes actual: " + mesActual);
-
                 let mesNacimiento = new Date(socio.fechaNacimiento);
                 mesNacimiento.setDate(mesNacimiento.getDate() + 1)
                 mesNacimiento = mesNacimiento.getMonth() + 1;
                 //   mesNacimiento.setDate(mesNacimiento.getDate() + 1)
-                //console.log(" El mes de nacimiento de socio.nombre es: "+ mesNacimiento) ;
-
                 if (mesNacimiento === mesActual) {
                     this.listSociosCumple.push(socio);
                 }
@@ -236,7 +230,6 @@ export default {
 
 
         } catch (e) {
-            console.log(e)
         } finally {
             this.loading = false
         }
@@ -365,6 +358,17 @@ export default {
     border-radius: 4px;
     padding: 8px;
 }
+.margenes {
+    margin-left: 4%;
+    margin-right: 4%;
+}
+
+@media (min-width: 800px) {
+    .margenes {
+        margin-left: 20%;
+        margin-right: 20%;
+    }
+}
 
 #explicacion {
     color: red;
@@ -404,7 +408,6 @@ export default {
         margin: 10px;
         padding: 10px;
     }
-
 
     .cumpleanos-table th,
     .cumpleanos-table td {
