@@ -45,7 +45,6 @@ onMounted(async () => {
 	min-height: 110vh;
 
 	background-image: url("../src/assets/coloredShapes.svg");
-	background-repeat: repeat-y;
 
 }
 </style>
