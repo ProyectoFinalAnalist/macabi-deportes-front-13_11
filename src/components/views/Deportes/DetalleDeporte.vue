@@ -22,7 +22,8 @@
 
 					<tr v-for="coordinador in coordinadores" @click="$router.push(`/usuarios/${coordinador.idUsuario}`);"
 						class="resaltable">
-						<td class="show_data_cell" data-cell="Nombre">{{ coordinador.nombre }} {{ coordinador.apellido }}</td>
+						<td class="show_data_cell" data-cell="Nombre">{{ coordinador.nombre }}, {{ coordinador.apellido }}
+						</td>
 						<td class="show_data_cell" data-cell="DNI">{{ coordinador.dni }}</td>
 						<td class="show_data_cell" data-cell="Email">{{ coordinador.email }}</td>
 						<td class="show_data_cell" data-cell="Estado">
@@ -136,6 +137,7 @@ onMounted(async () => {
 			await categoriasDeDeporteStore.fetchElements(`${apiUrl}/categoria/${idDeporte}/deporte`)
 
 			categorias.value = categoriasDeDeporteStore.getElements.result
+			categorias.value.sort(comparar);
 
 		} else {
 			titulo.value = "Deporte No Encontrado"
@@ -147,6 +149,13 @@ onMounted(async () => {
 	}
 
 })
+
+const comparar = (a, b) => {
+	const valorA = a.nombreCategoria.toLowerCase();
+	const valorB = b.nombreCategoria.toLowerCase();
+
+	return valorA.localeCompare(valorB);
+};
 
 const nombreCategoria = ref(null)
 const messageModal = ref(null);

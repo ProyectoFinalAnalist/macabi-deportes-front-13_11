@@ -112,6 +112,7 @@ export default {
         }
         await asistenciaStore.fetchElements(`${apiUrl}/asistencia/${idFecha}`);
         sociosAsistenciaFecha.value = asistenciaStore.getElements.result;
+        sociosAsistenciaFecha.value.sort(comparar)
         size.value = sociosAsistenciaFecha.value.length;
       } catch (error) {
         console.error("Error fetching socios anotados:", error);
@@ -132,6 +133,13 @@ export default {
 
       loading.value = false
     }
+
+    const comparar = (a, b) => {
+      const valorA = a.apellido.toLowerCase();
+      const valorB = b.apellido.toLowerCase();
+
+      return valorA.localeCompare(valorB);
+    };
 
     const obtenerDeporte = async (idCategoria) => {
       try {
@@ -281,4 +289,5 @@ input,
   border-style: solid;
   border-radius: 4px;
   padding: 8px;
-}</style>
+}
+</style>

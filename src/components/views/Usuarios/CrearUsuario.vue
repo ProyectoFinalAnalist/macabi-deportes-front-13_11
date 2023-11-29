@@ -102,9 +102,10 @@
             </div>
         </div>
     </div>
-    <div v-if="!loading" class="d-flex justify-content-center align-items-center mb-4">
+    <div v-if="!loading" class="d-flex justify-content-center align-items-center mb-5">
         <button class="btn btn-dark" v-on:click="volver()">Volver</button>
     </div>
+    <br>
 </template>
 <style scoped>
 h6 {

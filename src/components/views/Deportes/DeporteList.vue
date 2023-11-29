@@ -147,6 +147,7 @@ export default {
                     await categoriasStore.fetchElements(`${apiUrl}/categoria/getAll`)
                         .then(() => {
                             categorias.value = categoriasStore.getElements.result
+                            categorias.value.sort(comparar);
                         })
                 } catch (e) {
                     categorias.value = []
@@ -163,6 +164,14 @@ export default {
                 loading.value = false
             }
         }
+
+        const comparar = (a, b) => {
+            const valorA = a.nombreCategoria.toLowerCase();
+            const valorB = b.nombreCategoria.toLowerCase();
+
+            return valorA.localeCompare(valorB);
+        };
+
 
         function buscar() {
             reiniciar()

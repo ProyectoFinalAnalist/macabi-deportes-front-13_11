@@ -1,7 +1,7 @@
 <template>
 	<Loading v-if="loading" />
 
-	<div v-else class="container">
+	<div v-else class="container mb-5">
 
 		<div class="sub_container_title">{{ titulo }}</div>
 
@@ -105,7 +105,7 @@
 							@click="router.push(`/socios/${socio.idSocio}`)">
 
 							<td class="big" data-cell="Id">{{ socio.nroSocio }}</td>
-							<td class="show_data_cell" data-cell="Nombre">{{ socio.nombre }} {{ socio.apellido }}</td>
+							<td class="show_data_cell" data-cell="Nombre">{{ socio.apellido }}, {{ socio.nombre }}</td>
 							<td class="show_data_cell" data-cell="Dni">{{ socio.dni }}</td>
 
 							<td class="show_data_cell" data-cell="Total" style="font-weight: bold;">
@@ -193,11 +193,12 @@
 				</button>
 			</div>
 		</div>
+		<br>
 	</div>
 </template>
 
 <script setup>
-import { ref, onBeforeMount, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useElementStore } from '../../../utils/Store';
 import { useRoute, useRouter } from 'vue-router';
 import apiUrl from '../../../../config/config.js'
@@ -329,9 +330,16 @@ function showSocios() {
 			return { ...socio, Fechas: fechasFiltradas };
 		});
 
+	const comparar = (a, b) => {
+		const valorA = a.apellido.toLowerCase();
+		const valorB = b.apellido.toLowerCase();
+
+		return valorA.localeCompare(valorB);
+	};
 
 	//console.log("🚀 ~ file: FechasListCategoria.vue:274 ~ showSocios ~ value:", mapAsistencia(sociosProcesados) )
 	sociosToShow.value = mapAsistencia(sociosProcesados)
+	sociosToShow.value.sort(comparar)
 
 	cantSociosToShow.value = sociosProcesados.length
 }

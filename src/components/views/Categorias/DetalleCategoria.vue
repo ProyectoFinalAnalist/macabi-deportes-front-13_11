@@ -1,6 +1,6 @@
 <template>
     <Loading v-if="this.loading" />
-    <div v-else class="container-fluid px-0 px-md-5 mb-5">
+    <div v-else class="container-fluid px-3 px-md-5 mb-5">
         <div class="text text-center">
             <h1>Categoria: <strong>{{ nombreCategoria }}</strong> </h1>
             <h4>Deporte: <strong>{{ deporteCategoria }}</strong> </h4>
@@ -51,29 +51,63 @@
         <br>
         <div class="text text-center mb-3"> <code>Solo se muestran los socios asignados a la categoría</code></div>
         <div v-if="listSocios && listSocios.length > 0">
+            <div class="d-flex justify-content-center align-items-center mt-2">
+                <button type="button" class="btn btn-success" data-bs-toggle="collapse"
+                    data-bs-target="#demo">Ayuda</button>
+            </div>
+            <div id="demo" class="collapse">
+                <code><strong>"Click"</strong> en los botones verdes para ordenar las columnas por orden <strong>ASCENDENTE</strong> o <strong>DESCENDENTE</strong></code>
+            </div>
+            <div class="text-end mt-3 mt-lg-0" v-if="column">
+                <strong>Orden: </strong>
+                <p v-if="!orden" class="d-inline">{{ column }} - Ascendente</p>
+                <p v-else class="d-inline">{{ column }} - Descendente</p>
+            </div>
+            <br v-if="!column">
             <table class="table table-bordered table-hover">
                 <thead>
                     <tr>
-                        <th class="d-none d-sm-table-cell">NroSocio:
-                            <button class="btn bg-success" @click="ordenar('nroSocio')"></button>
+                        <th class="d-none d-sm-table-cell">
+                            <div class="d-flex flex-column flex-md-row align-items-center">
+                                <span>NroSocio:</span>
+                                <button class="button-list ms-2" @click="ordenar('nroSocio')"></button>
+                            </div>
                         </th>
-                        <th>Nombre:</th>
-                        <th>Apellido:</th>
-                        <th class="d-none d-sm-table-cell">Dni:
-                            <button class="btn bg-success" @click="ordenar('dni')"></button>
+                        <th>
+                            <div class="d-flex flex-column flex-md-row align-items-center">
+                                <span>Nombre:</span>
+                                <button class="button-list ms-2" @click="ordenar('nombre')"></button>
+                            </div>
                         </th>
-                        <th class="d-none d-lg-table-cell">Email:</th>
+                        <th>
+                            <div class="d-flex flex-column flex-md-row align-items-center">
+                                <span>Apellido:</span>
+                                <button class="button-list ms-2" @click="ordenar('apellido')"></button>
+                            </div>
+                        </th>
+                        <th class="d-none d-sm-table-cell">
+                            <div class="d-flex flex-column flex-md-row align-items-center">
+                                <span>Dni:</span>
+                                <button class="button-list ms-2" @click="ordenar('dni')"></button>
+                            </div>
+                        </th>
+                        <th class="d-none d-lg-table-cell">
+                            <div class="d-flex flex-column flex-md-row align-items-center">
+                                <span>Email:</span>
+                                <button class="button-list ms-2" @click="ordenar('email')"></button>
+                            </div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody class="pointer">
                     <tr v-for="socio in sociosFiltados" :key="socio.idSocio" @click="irA(socio.idSocio)">
-                        <td class="d-none d-sm-table-cell">{{ socio.nroSocio }}</td>
-                        <td>{{ socio.nombre }} <p class="badge bg-macabi ms-3 my-0" id="socioNuevo"
+                        <td class="d-none d-sm-table-cell td-custom">{{ socio.nroSocio }}</td>
+                        <td class="td-custom">{{ socio.nombre }} <p class="badge bg-macabi ms-1 my-0" id="socioNuevo"
                                 v-if="socio.esNuevoSocio">NUEVO</p>
                         </td>
-                        <td>{{ socio.apellido }}</td>
-                        <td class="d-none d-sm-table-cell">{{ socio.dni }}</td>
-                        <td class="d-none d-lg-table-cell">{{ socio.email }}</td>
+                        <td class="td-custom">{{ socio.apellido }}</td>
+                        <td class="d-none d-sm-table-cell td-custom">{{ socio.dni }}</td>
+                        <td class="d-none d-lg-table-cell td-custom2">{{ socio.email }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -132,9 +166,9 @@
                 </thead>
                 <tbody class="pointer">
                     <tr v-for="socio in listSociosCumple" :key="socio.idSocio" @click="irA(socio.idSocio)">
-                        <td class="d-none d-md-table-cell">{{ socio.nombre }}</td>
-                        <td>{{ socio.apellido }}</td>
-                        <td> <b> {{ obtenerFechaFormateada(socio.fechaNacimiento) }} </b>
+                        <td class="d-none d-md-table-cell td-custom">{{ socio.nombre }}</td>
+                        <td class="td-custom">{{ socio.apellido }}</td>
+                        <td class="td-custom"> <b> {{ obtenerFechaFormateada(socio.fechaNacimiento) }} </b>
                             ({{ calcularEdad(socio.fechaNacimiento) }})</td>
                     </tr>
                 </tbody>
@@ -171,7 +205,6 @@ export default {
             sociosFiltados: [],
             tipoFiltro: "",
             size: 0,
-            orden: 0,
             profesoresCategoria: [
 
             ],
@@ -181,7 +214,9 @@ export default {
             listSociosCumple: [],
             utils: new Utils(),
 
-            loading: true
+            loading: true,
+            orden: true,
+            column: null
 
         };
     },
@@ -335,18 +370,28 @@ export default {
         reiniciar() {
             this.sociosFiltados = this.listSocios;
         },
-        ordenar(columna) {
-            this.orden = !this.orden
 
-            this.sociosFiltados.sort((a, b) => {
-                let factorOrden = this.orden ? -1 : 1;
-                if (a[columna] < b[columna]) return -1 * factorOrden;
-                if (a[columna] > b[columna]) return 1 * factorOrden;
-                return 0;
-            });
-        },
         volverAtras() {
             this.$router.go(-1)
+        },
+
+        ordenar(columna) {
+            this.orden = !this.orden;
+            this.column = columna.toUpperCase()
+
+            const comparar = (a, b) => {
+                const factorOrden = this.orden ? -1 : 1;
+                const valorA = typeof a[columna] === 'number' ? a[columna] : a[columna].toLowerCase();
+                const valorB = typeof b[columna] === 'number' ? b[columna] : b[columna].toLowerCase();
+
+                if (valorA < valorB) return -1 * factorOrden;
+                if (valorA > valorB) return 1 * factorOrden;
+                return 0;
+            };
+
+            if (this.size != 0) {
+                this.sociosFiltados.sort(comparar);
+            }
         }
     },
 };

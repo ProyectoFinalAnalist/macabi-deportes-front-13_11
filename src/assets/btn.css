@@ -35,3 +35,38 @@
 .btn-macabi1:active {
     background-color: #002b58;
 }
+
+/*Estilos para los nuevos filtros*/
+
+.button-list {
+    width: 3rem;
+    height: 1.1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #198754;
+}
+
+.button-list:hover {
+    background-color: #177048;
+}
+
+.td-custom {
+    max-width: 120px;
+    /* Ajusta el valor según tus necesidades */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.td-custom2 {
+    max-width: 170px;
+    /* Ajusta el valor según tus necesidades */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+tbody {
+    cursor: pointer;
+}

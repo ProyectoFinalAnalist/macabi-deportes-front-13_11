@@ -47,9 +47,9 @@
                                 <tbody>
                                     <tr v-for="coordinador in coordinadores" :key="coordinador.idUsuario"
                                         @click="irA(coordinador.idUsuario, 'usuarios')">
-                                        <td>{{ coordinador.nombre }}</td>
-                                        <td>{{ coordinador.apellido }}</td>
-                                        <td class="d-none d-sm-table-cell">{{ coordinador.dni }}</td>
+                                        <td class="td-custom">{{ coordinador.nombre }}</td>
+                                        <td class="td-custom">{{ coordinador.apellido }}</td>
+                                        <td class="d-none d-sm-table-cell td-custom">{{ coordinador.dni }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -133,8 +133,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" @click="saveSelectedCoordinadores">Guardar</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-macabi1" @click="saveSelectedCoordinadores">Guardar</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -200,16 +200,32 @@ export default {
 
                 if (categoriasStore.getElements !== null) {
                     categorias.value = categoriasStore.getElements.result
+
+                    if (categorias.value) {
+                        categorias.value.sort((a, b) => comparar(a, b, 'nombreCategoria'));
+                    }
+
                 } else {
                     categorias.value = []
                 }
 
                 coordinadores.value = usuariosStore.getElements.result.CoordinadoresAsignados
 
+                if (coordinadores.value) {
+                    coordinadores.value.sort((a, b) => comparar(a, b, 'nombre'));
+                }
+
                 deportes.value = deporteStore.getElements.result.filter(deporte => deporte.idDeporte != idDeporte)
                 nombre.value = deporte.value.nombre
             }
         });
+
+        const comparar = (a, b, columna) => {
+            const valorA = String(a[columna]).toLowerCase();
+            const valorB = String(b[columna]).toLowerCase();
+
+            return valorA.localeCompare(valorB);
+        };
 
         function obtenerCoordinador(idUsuario) {
             const usuarioEncontrado = usuariosStore.getElements.result.find((usuario) => usuario.idUsuario === idUsuario);

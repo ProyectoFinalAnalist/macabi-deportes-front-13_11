@@ -35,7 +35,7 @@
       <table class="table table-bordered table-hover" v-if="sociosAsistenciaFecha.length !== 0">
         <thead>
           <tr>
-            <th>Nombre</th>
+            <th class="d-none d-sm-table-cell">Nombre</th>
             <th>Apellido</th>
             <th>Estado</th>
           </tr>
@@ -43,9 +43,9 @@
         <tbody>
           <tr v-for="socio in sociosAsistenciaFecha" :key="socio.idSocio" @click="irA(socio.idSocio)"
             style="cursor: pointer;">
-            <td>{{ socio.nombre }}</td>
-            <td>{{ socio.apellido }}</td>
-            <td>{{ mapearEstado(socio.estado) }}</td>
+            <td class="d-none d-sm-table-cell td-custom">{{ socio.nombre }}</td>
+            <td class="td-custom">{{ socio.apellido }}</td>
+            <td class="td-custom">{{ mapearEstado(socio.estado) }}</td>
           </tr>
         </tbody>
       </table>
@@ -60,7 +60,8 @@
     <div class="d-flex justify-content-center align-items-center mb-4 mt-3">
       <div class="btn-group">
         <router-link class="btn btn-macabi1" :to="`/editarfecha/${fechaDetalle.idFecha}`">Editar Fecha</router-link>
-        <button class="btn btn-success" @click="asignarAsistencia" v-if="sociosAsistenciaFecha.length !== 0">Asignar/Modificar asistencias</button>
+        <button class="btn btn-success" @click="asignarAsistencia"
+          v-if="sociosAsistenciaFecha.length !== 0">Asignar/Modificar asistencias</button>
       </div>
     </div>
     <div class="d-flex justify-content-center align-items-center">
@@ -112,6 +113,7 @@ export default {
         }
         await asistenciaStore.fetchElements(`${apiUrl}/asistencia/${idFecha}`);
         sociosAsistenciaFecha.value = asistenciaStore.getElements.result;
+        sociosAsistenciaFecha.value.sort(comparar)
         size.value = sociosAsistenciaFecha.value.length;
       } catch (error) {
         console.error("Error fetching socios anotados:", error);
@@ -131,6 +133,13 @@ export default {
         loading.value = false
       }
     }
+
+    const comparar = (a, b) => {
+      const valorA = a.apellido.toLowerCase();
+      const valorB = b.apellido.toLowerCase();
+
+      return valorA.localeCompare(valorB);
+    };
 
     const obtenerDeporte = async (idCategoria) => {
       try {

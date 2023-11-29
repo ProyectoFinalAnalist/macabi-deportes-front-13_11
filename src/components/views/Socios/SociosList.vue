@@ -1,6 +1,6 @@
 <template>
     <Loading v-if="loading" />
-    <div v-else class="container-fluid px-5 mb-5">
+    <div v-else class="container-fluid px-3 px-lg-5 mb-5">
         <div v-if="sociosStore.getElements != null">
             <div class="text text-center h1">SOCIOS</div>
             <br>
@@ -33,29 +33,62 @@
                     </div>
                 </div>
             </form>
-            <br>
+            <div class="d-flex justify-content-center align-items-center mt-2">
+                <button type="button" class="btn btn-success" data-bs-toggle="collapse"
+                    data-bs-target="#demo">Ayuda</button>
+            </div>
+            <div id="demo" class="collapse">
+                <code><strong>"Click"</strong> en los botones verdes para ordenar las columnas por orden <strong>ASCENDENTE</strong> o <strong>DESCENDENTE</strong></code>
+            </div>
+            <div class="text-end mt-3 mt-lg-0" v-if="column">
+                <strong>Orden: </strong>
+                <p v-if="!orden" class="d-inline">{{ column }} - Ascendente</p>
+                <p v-else class="d-inline">{{ column }} - Descendente</p>
+            </div>
+            <br v-if="!column">
             <div v-if="sociosStore.getElements != null || size > 0">
                 <table class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th class="d-none d-sm-table-cell">NroSocio:
-                                <button class="btn bg-success" @click="ordenar('nroSocio')"></button>
+                            <th class="d-none d-sm-table-cell">
+                                <div class="d-flex flex-column flex-md-row align-items-center">
+                                    <span>NroSocio:</span>
+                                    <button class="button-list ms-2" @click="ordenar('nroSocio')"></button>
+                                </div>
                             </th>
-                            <th>Nombre:</th>
-                            <th>Apellido:</th>
-                            <th class="d-none d-sm-table-cell">Dni:
-                                <button class="btn bg-success" @click="ordenar('dni')"></button>
+                            <th>
+                                <div class="d-flex flex-column flex-md-row align-items-center">
+                                    <span>Nombre:</span>
+                                    <button class="button-list ms-2" @click="ordenar('nombre')"></button>
+                                </div>
                             </th>
-                            <th class="d-none d-lg-table-cell">Email:</th>
+                            <th>
+                                <div class="d-flex flex-column flex-md-row align-items-center">
+                                    <span>Apellido:</span>
+                                    <button class="button-list ms-2" @click="ordenar('apellido')"></button>
+                                </div>
+                            </th>
+                            <th class="d-none d-sm-table-cell">
+                                <div class="d-flex flex-column flex-md-row align-items-center">
+                                    <span>Dni:</span>
+                                    <button class="button-list ms-2" @click="ordenar('dni')"></button>
+                                </div>
+                            </th>
+                            <th class="d-none d-lg-table-cell">
+                                <div class="d-flex flex-column flex-md-row align-items-center">
+                                    <span>Email:</span>
+                                    <button class="button-list ms-2" @click="ordenar('email')"></button>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="socio in socios" :key="socio.idSocio" @click="irA(socio.idSocio)">
-                            <td class="d-none d-sm-table-cell">{{ socio.nroSocio }}</td>
-                            <td>{{ socio.nombre }}</td>
-                            <td>{{ socio.apellido }}</td>
+                            <td class="d-none d-sm-table-cell td-custom">{{ socio.nroSocio }}</td>
+                            <td class="td-custom">{{ socio.nombre }}</td>
+                            <td class="td-custom">{{ socio.apellido }}</td>
                             <td class="d-none d-sm-table-cell">{{ socio.dni }}</td>
-                            <td class="d-none d-lg-table-cell">{{ socio.email }}</td>
+                            <td class="d-none d-lg-table-cell td-custom2">{{ socio.email }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -83,10 +116,6 @@
 </template>
 <style scoped>
 @import '../../../assets/btn.css';
-
-tbody {
-    cursor: pointer;
-}
 </style>
 <script>
 import { useElementStore } from '../../../utils/Store';
@@ -106,7 +135,6 @@ export default {
         const errorFiltro = ref(false)
         let filtro = ""
         let busqueda = ""
-        const orden = ref(true)
         const router = useRouter();
 
         const loading = ref(true)
@@ -152,16 +180,25 @@ export default {
             size.value = 0
         }
 
-        function ordenar(columna) {
-            orden.value = !orden.value
+        const orden = ref(true)
+        const column = ref(null)
 
-            if (socios.value != null) {
-                socios.value.sort((a, b) => {
-                    const factorOrden = orden.value ? -1 : 1;
-                    if (a[columna] < b[columna]) return -1 * factorOrden;
-                    if (a[columna] > b[columna]) return 1 * factorOrden;
-                    return 0;
-                });
+        function ordenar(columna) {
+            orden.value = !orden.value;
+            column.value = columna.toUpperCase()
+
+            const comparar = (a, b) => {
+                const factorOrden = orden.value ? -1 : 1;
+                const valorA = typeof a[columna] === 'number' ? a[columna] : a[columna].toLowerCase();
+                const valorB = typeof b[columna] === 'number' ? b[columna] : b[columna].toLowerCase();
+
+                if (valorA < valorB) return -1 * factorOrden;
+                if (valorA > valorB) return 1 * factorOrden;
+                return 0;
+            };
+
+            if (size.value != 0) {
+                socios.value.sort(comparar);
             }
         }
 
@@ -182,7 +219,9 @@ export default {
             buscar,
             irA,
             loading,
-            Loading
+            Loading,
+            orden,
+            column
         }
     }
 

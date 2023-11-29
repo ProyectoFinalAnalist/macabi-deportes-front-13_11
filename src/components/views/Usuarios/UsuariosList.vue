@@ -1,7 +1,7 @@
 <template>
   <Loading v-if="loading" />
-  <div v-else class="container-fluid ps-5 pe-5 mb-5">
-    <div class="text text-center h1">USUARIOS</div>
+  <div v-else class="container-fluid px-3 px-lg-5 mb-5">
+    <div class="text text-center h1">{{ txtTitle }}</div>
     <br>
     <form @submit.prevent="buscar()">
       <div class="row g-2">
@@ -50,26 +50,57 @@
         </div>
       </div>
     </form>
-    <br>
+    <div class="d-flex justify-content-center align-items-center mt-2">
+      <button type="button" class="btn btn-success" data-bs-toggle="collapse" data-bs-target="#demo">Ayuda</button>
+    </div>
+    <div id="demo" class="collapse">
+      <code><strong>"Click"</strong> en los botones verdes para ordenar las columnas por orden <strong>ASCENDENTE</strong> o <strong>DESCENDENTE</strong></code>
+    </div>
+    <div class="text-end mt-3 mt-lg-0" v-if="column">
+      <strong>Orden: </strong>
+      <p v-if="!orden" class="d-inline">{{ column }} - Ascendente</p>
+      <p v-else class="d-inline">{{ column }} - Descendente</p>
+    </div>
+    <br v-if="!column">
     <div class="d-flex justify-content-end input-group" v-if="usuarios">
       <table class="table table-bordered table-hover">
         <thead>
           <tr>
-            <th>Nombre:</th>
-            <th>Apellido:</th>
-            <th class="d-none d-sm-table-cell">Email:</th>
-            <th class="d-none d-sm-table-cell">Dni: <button class="btn bg-success" @click="ordenar('dni')"></button></th>
-            <th class="d-none d-md-table-cell">Rol:</th>
+            <th>
+              <div class="d-flex flex-column flex-md-row align-items-center">
+                <span>Nombre:</span>
+                <button class="button-list ms-2" @click="ordenar('nombre')"></button>
+              </div>
+            </th>
+            <th>
+              <div class="d-flex flex-column flex-md-row align-items-center">
+                <span>Apellido:</span>
+                <button class="button-list ms-2" @click="ordenar('apellido')"></button>
+              </div>
+            </th>
+            <th class="d-none d-sm-table-cell">
+              <div class="d-flex flex-column flex-md-row align-items-center">
+                <span>Email:</span>
+                <button class="button-list ms-2" @click="ordenar('email')"></button>
+              </div>
+            </th>
+            <th class="d-none d-sm-table-cell">
+              <div class="d-flex flex-column flex-md-row align-items-center">
+                <span>Dni:</span>
+                <button class="button-list ms-2" @click="ordenar('dni')"></button>
+              </div>
+            </th>
+            <th class="d-none d-md-table-cell" v-if="mostrar">Rol:</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="user in usuarios" :key="user.idUsuario" @click="irA(user.idUsuario)"
             :class="{ 'table-danger': !user.activo }">
-            <td>{{ user.nombre }}</td>
-            <td>{{ user.apellido }}</td>
-            <td class="d-none d-sm-table-cell">{{ user.email }}</td>
+            <td class="td-custom">{{ user.nombre }}</td>
+            <td class="td-custom">{{ user.apellido }}</td>
+            <td class="d-none d-sm-table-cell td-custom2">{{ user.email }}</td>
             <td class="d-none d-sm-table-cell"> {{ user.dni }}</td>
-            <td class="d-none d-md-table-cell"> {{ obtenerRol(user.Rol.tipo) }}</td>
+            <td class="d-none d-md-table-cell" v-if="mostrar"> {{ obtenerRol(user.Rol.tipo) }}</td>
           </tr>
         </tbody>
       </table>
@@ -94,10 +125,6 @@
 </template>
 <style scoped>
 @import '../../../assets/btn.css';
-
-tbody {
-  cursor: pointer;
-}
 </style>
 <script>
 import { useElementStore } from "../../../stores/Store";
@@ -115,9 +142,11 @@ export default
       const elementStore = useElementStore("usuario")()
       let busqueda = ""
       const usuarios = ref(null)
-      const orden = ref(true)
       const router = useRouter();
       const loading = ref(true)
+
+      const txtTitle = ref('USUARIOS')
+      const mostrar = ref(true)
 
       const size = ref(0)
 
@@ -129,6 +158,8 @@ export default
         }).then(() => {
           if (usuarioStore.getRol == 'C') {
             elementStore.setElements(elementStore.getElements.filter((usuario) => usuario.Rol.tipo == 'P'))
+            mostrar.value = false
+            txtTitle.value = 'PROFESORES'
           }
 
           usuarios.value = elementStore.getElements
@@ -187,32 +218,31 @@ export default
         size.value = usuarios.value.length || 0
       }
 
-      function ordenar(columna) {
-        orden.value = !orden.value
+      const orden = ref(true)
+      const column = ref(null)
 
-        usuarios.value.sort((a, b) => {
+      function ordenar(columna) {
+        orden.value = !orden.value;
+        column.value = columna.toUpperCase()
+
+        const comparar = (a, b) => {
           const factorOrden = orden.value ? -1 : 1;
-          if (a[columna] < b[columna]) return -1 * factorOrden;
-          if (a[columna] > b[columna]) return 1 * factorOrden;
+          const valorA = typeof a[columna] === 'number' ? a[columna] : a[columna].toLowerCase();
+          const valorB = typeof b[columna] === 'number' ? b[columna] : b[columna].toLowerCase();
+
+          if (valorA < valorB) return -1 * factorOrden;
+          if (valorA > valorB) return 1 * factorOrden;
           return 0;
-        });
+        };
+
+        usuarios.value.sort(comparar);
       }
+
 
       function irA(id) {
         if (id != 0) {
           router.push(`/usuarios/${id}`);
         }
-      }
-
-      function generarCorreos(cantidad) {
-        let correos = [];
-
-        for (let i = 1; i <= cantidad; i++) {
-          let correo = `email${i}@gmail.com`;
-          correos.push(correo);
-        }
-
-        return correos;
       }
 
       function obtenerRol(rol) {
@@ -242,7 +272,11 @@ export default
         obtenerRol,
         loading,
         Loading,
-        usuarioStore
+        usuarioStore,
+        orden,
+        column,
+        txtTitle,
+        mostrar
       }
     },
   }

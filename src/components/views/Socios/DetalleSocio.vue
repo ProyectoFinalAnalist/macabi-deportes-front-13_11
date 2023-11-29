@@ -29,7 +29,7 @@
                             <p class="p pe-3">
                                 <strong class="h5 fw-bold">Datos de contacto: </strong>
                             </p>
-                            <div v-if="infoContactos == null" class="p pe-2 ps-4">
+                            <div v-if="infoContactos == null" class="p px-2">
                                 <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3">
                                     <strong>{{ socio.nombre }} no posee datos de contacto</strong>
                                 </h6>
@@ -52,7 +52,7 @@
                             <p>
                                 <strong class="h5 fw-bold">Categorias asociadas: </strong>
                             </p>
-                            <table class="table table-bordered">
+                            <table class="table table-bordered" v-if="categorias.length != 0">
                                 <thead style="background-color: rgb(255, 255, 255);">
                                     <tr>
                                         <th>Categoria:</th>
@@ -68,6 +68,11 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            <div v-else class="p px-2">
+                                <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3">
+                                    <strong>{{ socio.nombre }} no posee cateogorías asignadas</strong>
+                                </h6>
+                            </div>
                         </div>
                     </div>
                 </div>
