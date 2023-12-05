@@ -83,9 +83,7 @@
 	<div v-if="!loading" class="sub_container_buttons btn-group mb-5">
 		<button v-if="rolUsuario == 'A'" class="btn btn-primary primary-macabi"
 			@click="$router.push(`/editarDeporte/${idDeporte}`);">Editar Deporte</button>
-		<div class="justify-content-center d-flex">
 
-		</div>
 		<button v-if="rolUsuario == 'C'" class="btn btn-primary primary-macabi" data-bs-toggle="modal"
 			data-bs-target="#categoriaModal">Agregar nueva categoria</button>
 		<button class="btn btn-dark" @click="$router.go(-1)">Volver</button>

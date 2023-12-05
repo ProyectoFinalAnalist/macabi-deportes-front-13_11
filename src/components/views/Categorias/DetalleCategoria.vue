@@ -369,6 +369,7 @@ export default {
         },
         reiniciar() {
             this.sociosFiltados = this.listSocios;
+            this.size = this.sociosFiltados.length || 0
         },
 
         volverAtras() {

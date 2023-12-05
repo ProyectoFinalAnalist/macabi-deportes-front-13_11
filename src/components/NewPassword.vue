@@ -227,10 +227,11 @@ async function reenviarEmailRecuperacion() {
 
         if (window.confirm(`Deseas Reenviar el Email de recuperacion a ${email.value}`)) {
             const response = await axios.post(`${apiUrl}/recoverPassword/sendEmail`, data, { withCredentials: true })
+            alert("El Email se ha reenviado")
         }
 
         loading.value = false
-        alert("El Email se ha reenviado")
+       
 
     } catch (error) {
         loading.value = false
