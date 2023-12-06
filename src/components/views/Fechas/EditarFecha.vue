@@ -1,5 +1,6 @@
 <template>
-  <div class="container fluid mb-5">
+  <Loading v-if="loading" />
+  <div v-else class="container fluid mb-5">
     <div class="text text-center pb-3 h3">Detalles de la Fecha: <strong>{{
       utils.obtenerFechaFormateada(fechaDetalle.fechaCalendario) }}</strong></div>
     <div class="row">
@@ -110,7 +111,7 @@ import { useRoute, useRouter } from "vue-router";
 import apiUrl from "../../../../config/config.js";
 import { verificarAutorizacionFecha } from "../../../utils/permisos";
 import { Utils } from "../../../utils/utils";
-
+import Loading from "../../dependentComponents/Loading.vue";
 
 export default {
   setup() {
@@ -133,6 +134,8 @@ export default {
 
     const utils = new Utils()
 
+    const loading = ref(true)
+
     onBeforeMount(async () => {
       await fetchs();
       if (!await verificarAutorizacionFecha(idFecha)) {
@@ -151,6 +154,7 @@ export default {
         sociosXCategoria.value = await obtenerSociosXCategoria(idCategoria)
       }
 
+      loading.value = false
     }
 
     const obtenerSociosXCategoria = async (idCategoria) => {
@@ -345,13 +349,17 @@ export default {
       volverADetalle,
       utils,
       router,
-      irA
+      irA,
+      loading
     };
   },
   data() {
     return {};
   },
   methods: {},
+  components: {
+    Loading
+  }
 };
 </script>
 
