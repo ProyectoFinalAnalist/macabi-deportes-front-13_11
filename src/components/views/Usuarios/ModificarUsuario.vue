@@ -1,13 +1,13 @@
 <template>
-    <Loading v-if="loading"/>
-    <div v-else class="container-fluid">
-        <div class="row m">
+    <Loading v-if="loading" />
+    <div v-else class="container-fluid mb-5">
+        <div class="row">
             <div class="col-md-6 offset-md-3" v-if="usuario">
-                <h3 class="text-center mt-2">Registrar Usuario</h3>
-                <div class="text-end"><code>*campos obligatorios</code></div>
-                <div class="card bg-light text-dark mb-4">
+                <h3 class="text-center">Detalles del Usuario: <strong>{{ nombre }}</strong></h3>
+                <div class="text-end mb-1"><code>*campos obligatorios</code></div>
+                <div class="card bg-light text-dark mb-3">
                     <div class="card-body">
-                        <p>
+                        <p class="p pe-2 ps-2">
                             <strong>Nombre: <code>*</code></strong><input class="form-control" type="text"
                                 v-model="usuario.nombre" placeholder="Ingrese el nombre del usuario" />
                         </p>
@@ -17,7 +17,7 @@
                         <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="showErrores.nombreSize">
                             <strong>El nombre debe tener un minimo de 2 caracteres y un maximo de 24</strong>
                         </h6>
-                        <p>
+                        <p class="p pe-2 ps-2">
                             <strong>Apellido: <code>*</code></strong><input class="form-control" type="text"
                                 v-model="usuario.apellido" placeholder="Ingrese el apellido del usuario" />
                         </p>
@@ -27,7 +27,7 @@
                         <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="showErrores.apellidoSize">
                             <strong>El apellido debe tener un minimo de 2 caracteres y un maximo de 24</strong>
                         </h6>
-                        <p><strong>Email: <code>*</code></strong><input class="form-control" id="email" type="email"
+                        <p class="p pe-2 ps-2"><strong>Mail: <code>*</code></strong><input class="form-control" type="email"
                                 v-model="usuario.email" placeholder="correo@ejemplo.com" /></p>
                         <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="showErrores.emailExistente">
                             <strong>Error, este MAIL ya se encuentra registrado</strong>
@@ -35,7 +35,7 @@
                         <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-else-if="showErrores.email">
                             <strong>Formato de mail inválido</strong>
                         </h6>
-                        <p><strong>Dni: <code>*</code></strong><input class="form-control" id="dni" type="number"
+                        <p class="p pe-2 ps-2"><strong>Dni: <code>*</code></strong><input class="form-control" type="number"
                                 v-model="usuario.dni" placeholder="12345678" /></p>
                         <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="showErrores.dniExistente">
                             <strong>Error, este DNI ya se encuentra registrado</strong>
@@ -43,26 +43,11 @@
                         <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-else-if="showErrores.dni">
                             <strong>Formato del dni inválido</strong>
                         </h6>
-                        <div class="form-group row mb-3">
-                            <p>
-                                <strong>Contraseña: <code>*</code></strong>
-                            </p>
-                            <div class="col">
-                                <input :type="mostrar" class="form-control" v-model="usuario.clave"
-                                    placeholder="Ingrese contraseña" required />
-                            </div>
-                            <div class="col-auto">
-                                <button class="btn btn-outline-dark" type="button" id="togglePassword"
-                                    @click="mostrarContrasena">Ver contraseña</button>
-                            </div>
-                        </div>
-                        <h6 class="  alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="showErrores.clave">
-                            <strong>Error, la contraseña debe contener al menos 8 caracteres, un número y una
-                                mayúscula</strong>
-                        </h6>
-                        <p><strong>Fecha de nacimiento: <code>*</code></strong> <input class="form-control" type="date"
-                                required v-model="usuario.fechaNacimiento" :max="obtenerFechaMax()"></p>
-                        <p>
+
+                        <p class="p pe-2 ps-2"><strong>Fecha de nacimiento: <code>*</code></strong> <input
+                                class="form-control" type="date" required :max="obtenerFechaMax()"
+                                v-model="usuario.fechaNacimiento"></p>
+                        <p class="p pe-2 ps-2">
 
                             <strong>Telefono: <code>*</code></strong><input class="form-control" type="tel"
                                 v-model="usuario.telefono" placeholder="1123456789" />
@@ -70,40 +55,72 @@
                         <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="showErrores.telefono">
                             <strong>Formato del telefono inválido</strong>
                         </h6>
-                        <p>
+                        <p class="p pe-2 ps-2">
                             <strong>Rol: <code>*</code></strong>
-                            
-                            <select v-if="rolUser == 'A'" id="filtro" class="form-select" v-model="usuario.idRol">
-                                
+                            <select v-if="this.usrStore.getRol == 'A'" id="filtro" class="form-select"
+                                v-model="usuario.idRol">
+
                                 <option selected disabled value="">Seleccione el Rol</option>
                                 <option value="1">Administrador</option>
                                 <option value="2">Coordinador</option>
                                 <option value="3">Profesor</option>
                             </select>
 
-                            <select v-else  class="form-select" v-model="usuario.idRol">
+
+                            <select v-else-if="this.usrStore.getId != usuario.idUsuario" class="form-select"
+                                v-model="usuario.idRol">
                                 <option value="3">Profesor</option>
                             </select>
 
+                            <select v-else-if="this.usrStore.getId == usuario.idUsuario" class="form-select"
+                                v-model="usuario.idRol">
+                                <option disabled value="2">Coordinador</option>
+                            </select>
                         </p>
                         <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="showErrores.rol">
                             <strong>El rol no debe estar vacio</strong>
                         </h6>
-                        <p>
+                        <p class="p pe-2 ps-2">
+                            <strong>Activo: <code>*</code></strong>
+                            <select id="filtro" class="form-select" v-model="usuario.activo">
+
+                                <option selected disabled value="">Seleccione si el usuario esta activo</option>
+                                <option value=true>Si</option>
+                                <option value=false>No</option>
+                            </select>
+                        </p>
+                        <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="showErrores.rol">
+                            <strong>El estado de actividad no debe estar vacio</strong>
+                        </h6>
+
+                        <p class="p pe-2 ps-2">
                             <strong>Direccion: <code>*</code></strong><input class="form-control" type="text"
-                                v-model="usuario.direccion" placeholder="Ingrese la direccion" />
+                                v-model="usuario.direccion" placeholder="Ingrese el direccion" />
                         </p>
                         <h6 class="alert-sm mb-0 text-center p-2 m-2 rounded mb-3" v-if="showErrores.direccion">
-                            <strong>La Direccion debe tener un minimo de 5 caracteres y un maximo de 50</strong>
+                            <strong>La dirección debe tener un minimo de 5 caracteres y un maximo de 50</strong>
                         </h6>
-                        <button class="btn btn-macabi1 mx-auto d-block" @click="crearUsuario">Crear Usuario</button>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center align-items-center mb-3">
+                    <div class="btn-group">
+                        <button class="btn btn-macabi1" @click="updateUsuario">
+                            Actualizar Usuario
+                        </button>
                     </div>
                 </div>
             </div>
+            <div class="col-md-6 offset-md-3" v-if="!usuario">
+                <div class="card fondo-card mb-4">
+                    <div class="card-body" style="border-radius: 10px;">
+                        <h5 class="fw-bold text-center">No se encontró el usuario</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-dark" @click="volver">Volver</button>
+            </div>
         </div>
-    </div>
-    <div v-if="!loading" class="d-flex justify-content-center align-items-center mb-5">
-        <button class="btn btn-dark" v-on:click="volver()">Volver</button>
     </div>
     <br>
 </template>
@@ -119,53 +136,53 @@ h6 {
 }
 </style>
 <script>
+import { usrStore } from '../../../stores/usrStore'
 import { useElementStore } from "../../../stores/Store";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { computed, ref, onMounted } from "vue";
 import { UtilsUsuario, Utils } from '../../../utils/utils.js'
-import Loading from "../../dependentComponents/Loading.vue";
-import { usrStore } from "../../../stores/usrStore";
+import { permisosModificarPerfil } from '../../../utils/permisos.js'
+import Loading from '../../dependentComponents/Loading.vue';
 
 export default {
     setup() {
+        const route = useRoute();
+        const idUsuario = route.params.id.toString();
         const elementStore = useElementStore("usuario")();
-        elementStore.setCurrentElement({
-            nombre: "",
-            apellido: "",
-            email: "",
-            clave: "",
-            fechaNacimiento: "",
-            telefono: "",
-            idRol: "",
-            dni: "",
-            direccion: "",
-        });
+        elementStore.fetchElementById(idUsuario).then(() => { nombre.value = `${usuario.value.apellido}, ${usuario.value.nombre}`; loading.value = false })
 
         const usuario = computed(() => elementStore.currentElement);
         const router = useRouter();
         const utils = new Utils()
         const utilsUsuario = new UtilsUsuario()
         const showErrores = ref({})
-        const userStore = usrStore()
-        const rolUser = userStore.getRol
+        const nombre = ref(null)
+
 
         const loading = ref(true)
 
-        onMounted(() => {
+        onMounted(async () => {
+
             elementStore.fetchElements()
-            .then(() => {
-                loading.value = false
-            })
+                .then(async () => {
+                    loading.value = false
+
+                    if (! await permisosModificarPerfil(idUsuario, usuario.value.idRol)) {
+                        router.push(`/unauthorized`);
+
+                    }
+                })
+
         })
 
-        const crearUsuario = async () => {
+        const updateUsuario = async () => {
             showErrores.value = utilsUsuario.validar(elementStore.currentElement, elementStore.elements)
 
             if (!utilsUsuario.errores(showErrores.value)) {
-                if (utils.confirm("crear", "registrado", "Usuario")) {
+                if (utils.confirm("modificar", "modificado", "Usuario")) {
                     loading.value = true
-                    await elementStore.createElement(usuario.value);
-                    router.push("/usuarios");
+                    await elementStore.patchElement(usuario.value);
+                    router.go(-1)
                 }
             } else {
                 alert("Error detectado en el ingreso de campos")
@@ -181,30 +198,26 @@ export default {
             return `${year}-${month}-${day}`;
         }
 
+        function volver() {
+            router.go(-1)
+        }
+
         return {
-            crearUsuario,
+            updateUsuario,
             usuario,
             showErrores,
+            nombre,
+            volver,
             obtenerFechaMax,
             loading,
-            rolUser
+
         };
     },
     data() {
         return {
-            mostrar: "password",
-            mostrarBool: true,
-        };
-    },
-    methods: {
-        mostrarContrasena() {
-            if (this.mostrarBool) {
-                this.mostrar = "text"
-            } else this.mostrar = "password"
-            this.mostrarBool = !this.mostrarBool
-        },
-        volver() {
-            this.$router.go(-1)
+            usrStore: usrStore(),
+            idUser: 0,
+            route: useRoute(),
         }
     },
     components: {
